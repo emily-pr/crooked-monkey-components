@@ -1139,11 +1139,52 @@ def process_row(steps):
     return '<div class="cm-proc-row">' + "".join(out) + '</div>'
 
 
+# ---- Info card (icon chip + eyebrow + body) — molecule ----
+def info_card_css():
+    return ("/* ---- CM: info card ---- */"
+            ".cm-info-stack{display:flex;flex-direction:column;gap:clamp(14px,1.4vw,20px)}"
+            ".cm-info{background:#fff;border-radius:clamp(16px,1.4vw,22px);padding:clamp(22px,2vw,30px);"
+            "display:flex;gap:18px;align-items:flex-start}"
+            ".cm-info-chip{flex:none;width:48px;height:48px;border-radius:50%;background:var(--accent,var(--yellow));"
+            "color:var(--on,var(--yellow-deep));display:flex;align-items:center;justify-content:center}"
+            ".cm-info-chip svg{width:22px;height:22px}"
+            ".cm-info-eyebrow{display:block;font:800 12px/1 Inter;letter-spacing:.14em;text-transform:uppercase;"
+            "color:var(--on,var(--yellow-deep));margin-bottom:10px}"
+            ".cm-info-b{font:500 clamp(14px,1.05vw,16px)/1.55 Inter;color:rgba(4,18,2,.72);margin:0;max-width:48ch}")
+
+def info_card(icon_svg, eyebrow, body, accent="yellow"):
+    return (f'<article class="cm-info" style="--accent:var(--{accent});--on:var(--{accent}-deep)">'
+            f'<span class="cm-info-chip">{icon_svg}</span>'
+            f'<div><span class="cm-info-eyebrow">{_html.escape(eyebrow)}</span>'
+            f'<p class="cm-info-b">{body}</p></div></article>')
+
+def info_stack(items):
+    """items = list of (icon_svg, eyebrow, body, accent)."""
+    return '<div class="cm-info-stack">' + "".join(info_card(*it) for it in items) + '</div>'
+
+# ---- Callout section (heading left + info-card stack right) — organism ----
+def callout_css():
+    return (heading_css() + info_card_css() + "/* ---- CM: callout section ---- */"
+            ".cm-callout{background:var(--cream);color:var(--ink)}"
+            ".cm-callout-in{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);"
+            "gap:clamp(36px,6vw,88px);align-items:center}"
+            "@media(max-width:820px){.cm-callout-in{grid-template-columns:1fr;gap:32px}}")
+
+def callout_section(eyebrow, title, body, cards, eyebrow_color="var(--pink-deep)"):
+    """Two-column 'what to know' callout: heading on the left, info cards on the right.
+    cards = list of (icon_svg, eyebrow, body, accent)."""
+    left = (f'<div class="cm-heading"><span class="cm-h-eyebrow" style="color:{eyebrow_color}">{_html.escape(eyebrow)}</span>'
+            f'<h2>{title}</h2><p class="cm-h-sub">{_html.escape(body)}</p></div>')
+    return f'<section class="cm-callout"><div class="cm-callout-in"><div>{left}</div>{info_stack(cards)}</div></section>'
+
+
 if __name__ == "__main__":
     # tiny smoke test
     print(root_css()[:60], "...")
     print("notch_css length:", len(notch_css()))
     print("button:", button("Request a quote")[:60], "...")
+    print("info_card ok:", "cm-info" in info_card("<svg/>", "PRICING", "body"))
+    print("callout ok:", "cm-callout" in callout_section("Eyebrow", "<b>T</b>", "body", [("<svg/>", "A", "b", "pink")]))
     print("media_card ok:", "cm-media" in media_card("x", "T", "m"))
     print("service_card ok:", "cm-svc" in service_card("x", "T", "m", "L"))
     print("footer ok:", "cm-ft" in footer("x"))

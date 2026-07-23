@@ -42,8 +42,8 @@ on; each component page lists its pages under "Used on".
 | Tier | Components |
 |---|---|
 | **Atoms** | K-Notch Card · Buttons · Premium Pill · Form Input · Eyebrow · Arrow Link *(shared)* |
-| **Molecules** | Stat Strip · Photo Card · Use-Case Card · Decoration Card · Product Card · Image Ticker · Pill Group · FAQ Accordion |
-| **Organisms** | Nav · Brand Hero · Statement Band · Process Row · Text + Pills · FAQ + Title · Form · Footer |
+| **Molecules** | Stat Strip · Photo Card · Use-Case Card · Decoration Card · Product Card · Info Card · Image Ticker · Pill Group · FAQ Accordion |
+| **Organisms** | Nav · Brand Hero · Statement Band · Process Row · Callout Section · Text + Pills · FAQ + Title · Form · Footer |
 | **Templates** | Premium Brands Page |
 
 - **Per-component page** — three things together:

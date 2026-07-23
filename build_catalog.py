@@ -475,6 +475,8 @@ _IC = {
  "gift": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="12" rx="1"/><path d="M4 13h16M12 9v12M12 9S10 4 7.5 5.5 9 9 12 9zM12 9s2-5 4.5-3.5S15 9 12 9z"/></svg>',
  "brief": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>',
  "users": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0112 0M16 5.5a3 3 0 010 5.8M21 20a6 6 0 00-4-5.6"/></svg>',
+ "note": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="M7 9.5h10M7 13.5h6"/></svg>',
+ "history": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/></svg>',
 }
 
 def build_brand_hero():
@@ -554,6 +556,34 @@ def build_premium_template():
     demo = ('<div class="demo bleed"><iframe class="demo-iframe" src="preview-premium.html" '
             'title="Premium Brands page template preview" loading="lazy"></iframe></div>')
     return demo, "", ""
+
+def build_info_card():
+    items = [(_IC["note"], "Pricing model", "Retail cost + 10% sourcing fee + decoration — reach out for an exact quote.", "pink"),
+             (_IC["box"], "MOQs vary", "Minimums depend on style, size run, and live inventory.", "yellow"),
+             (_IC["history"], "Flexible timelines", "Plan four to six weeks from approval; not built for rush orders.", "mint")]
+    demo = '<div class="demo col">' + cm.info_stack(items) + '</div>'
+    return demo, cm.info_card_css(), ""
+
+def build_callout():
+    cards = [
+        (_IC["note"], "Pricing model",
+         "Retail cost + 10% sourcing fee + decoration (typically $10–15 per location), plus applicable tax and "
+         "shipping. Reach out for an exact quote on your styles.", "pink"),
+        (_IC["box"], "MOQs vary",
+         "Minimums depend on style, size run, and live inventory. Smaller runs are possible on accessories and core "
+         "styles like the Everywhere Belt Bag; larger size-spread orders need more lead time.", "yellow"),
+        (_IC["history"], "Flexible timelines",
+         "Inventory changes daily and isn't fully visible in real time. Plan four to six weeks from approval — "
+         "Lululemon projects are not recommended for rush orders.", "mint"),
+    ]
+    demo = ('<div class="demo bleed" style="background:var(--cream);padding:clamp(28px,4vw,56px)">'
+            + cm.callout_section(
+                "What to know, before we get started",
+                "LULULEMON IS A<br>PREMIUM RETAIL BRAND.",
+                "We don't hold a wholesale account with Lululemon, and that shapes the project differently than a "
+                "typical custom apparel order. We believe in being clear upfront so you can decide if it's the right fit.",
+                cards) + '</div>')
+    return demo, cm.callout_css(), ""
 
 # ---------------------------------------------------------------------------
 # REGISTRY — the single place to add a component. Each entry -> card + page.
@@ -936,6 +966,25 @@ REGISTRY.extend([
                "The blueprint for spinning up any new premium-brand page."]},
 ])
 
+REGISTRY.extend([
+    {"slug": "info-card", "name": "Info Card", "eyebrow": "MOLECULE", "color": "yellow",
+     "blurb": "White card: a bright icon chip + an eyebrow label + a line of body. For facts, pricing notes, callouts.",
+     "builder": build_info_card,
+     "api": [("Emit CSS once, render a stack (pass inline SVG icons)",
+              'cm.info_stack([\n  (note_svg, "Pricing model", "Retail cost + 10% sourcing fee…", "pink"),\n  (box_svg,  "MOQs vary",     "Minimums depend on style…",      "yellow"),\n  (clock_svg,"Flexible timelines","Plan four to six weeks…",     "mint"),\n])')],
+     "notes": ["<code>accent</code> colors both the chip and the eyebrow (chip = bright, eyebrow = its deep accent).",
+               "<b>Accessibility:</b> the eyebrow uses the deep accent, not the bright — a bright label on white/cream fails contrast.",
+               "Body stays dim ink; keep each card to one idea."]},
+    {"slug": "callout", "name": "Callout Section", "eyebrow": "ORGANISM", "color": "pink",
+     "blurb": "Two-column 'what to know' — a section heading beside a stack of info cards. The brand-page primer block.",
+     "builder": build_callout,
+     "api": [("Emit CSS once, then render",
+              'cm.callout_section(\n  "What to know, before we get started",\n  "LULULEMON IS A<br>PREMIUM RETAIL BRAND.",\n  "We don\'t hold a wholesale account...",\n  cards)   # cards = list of (icon, eyebrow, body, accent)')],
+     "notes": ["Composes <code>heading</code> + the Info Card stack; heading title accepts inline HTML (<code>&lt;br&gt;</code>).",
+               "The left eyebrow color is a param (default <code>--pink-deep</code>) — match it to the page's accent.",
+               "Two columns on desktop, stacks on mobile; cream section, white cards."]},
+])
+
 # ---------------------------------------------------------------------------
 # Collections — the catalog is browsed by page, not as one long list.
 #   tokens = shared foundations; home / premium-brands = per-page component sets.
@@ -966,7 +1015,8 @@ _assign(["badge", "media-card", "feature-card", "checklist", "level-card", "hero
          "template-landing"], ["home"])
 # premium-brands only
 _assign(["brand-hero", "stat-strip", "statement-band", "photo-card", "usecase-card",
-         "decoration-card", "product-card", "process-row", "template-premium"], ["premium-brands"])
+         "decoration-card", "product-card", "process-row", "info-card", "callout",
+         "template-premium"], ["premium-brands"])
 
 def pages_of(slug):
     return _PAGE_OF.get(slug, {"home"})
