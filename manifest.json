@@ -1,0 +1,514 @@
+{
+  "components": [
+    {
+      "handle": "color",
+      "name": "Color",
+      "tier": "Tokens",
+      "color": "pink",
+      "pages": [
+        "tokens"
+      ],
+      "call": "cm.root_css(…)",
+      "url": "color.html"
+    },
+    {
+      "handle": "typography",
+      "name": "Typography",
+      "tier": "Tokens",
+      "color": "pink",
+      "pages": [
+        "tokens"
+      ],
+      "call": null,
+      "url": "typography.html"
+    },
+    {
+      "handle": "spacing",
+      "name": "Spacing",
+      "tier": "Tokens",
+      "color": "pink",
+      "pages": [
+        "tokens"
+      ],
+      "call": null,
+      "url": "spacing.html"
+    },
+    {
+      "handle": "radius",
+      "name": "Radius",
+      "tier": "Tokens",
+      "color": "pink",
+      "pages": [
+        "tokens"
+      ],
+      "call": null,
+      "url": "radius.html"
+    },
+    {
+      "handle": "notch-card",
+      "name": "K-Notch Card",
+      "tier": "Atom",
+      "color": "blue",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.notch_card(…)",
+      "url": "notch-card.html"
+    },
+    {
+      "handle": "button",
+      "name": "Buttons",
+      "tier": "Atom",
+      "color": "blue",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.button(…)",
+      "url": "button.html"
+    },
+    {
+      "handle": "pill",
+      "name": "Premium Pill",
+      "tier": "Atom",
+      "color": "blue",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.pill(…)",
+      "url": "pill.html"
+    },
+    {
+      "handle": "input",
+      "name": "Form Input",
+      "tier": "Atom",
+      "color": "blue",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.field(…)",
+      "url": "input.html"
+    },
+    {
+      "handle": "faq",
+      "name": "FAQ Accordion",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.faq(…)",
+      "url": "faq.html"
+    },
+    {
+      "handle": "nav",
+      "name": "Nav",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.nav(…)",
+      "url": "nav.html"
+    },
+    {
+      "handle": "eyebrow",
+      "name": "Eyebrow",
+      "tier": "Atom",
+      "color": "blue",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.eyebrow(…)",
+      "url": "eyebrow.html"
+    },
+    {
+      "handle": "arrow-link",
+      "name": "Arrow Link",
+      "tier": "Atom",
+      "color": "blue",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.arrow_link(…)",
+      "url": "arrow-link.html"
+    },
+    {
+      "handle": "badge",
+      "name": "Monkey Badge",
+      "tier": "Atom",
+      "color": "blue",
+      "pages": [
+        "home"
+      ],
+      "call": "cm.badge(…)",
+      "url": "badge.html"
+    },
+    {
+      "handle": "section-heading",
+      "name": "Section Heading",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.heading(…)",
+      "url": "section-heading.html"
+    },
+    {
+      "handle": "media-card",
+      "name": "Media Card",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "home"
+      ],
+      "call": "cm.media_card(…)",
+      "url": "media-card.html"
+    },
+    {
+      "handle": "feature-card",
+      "name": "Feature Card",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "home"
+      ],
+      "call": "cm.feature_card(…)",
+      "url": "feature-card.html"
+    },
+    {
+      "handle": "checklist",
+      "name": "Checklist",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "home"
+      ],
+      "call": "cm.checklist(…)",
+      "url": "checklist.html"
+    },
+    {
+      "handle": "pill-group",
+      "name": "Pill Group",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.pill_group(…)",
+      "url": "pill-group.html"
+    },
+    {
+      "handle": "level-card",
+      "name": "Level Card",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "home"
+      ],
+      "call": "cm.level_card(…)",
+      "url": "level-card.html"
+    },
+    {
+      "handle": "hero",
+      "name": "Hero",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "home"
+      ],
+      "call": "cm.hero(…)",
+      "url": "hero.html"
+    },
+    {
+      "handle": "service-cards",
+      "name": "Service Cards",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "home"
+      ],
+      "call": "cm.services_grid(…)",
+      "url": "service-cards.html"
+    },
+    {
+      "handle": "text-pills",
+      "name": "Text + Pills",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.premium_section(…)",
+      "url": "text-pills.html"
+    },
+    {
+      "handle": "faq-title",
+      "name": "FAQ + Title",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.faq_section(…)",
+      "url": "faq-title.html"
+    },
+    {
+      "handle": "form",
+      "name": "Form (Contact)",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.contact_form(…)",
+      "url": "form.html"
+    },
+    {
+      "handle": "footer",
+      "name": "Footer",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.footer(…)",
+      "url": "footer.html"
+    },
+    {
+      "handle": "ticker",
+      "name": "Image Ticker",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "home",
+        "premium-brands"
+      ],
+      "call": "cm.ticker(…)",
+      "url": "ticker.html"
+    },
+    {
+      "handle": "gallery",
+      "name": "Gallery",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "home"
+      ],
+      "call": "cm.gallery(…)",
+      "url": "gallery.html"
+    },
+    {
+      "handle": "four-levels",
+      "name": "Four Levels",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "home"
+      ],
+      "call": "cm.four_levels(…)",
+      "url": "four-levels.html"
+    },
+    {
+      "handle": "how-it-works",
+      "name": "How It Works",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "home"
+      ],
+      "call": "cm.how_it_works(…)",
+      "url": "how-it-works.html"
+    },
+    {
+      "handle": "who",
+      "name": "Who We Make Merch For",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "home"
+      ],
+      "call": "cm.who_section(…)",
+      "url": "who.html"
+    },
+    {
+      "handle": "template-landing",
+      "name": "Landing Page",
+      "tier": "Template",
+      "color": "pink",
+      "pages": [
+        "home"
+      ],
+      "call": "render_brand_page(config)",
+      "url": "template-landing.html"
+    },
+    {
+      "handle": "brand-hero",
+      "name": "Brand Hero",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "premium-brands"
+      ],
+      "call": "cm.brand_hero(…)",
+      "url": "brand-hero.html"
+    },
+    {
+      "handle": "stat-strip",
+      "name": "Stat Strip",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "premium-brands"
+      ],
+      "call": "cm.stat_strip(…)",
+      "url": "stat-strip.html"
+    },
+    {
+      "handle": "statement-band",
+      "name": "Statement Band",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "premium-brands"
+      ],
+      "call": "cm.statement_band(…)",
+      "url": "statement-band.html"
+    },
+    {
+      "handle": "photo-card",
+      "name": "Photo Card",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "premium-brands"
+      ],
+      "call": "cm.photo_grid(…)",
+      "url": "photo-card.html"
+    },
+    {
+      "handle": "usecase-card",
+      "name": "Use-Case Card",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "premium-brands"
+      ],
+      "call": "cm.usecase_grid(…)",
+      "url": "usecase-card.html"
+    },
+    {
+      "handle": "decoration-card",
+      "name": "Decoration Card",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "premium-brands"
+      ],
+      "call": "cm.decoration_grid(…)",
+      "url": "decoration-card.html"
+    },
+    {
+      "handle": "product-card",
+      "name": "Product Card",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "premium-brands"
+      ],
+      "call": "cm.product_grid(…)",
+      "url": "product-card.html"
+    },
+    {
+      "handle": "process-row",
+      "name": "Process Row",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "premium-brands"
+      ],
+      "call": "cm.process_row(…)",
+      "url": "process-row.html"
+    },
+    {
+      "handle": "template-premium",
+      "name": "Premium Brands Page",
+      "tier": "Template",
+      "color": "pink",
+      "pages": [
+        "premium-brands"
+      ],
+      "call": "render_brand_page(config)",
+      "url": "template-premium.html"
+    },
+    {
+      "handle": "info-card",
+      "name": "Info Card",
+      "tier": "Molecule",
+      "color": "mint",
+      "pages": [
+        "premium-brands"
+      ],
+      "call": "cm.info_stack(…)",
+      "url": "info-card.html"
+    },
+    {
+      "handle": "callout",
+      "name": "Callout Section",
+      "tier": "Organism",
+      "color": "yellow",
+      "pages": [
+        "premium-brands"
+      ],
+      "call": "cm.callout_section(…)",
+      "url": "callout.html"
+    },
+    {
+      "handle": "layout",
+      "name": "Layout & Grid",
+      "tier": "Tokens",
+      "color": "pink",
+      "pages": [
+        "tokens"
+      ],
+      "call": "cm.root_css(…)",
+      "url": "layout.html"
+    },
+    {
+      "handle": "template-lululemon",
+      "name": "Custom Lululemon Page",
+      "tier": "Template",
+      "color": "pink",
+      "pages": [
+        "premium-brands"
+      ],
+      "call": "render_brand_page(config)",
+      "url": "template-lululemon.html"
+    },
+    {
+      "handle": "template-under-armour",
+      "name": "Custom Under Armour Page",
+      "tier": "Template",
+      "color": "pink",
+      "pages": [
+        "premium-brands"
+      ],
+      "call": "render_brand_page(config)",
+      "url": "template-under-armour.html"
+    }
+  ]
+}

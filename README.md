@@ -85,6 +85,27 @@ Everything is ported faithfully from the live pages, stays on-brand (brand token
 only, Poppins 900 + Inter), keeps ARIA roles + focus states, and honors
 `prefers-reduced-motion`.
 
+## Naming — how to reference a component
+
+Every component has one stable **handle**: its kebab-case slug, which is also its page
+filename (`product-card` → `product-card.html`). That's the label to use — on this site
+or any new one. To reuse a component, name it by:
+
+- its **handle** (`product-card`, `brand-hero`, `stat-strip`, `callout`), or
+- its **display name** ("Product Card", "Brand Hero"), or
+- just paste its catalog **URL**.
+
+Each handle maps to exactly one `cm.*` call, listed in **`manifest.json`** (generated on
+every build) and on each component page's "How to call it" section:
+
+```json
+{ "handle": "product-card", "name": "Product Card", "tier": "Molecule",
+  "call": "cm.product_grid(…)", "pages": ["premium-brands"], "url": "product-card.html" }
+```
+
+So "use `product-card` and `stat-strip` on the new page" is unambiguous — the handle →
+`cm.*` mapping is fixed. (Handles are unique; don't reuse one for a different component.)
+
 ## Building a page (the Layout system)
 
 Components own their *look*; the **page** owns its *rhythm*. The rules that make a page

@@ -13,7 +13,7 @@ component descriptor; the build loop turns it into (a) a card on the index page 
 
 See README.md -> "Add a component" for the full one-step flow.
 """
-import os, html
+import os, html, re
 import cm_kit as cm
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
@@ -1555,7 +1555,28 @@ def main():
     for e in REGISTRY:
         open(os.path.join(_HERE, e["slug"] + ".html"), "w").write(render_component(e))
         n += 1
-    print(f"written {n} pages: index + {len(COLLECTIONS)} collections + preview-landing + {len(REGISTRY)} components")
+
+    # ---- Component manifest: the single lookup for "which component to call" ----
+    # handle (kebab-case slug) is the stable name; call is the exact cm.* function.
+    def _call(e):
+        if e["slug"].startswith("template-"):
+            return "render_brand_page(config)"
+        calls = []
+        for _lab, snippet in e.get("api", []):
+            calls += re.findall(r'cm\.[a-z_]+', snippet)
+        # prefer the render helper over the emit-once *_css() utilities
+        pick = [c for c in calls if not c.endswith("_css")] or calls
+        return (pick[0] + "(…)") if pick else None
+    manifest = {"components": [
+        {"handle": e["slug"], "name": e["name"], "tier": e["eyebrow"].title(),
+         "color": tier_color(e["eyebrow"]), "pages": sorted(pages_of(e["slug"])),
+         "call": _call(e), "url": e["slug"] + ".html"}
+        for e in REGISTRY]}
+    open(os.path.join(_HERE, "manifest.json"), "w").write(
+        json.dumps(manifest, indent=2, ensure_ascii=False))
+    n += 1
+    print(f"written {n} files: index + {len(COLLECTIONS)} collections + 2 previews + "
+          f"{len(REGISTRY)} components + manifest.json")
 
 if __name__ == "__main__":
     main()
