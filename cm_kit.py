@@ -931,16 +931,227 @@ def who_js():
             "if(ni>=0){e.preventDefault();whoSel(ni,true);}});});}")
 
 
+# ===========================================================================
+# PREMIUM-BRAND PAGE components (Patagonia-style brand landing)
+# ===========================================================================
+
+# ---- Stat strip (ink bar of icon + label + value) — molecule ----
+def stat_strip_css():
+    return ("/* ---- CM: stat strip ---- */"
+            ".cm-strip{background:var(--ink);color:var(--cream)}"
+            ".cm-strip-in{display:grid;grid-template-columns:repeat(4,1fr);max-width:1340px;margin:0 auto}"
+            ".cm-st{display:flex;align-items:center;gap:14px;padding:22px clamp(16px,2.4vw,36px);border-right:1px solid rgba(253,249,234,.16)}"
+            ".cm-st:last-child{border-right:0}"
+            ".cm-st .ic{color:var(--mint);flex:0 0 auto;width:26px;height:26px}.cm-st .ic svg{width:26px;height:26px}"
+            ".cm-st .lab{font:600 11px/1 Inter;letter-spacing:.14em;text-transform:uppercase;color:rgba(253,249,234,.55);margin-bottom:7px}"
+            ".cm-st .val{font:700 clamp(16px,1.4vw,20px)/1 Inter;letter-spacing:-.01em;color:var(--cream)}"
+            "@media(max-width:640px){.cm-strip-in{grid-template-columns:1fr 1fr}"
+            ".cm-st{border-bottom:1px solid rgba(253,249,234,.16)}.cm-st:nth-child(2){border-right:0}}")
+
+def stat_strip(items):
+    """items = list of (icon_svg, label, value)."""
+    cells = "".join(f'<div class="cm-st"><span class="ic">{ic}</span>'
+                    f'<div><div class="lab">{_html.escape(l)}</div><div class="val">{v}</div></div></div>'
+                    for ic, l, v in items)
+    return f'<div class="cm-strip"><div class="cm-strip-in">{cells}</div></div>'
+
+# ---- Statement band (eyebrow + big statement + copy + quote + photo) — organism ----
+def statement_css():
+    return ("/* ---- CM: statement band ---- */"
+            ".cm-stmt{background:#fff;color:var(--ink)}"
+            ".cm-stmt-in{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,64px);align-items:center}"
+            ".cm-stmt-eyebrow{display:inline-block;font:900 12px/1 Poppins,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mint-deep);margin-bottom:18px}"
+            ".cm-stmt-t{font:900 clamp(28px,4.4vw,52px)/1.02 Poppins,sans-serif;letter-spacing:-.02em;text-transform:uppercase;margin:0 0 22px;color:var(--ink)}"
+            ".cm-stmt-b{font:500 clamp(15px,1.2vw,17px)/1.62 Inter;color:rgba(4,18,2,.72);margin:0 0 16px;max-width:48ch}"
+            ".cm-quote{margin:28px 0 0;padding:20px 24px;background:var(--mint);border-radius:16px}"
+            ".cm-quote p{font:600 clamp(15px,1.3vw,18px)/1.45 Inter;color:var(--mint-deep);margin:0 0 10px}"
+            ".cm-quote cite{font:600 12px/1 Inter;letter-spacing:.06em;text-transform:uppercase;color:var(--mint-deep);opacity:.85;font-style:normal}"
+            ".cm-stmt-photo{aspect-ratio:4/4.4;border-radius:16px;overflow:hidden;background:var(--blue);margin:0}"
+            ".cm-stmt-photo img{width:100%;height:100%;object-fit:cover;display:block}"
+            "@media(max-width:640px){.cm-stmt-in{grid-template-columns:1fr}.cm-stmt-photo{order:-1;aspect-ratio:4/3}}")
+
+def statement_band(eyebrow, title, paras, img, quote=None, cite=None, alt=""):
+    ps = "".join(f'<p class="cm-stmt-b">{p}</p>' for p in paras)
+    q = ""
+    if quote:
+        c = f'<cite>{_html.escape(cite)}</cite>' if cite else ""
+        q = f'<div class="cm-quote"><p>{quote}</p>{c}</div>'
+    return ('<section class="cm-stmt"><div class="cm-stmt-in"><div>'
+            f'<span class="cm-stmt-eyebrow">{_html.escape(eyebrow)}</span>'
+            f'<h2 class="cm-stmt-t">{title}</h2>{ps}{q}</div>'
+            f'<figure class="cm-stmt-photo"><img src="{img}" alt="{_html.escape(alt)}"></figure>'
+            '</div></section>')
+
+# ---- Photo caption card (photo + bright caption) — molecule ----
+def photo_card_css():
+    return ("/* ---- CM: photo caption card ---- */"
+            ".cm-photocard-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2vw,26px)}"
+            ".cm-photocard{border-radius:16px;overflow:hidden;background:#fff;display:flex;flex-direction:column;margin:0}"
+            ".cm-photocard-photo{aspect-ratio:4/3.4;overflow:hidden;background:var(--cream)}"
+            ".cm-photocard-photo img{width:100%;height:100%;object-fit:cover;display:block}"
+            ".cm-photocard-cap{padding:clamp(20px,2vw,26px);flex:1;background:var(--accent,var(--mint))}"
+            ".cm-photocard-cap h3{font:900 clamp(19px,1.8vw,25px)/1.05 Poppins,sans-serif;letter-spacing:-.01em;text-transform:uppercase;margin:0 0 12px;color:var(--on,var(--mint-deep))}"
+            ".cm-photocard-cap p{font:500 clamp(14px,1.05vw,15.5px)/1.55 Inter;margin:0;color:var(--on,var(--mint-deep));opacity:.86}"
+            "@media(max-width:760px){.cm-photocard-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}}")
+
+def photo_card(img, title, body, accent="mint", alt=""):
+    return (f'<article class="cm-photocard" style="--accent:var(--{accent});--on:var(--{accent}-deep)">'
+            f'<div class="cm-photocard-photo"><img src="{img}" alt="{_html.escape(alt or title)}"></div>'
+            f'<div class="cm-photocard-cap"><h3>{title}</h3><p>{body}</p></div></article>')
+
+def photo_grid(items):
+    """items = list of (img, title, body, accent)."""
+    return '<div class="cm-photocard-grid">' + "".join(photo_card(*it) for it in items) + '</div>'
+
+# ---- Use-case K-card (blue chip card with animated K sweep) — molecule ----
+_CM_KX = ("<svg class='cm-kx' viewBox='0 0 40.29 173' preserveAspectRatio='none' aria-hidden='true'>"
+          "<path fill='#041202' d='M0,86.51 c11.69,-7.96 21.21,-18.78 28.56,-32.43 7.35,-13.67 11.25,-30.54 11.73,-50.61 "
+          "L40.29,0 L40.29,173 L40.29,169.53 c-.48,-20.08 -4.38,-36.93 -11.73,-50.6 -7.35,-13.67 -16.87,-24.47 -28.56,-32.43 Z'/></svg>")
+
+def usecase_css():
+    return ("/* ---- CM: use-case K-card ---- */"
+            ".cm-usecase-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,1.6vw,22px)}"
+            ".cm-usecase{position:relative;background:var(--blue);color:var(--blue-deep);border-radius:22px 6px 6px 22px;"
+            "overflow:hidden;min-height:220px;padding:24px;display:flex;flex-direction:column}"
+            ".cm-usecase .cm-kx{position:absolute;top:0;right:0;height:100%;width:46px;transform:scaleX(0);"
+            "transform-origin:right center;transition:transform .6s cubic-bezier(.2,.75,.2,1);pointer-events:none}"
+            ".cm-usecase:hover .cm-kx,.cm-usecase:focus-within .cm-kx{transform:scaleX(1)}"
+            ".cm-usecase-chip{width:44px;height:44px;border-radius:11px;background:var(--yellow);color:var(--yellow-deep);"
+            "display:flex;align-items:center;justify-content:center}.cm-usecase-chip svg{width:22px;height:22px}"
+            ".cm-usecase-t{margin-top:auto;font:800 clamp(16px,1.5vw,19px)/1.18 Inter;letter-spacing:-.01em;max-width:11ch;color:var(--blue-deep)}"
+            "@media(max-width:820px){.cm-usecase-grid{grid-template-columns:1fr 1fr}}"
+            "@media(max-width:460px){.cm-usecase-grid{grid-template-columns:1fr}}"
+            "@media (prefers-reduced-motion:reduce){.cm-usecase .cm-kx{transition:none}}")
+
+def usecase_card(icon_svg, title):
+    return (f'<article class="cm-usecase">{_CM_KX}'
+            f'<div class="cm-usecase-chip">{icon_svg}</div>'
+            f'<h3 class="cm-usecase-t">{title}</h3></article>')
+
+def usecase_grid(items):
+    """items = list of (icon_svg, title)."""
+    return '<div class="cm-usecase-grid">' + "".join(usecase_card(*it) for it in items) + '</div>'
+
+# ---- Decoration card (photo + badge + bright caption + bullet list) — molecule ----
+def decoration_css():
+    return ("/* ---- CM: decoration card ---- */"
+            ".cm-dcard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,1.6vw,22px)}"
+            ".cm-dcard{position:relative;border-radius:16px;overflow:hidden;background:#fff;display:flex;flex-direction:column;margin:0}"
+            ".cm-dcard-photo{position:relative;aspect-ratio:4/2.7;overflow:hidden;background:var(--cream)}"
+            ".cm-dcard-photo img{width:100%;height:100%;object-fit:cover;display:block}"
+            ".cm-dcard-badge{position:absolute;top:12px;right:12px;background:var(--ink);color:var(--cream);border-radius:999px;"
+            "padding:6px 13px;font:900 10px/1 Poppins,sans-serif;letter-spacing:.12em;text-transform:uppercase}"
+            ".cm-dcard-cap{flex:1;padding:clamp(18px,1.6vw,24px);background:var(--accent,var(--yellow))}"
+            ".cm-dcard-cap h3{font:900 clamp(18px,1.7vw,23px)/1.05 Poppins,sans-serif;letter-spacing:-.01em;text-transform:uppercase;margin:0 0 12px;color:var(--on,var(--yellow-deep))}"
+            ".cm-dcard-desc{font:500 clamp(13.5px,1vw,15px)/1.5 Inter;color:rgba(4,18,2,.78);margin:0 0 16px}"
+            ".cm-dcard-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}"
+            ".cm-dcard-list li{position:relative;padding-left:18px;font:600 clamp(13px,.95vw,14.5px)/1.35 Inter;color:var(--ink)}"
+            ".cm-dcard-list li::before{content:'';position:absolute;left:0;top:.5em;width:6px;height:6px;border-radius:50%;background:var(--on,var(--yellow-deep))}"
+            "@media(max-width:900px){.cm-dcard-grid{grid-template-columns:1fr 1fr}}"
+            "@media(max-width:480px){.cm-dcard-grid{grid-template-columns:1fr;max-width:400px;margin:0 auto}}")
+
+def decoration_card(img, title, desc, items, accent="yellow", badge=None, alt=""):
+    bd = f'<span class="cm-dcard-badge">{_html.escape(badge)}</span>' if badge else ""
+    lis = "".join(f'<li>{_html.escape(x)}</li>' for x in items)
+    return (f'<article class="cm-dcard" style="--accent:var(--{accent});--on:var(--{accent}-deep)">'
+            f'<div class="cm-dcard-photo"><img src="{img}" alt="{_html.escape(alt or title)}">{bd}</div>'
+            f'<div class="cm-dcard-cap"><h3>{title}</h3><p class="cm-dcard-desc">{desc}</p>'
+            f'<ul class="cm-dcard-list">{lis}</ul></div></article>')
+
+def decoration_grid(items):
+    """items = list of dicts/tuples (img, title, desc, [bullets], accent, badge)."""
+    return '<div class="cm-dcard-grid">' + "".join(decoration_card(*it) for it in items) + '</div>'
+
+# ---- Product card (photo + category + name + price + swatches) — molecule ----
+def product_css():
+    return ("/* ---- CM: product card ---- */"
+            ".cm-product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,1.6vw,22px)}"
+            ".cm-product{background:#fff;border-radius:16px;padding:10px 10px 4px;margin:0}"
+            ".cm-product-photo{aspect-ratio:4/5;border-radius:10px;overflow:hidden;background:var(--cream);margin-bottom:14px}"
+            ".cm-product-photo img{width:100%;height:100%;object-fit:cover;display:block}"
+            ".cm-product-cat{font:600 11px/1 Inter;letter-spacing:.12em;text-transform:uppercase;color:rgba(4,18,2,.48);padding:0 6px;margin-bottom:8px}"
+            ".cm-product-name{font:700 clamp(15px,1.2vw,17px)/1.2 Inter;color:var(--ink);padding:0 6px;margin:0 0 12px}"
+            ".cm-product-foot{display:flex;align-items:center;justify-content:space-between;padding:0 6px 10px}"
+            ".cm-product-price{font:700 clamp(14px,1.05vw,16px)/1 Inter;color:var(--ink)}"
+            ".cm-product-sw{display:flex;gap:6px}"
+            ".cm-product-sw span{width:13px;height:13px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(4,18,2,.12)}"
+            "@media(max-width:900px){.cm-product-grid{grid-template-columns:1fr 1fr}}"
+            "@media(max-width:460px){.cm-product-grid{grid-template-columns:1fr;max-width:320px;margin:0 auto}}")
+
+def product_card(img, name, category, price, swatches=(), alt=""):
+    sw = "".join(f'<span style="background:{c}"></span>' for c in swatches)
+    return (f'<article class="cm-product"><div class="cm-product-photo"><img src="{img}" alt="{_html.escape(alt or name)}"></div>'
+            f'<div class="cm-product-cat">{_html.escape(category)}</div>'
+            f'<h3 class="cm-product-name">{_html.escape(name)}</h3>'
+            f'<div class="cm-product-foot"><span class="cm-product-price">{price}</span>'
+            f'<span class="cm-product-sw">{sw}</span></div></article>')
+
+def product_grid(items):
+    """items = list of (img, name, category, price, swatches)."""
+    return '<div class="cm-product-grid">' + "".join(product_card(*it) for it in items) + '</div>'
+
+# ---- Brand hero (centered title + image ticker + sub + CTA) — organism ----
+def brand_hero_css():
+    return (ticker_css() + button_css() + "/* ---- CM: brand hero ---- */"
+            ".cm-bhero{background:var(--cream);color:var(--ink);overflow:hidden;padding:clamp(40px,6vw,72px) 0}"
+            ".cm-bhero-title{text-align:center;font:900 clamp(30px,4.8vw,62px)/.98 Poppins,sans-serif;letter-spacing:-.02em;"
+            "text-transform:uppercase;margin:0 auto;max-width:1100px;padding:0 clamp(16px,4vw,48px);color:var(--ink)}"
+            ".cm-bhero-title .hl{position:relative;display:inline-block}"
+            ".cm-bhero-title .hl::before{content:'';position:absolute;left:-.05em;right:-.05em;top:.12em;bottom:.05em;background:var(--blue);z-index:-1}"
+            ".cm-bhero .cm-ticker{margin-top:clamp(32px,5vw,56px)}"
+            ".cm-bhero-bottom{display:grid;grid-template-columns:1.35fr .65fr;gap:clamp(24px,4vw,56px);align-items:center;"
+            "max-width:1340px;margin:clamp(32px,5vh,60px) auto 0;padding:0 clamp(24px,5vw,72px)}"
+            ".cm-bhero-sub{font:500 clamp(15px,1.4vw,19px)/1.55 Inter;color:rgba(4,18,2,.74);max-width:52ch;margin:0}"
+            ".cm-bhero-cta{display:inline-flex;align-items:center;justify-content:center;background:var(--mint);color:var(--mint-deep);"
+            "border-radius:999px;padding:17px 34px;font:800 14px/1 Inter;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;"
+            "transition:transform .15s ease}.cm-bhero-cta:hover{transform:translateY(-2px)}"
+            "@media(max-width:640px){.cm-bhero-bottom{grid-template-columns:1fr}}")
+
+def brand_hero(title_html, sub, images, cta="Talk to a Merch Expert"):
+    return ('<section class="cm-bhero">'
+            f'<h1 class="cm-bhero-title">{title_html}</h1>'
+            + ticker(images)
+            + f'<div class="cm-bhero-bottom"><p class="cm-bhero-sub">{_html.escape(sub)}</p>'
+            f'<div><a class="cm-bhero-cta" href="#">{_html.escape(cta)}</a></div></div></section>')
+
+# ---- Process row (4-across numbered steps w/ meta, K-notch bg) — organism ----
+def process_css():
+    return (notch_css() + "/* ---- CM: process row ---- */"
+            ".cm-proc-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}"
+            ".cm-proc{color:var(--blue-deep);min-height:280px}"
+            ".cm-proc .cm-proc-in{height:100%;display:flex;flex-direction:column;padding:30px 52px}"
+            ".cm-proc-num{font:900 clamp(38px,3.6vw,54px)/1 Poppins,sans-serif;letter-spacing:-.02em;color:var(--blue-deep);margin-bottom:16px}"
+            ".cm-proc-t{font:900 clamp(17px,1.5vw,21px)/1.05 Poppins,sans-serif;letter-spacing:-.01em;text-transform:uppercase;color:var(--blue-deep);margin:auto 0 8px}"
+            ".cm-proc-meta{font:700 11px/1 Inter;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,53,71,.6);margin-bottom:12px}"
+            ".cm-proc-b{font:500 clamp(13px,1vw,14.5px)/1.5 Inter;color:rgba(4,18,2,.72);margin:0}"
+            "@media(max-width:1000px){.cm-proc-row{grid-template-columns:1fr;gap:16px}.cm-proc .cm-proc-in{padding:30px 64px 30px 34px}}")
+
+def process_row(steps):
+    """steps = list of (num, title, meta, body). Blue ramp, alternating notch sides."""
+    cols = ["#BCEDFC", "#9DE1FA", "#80D5F4", "#63C6EC"]
+    sides = ["r", "both", "both", "l"]
+    out = []
+    for i, (num, title, meta, body) in enumerate(steps):
+        inner = (f'<div class="cm-proc-in"><div class="cm-proc-num">{_html.escape(num)}</div>'
+                 f'<h3 class="cm-proc-t">{_html.escape(title)}</h3>'
+                 f'<div class="cm-proc-meta">{meta}</div><p class="cm-proc-b">{body}</p></div>')
+        out.append(notch_card(inner=inner, side=sides[i % 4], bg=cols[i % 4], cls="cm-proc"))
+    return '<div class="cm-proc-row">' + "".join(out) + '</div>'
+
+
 if __name__ == "__main__":
     # tiny smoke test
     print(root_css()[:60], "...")
     print("notch_css length:", len(notch_css()))
-    print(notch_card("hi", side="both", bg="var(--pink)")[:80], "...")
     print("button:", button("Request a quote")[:60], "...")
-    print("pill:", pill("PATAGONIA")[:60], "...")
     print("media_card ok:", "cm-media" in media_card("x", "T", "m"))
     print("service_card ok:", "cm-svc" in service_card("x", "T", "m", "L"))
     print("footer ok:", "cm-ft" in footer("x"))
-    print("gallery ok:", "cm-gal" in gallery(["A"], ["x"]))
     print("who ok:", "cm-who" in who_section([("A", "var(--blue)", "x", "c")]))
-    print("hiw ok:", "cm-hiw" in how_it_works([("01", "t", "b")]))
+    print("product_card ok:", "cm-product" in product_card("x", "N", "Cat", "$9", ["#000"]))
+    print("usecase ok:", "cm-usecase" in usecase_card("<svg/>", "Client gifts"))
+    print("stat_strip ok:", "cm-strip" in stat_strip([("<svg/>", "Lead time", "5-8 days")]))
+    print("statement ok:", "cm-stmt" in statement_band("Why", "<b>T</b>", ["p"], "x"))
+    print("decoration ok:", "cm-dcard" in decoration_card("x", "Emb", "d", ["a", "b"]))
+    print("brand_hero ok:", "cm-bhero" in brand_hero("<b>T</b>", "s", ["x"]))
+    print("process ok:", "cm-proc" in process_row([("01", "Quote", "24h", "b")]))

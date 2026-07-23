@@ -11,35 +11,53 @@ self-contained (only external dependency: Google Fonts — Poppins 900 + Inter).
 python3 build_catalog.py
 ```
 
-That writes `index.html` (the card-grid landing page) plus one `<slug>.html` per
-component. Open `index.html` in a browser — no server, no npm.
+That writes `index.html`, one collection page per page (`tokens.html`, `home.html`,
+`premium-brands.html`), and one `<slug>.html` per component. Open `index.html` in a
+browser — no server, no npm.
 
-## What's in it
+## How it's browsed — by page, not one long list
 
-The catalog is organized by **atomic design** — the index groups everything into five
-tiers, smallest to largest:
+The landing page keeps navigation short by grouping into three **collections**:
+
+- **Tokens** — the shared foundation (color, type, spacing, radius).
+- **Home Page** — every component the home page is built from.
+- **Premium Brands Page** — the brand landing template (Patagonia-style) and its parts.
+
+Pick a collection and you see just that page's components, grouped by **atomic-design
+tier** (Atoms → Molecules → Organisms → Templates). Components shared across pages
+(Nav, Footer, Buttons, Form, FAQ, Text + Pills…) appear under each page they're used
+on; each component page lists its pages under "Used on".
+
+### Home Page components
 
 | Tier | Components |
 |---|---|
-| **Tokens** | Color · Typography · Spacing · Radius |
 | **Atoms** | K-Notch Card · Buttons · Premium Pill · Form Input · Eyebrow · Arrow Link · Monkey Badge |
 | **Molecules** | Section Heading · Media Card · Feature Card · Checklist · Pill Group · Level Card · Image Ticker · FAQ Accordion |
 | **Organisms** | Nav · Hero · Service Cards · Text + Pills · FAQ + Title · Form · Footer · Gallery · Four Levels · How It Works · Who We Make Merch For |
-| **Templates** | Landing Page (organisms composed into a real page) |
+| **Templates** | Landing Page |
 
-- **Index / landing** — a bright card grid grouped by tier, modelled on the brand's
-  card-grid navigation. Each card links to a component page.
+### Premium Brands Page components
+
+| Tier | Components |
+|---|---|
+| **Atoms** | K-Notch Card · Buttons · Premium Pill · Form Input · Eyebrow · Arrow Link *(shared)* |
+| **Molecules** | Stat Strip · Photo Card · Use-Case Card · Decoration Card · Product Card · Image Ticker · Pill Group · FAQ Accordion |
+| **Organisms** | Nav · Brand Hero · Statement Band · Process Row · Text + Pills · FAQ + Title · Form · Footer |
+| **Templates** | Premium Brands Page |
+
 - **Per-component page** — three things together:
   1. **Live demo** of every relevant variant (e.g. notch card `side="r"/"l"/"both"`
      and both height modes; service cards; the interactive Who tabs).
   2. **How to call it** — the exact `cm_kit` API snippet (the render helper + the
      `*_css()` you emit once, plus any `*_js()`), with underlying classes as a fallback.
   3. **When to use it / gotchas.**
-- **Template preview** — the Landing Page composes Nav + Hero + Services + Text + Pills
-  + FAQ + Form + Footer into a full page (`preview-landing.html`), shown inside an
-  isolating `<iframe>` so its styles never touch the catalog chrome.
+- **Template previews** — the Home *Landing Page* is composed live from kit organisms
+  (`preview-landing.html`); the *Premium Brands Page* is the actual built page
+  (`preview-premium.html`, scroll-pinning preserved). Both are shown inside an isolating
+  `<iframe>` so their styles never touch the catalog chrome.
 
-Everything is ported faithfully from the live home page, stays on-brand (brand tokens
+Everything is ported faithfully from the live pages, stays on-brand (brand tokens
 only, Poppins 900 + Inter), keeps ARIA roles + focus states, and honors
 `prefers-reduced-motion`.
 
@@ -48,8 +66,10 @@ only, Poppins 900 + Inter), keeps ARIA roles + focus states, and honors
 | File | Role |
 |---|---|
 | `cm_kit.py` | The shared kit. Each component is a `*_css()` returning a CSS string to embed once + a render helper returning HTML (interactive ones also expose a `*_js()`). Source of truth for tokens + components. |
-| `build_catalog.py` | The catalog builder. A single `REGISTRY` list of component descriptors drives both the index cards and the per-component pages. |
-| `assets/cm_logo_cream.svg` | Cream logo, inlined into the Nav demo. |
+| `build_catalog.py` | The catalog builder. One `REGISTRY` drives every component page; `COLLECTIONS` + `_assign(...)` drive the by-page navigation. |
+| `assets/` | `cm_logo_cream.svg` + `monkey_inner.svg` (inlined into nav/footer/badge) and `imgs.json` (product photos as data URIs, home `chief…` + premium `pat…`). |
+| `preview-landing.html` | The Home template, composed live from kit organisms. |
+| `preview-premium.html` | The built Premium Brands (Patagonia) page — the actual deliverable, iframed by the template. |
 | `index.html`, `*.html` | The built, self-contained catalog (this is what GitHub Pages serves). |
 
 ## Add a component later (one-step flow)
@@ -77,7 +97,7 @@ entry in the build — a new card **and** a new page appear automatically.
        return demo, cm.badge_css(), ""
 
    REGISTRY.append({
-       "slug": "badge", "name": "Badge", "eyebrow": "COMPONENT", "color": "yellow",
+       "slug": "badge", "name": "Badge", "eyebrow": "ATOM", "color": "yellow",
        "blurb": "Small status chip.",
        "builder": build_badge,
        "api":   [("Emit CSS once, then render",
@@ -86,8 +106,12 @@ entry in the build — a new card **and** a new page appear automatically.
    })
    ```
 
-3. **Rebuild:** `python3 build_catalog.py`. A `badge.html` page and a Badge card on the
-   index appear automatically.
+3. **Assign it to a page** so it shows in the right collection — add the slug to the
+   relevant `_assign(...)` call in `build_catalog.py` (e.g. `["home", "premium-brands"]`
+   for a shared component). Unassigned slugs default to the Home page.
+
+4. **Rebuild:** `python3 build_catalog.py`. A `badge.html` page appears, and a Badge
+   card shows up under its tier on every page it's assigned to.
 
 **Descriptor fields:** `slug` (output filename + URL), `name`, `eyebrow` — the atomic
 tier: `TOKENS` / `ATOM` / `MOLECULE` / `ORGANISM` / `TEMPLATE` (sets the index

@@ -1,0 +1,107 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Home Page — Crooked Monkey Components</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><style>:root{--cream:#FDF9EA;--ink:#041202;--yellow:#FBF79E;--blue:#94DFFA;--pink:#F580B1;--mint:#6EE8BE;--yellow-deep:#474400;--blue-deep:#003547;--pink-deep:#47001E;--mint-deep:#05432D;--bg:var(--cream);--fg:var(--ink);--cta:var(--yellow);--border:var(--ink);--surface-yellow:var(--yellow);--surface-blue:var(--blue);--surface-pink:var(--pink);--surface-mint:var(--mint);--on-yellow:var(--yellow-deep);--on-blue:var(--blue-deep);--on-pink:var(--pink-deep);--on-mint:var(--mint-deep);--r-pill:999px;--r-card:clamp(18px,1.6vw,26px);--r-card-lg:clamp(22px,2.4vw,40px);--r-sm:10px;--r-flat:6px;}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+a{color:inherit}
+img{display:block;max-width:100%}
+.top{position:sticky;top:0;z-index:20;background:var(--ink);color:var(--cream);display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;padding:18px clamp(20px,5vw,64px)}
+.top .brand{font-family:Poppins,sans-serif;font-weight:900;font-size:19px;letter-spacing:-.01em;color:var(--cream);text-decoration:none}
+.top .brand:hover{color:var(--yellow)}
+.top .tag{font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.7}
+.wrap{max-width:1180px;margin:0 auto;padding:clamp(40px,6vw,80px) clamp(20px,5vw,64px) clamp(80px,10vw,140px)}
+.eyebrow{font-size:13px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(4,18,2,.5)}
+.h-display{font-family:Poppins,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;line-height:.98;color:var(--ink)}
+
+/* ---- Index: hero + card grid (modelled on the brand's card-grid nav) ---- */
+.hero{max-width:52ch;margin-bottom:clamp(40px,6vw,72px)}
+.hero h1{font-size:clamp(44px,7vw,96px)}
+.hero .lead{margin-top:22px;font:500 clamp(16px,1.4vw,20px)/1.55 Inter;color:rgba(4,18,2,.66);max-width:44ch}
+.cat-group{margin-top:clamp(36px,5vw,56px)}
+.cat-group > h2{font-size:clamp(22px,2.4vw,30px);margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:clamp(16px,1.8vw,26px)}
+.grid-lg{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.col-card{min-height:300px}
+.col-card .c-title{font-size:clamp(28px,2.8vw,40px)}
+.p-pages{margin-top:16px;font:600 13px/1.4 Inter;color:rgba(4,18,2,.55)}
+.p-pages a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.card{position:relative;display:flex;flex-direction:column;min-height:230px;border-radius:var(--r-card-lg);padding:clamp(22px,2vw,30px);text-decoration:none;color:var(--ink);overflow:hidden;transition:transform .22s cubic-bezier(.2,.75,.2,1),box-shadow .22s ease}
+.card:hover{transform:translateY(-5px) rotate(-1deg);box-shadow:0 30px 50px -30px rgba(4,18,2,.5)}
+.card:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.card .c-eyebrow{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.card .c-title{font-family:Poppins,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;line-height:1.0;font-size:clamp(24px,2.3vw,32px);margin-top:12px;color:var(--ink)}
+.card .c-blurb{margin-top:12px;font:500 14.5px/1.5 Inter;color:rgba(4,18,2,.72);max-width:34ch}
+.card .c-go{margin-top:auto;padding-top:18px;font:800 12px/1 Inter;letter-spacing:.14em;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px}
+.card .c-go .ar{transition:transform .22s ease}
+.card:hover .c-go .ar{transform:translateX(5px)}
+
+/* ---- Component page ---- */
+.back{display:inline-flex;align-items:center;gap:8px;font:800 12px/1 Inter;letter-spacing:.14em;text-transform:uppercase;color:rgba(4,18,2,.6);text-decoration:none;margin-bottom:clamp(26px,4vw,44px)}
+.back:hover{color:var(--ink)}
+.p-head{margin-bottom:clamp(36px,5vw,60px);max-width:60ch}
+.p-head h1{font-size:clamp(38px,5.2vw,72px);margin-top:12px}
+.p-head .lead{margin-top:18px;font:500 clamp(16px,1.3vw,19px)/1.55 Inter;color:rgba(4,18,2,.66)}
+.sect{padding-top:clamp(34px,4.5vw,54px);margin-top:clamp(34px,4.5vw,54px);border-top:1.5px solid rgba(4,18,2,.12)}
+.sect-lab{font-size:13px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(4,18,2,.5);margin-bottom:6px}
+.sect > h2{font-family:Poppins,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;font-size:clamp(24px,2.6vw,34px);margin-bottom:24px;color:var(--ink)}
+
+/* demo canvas */
+.demo{background:#fff;border:1.5px solid rgba(4,18,2,.14);border-radius:var(--r-card);padding:clamp(24px,3vw,40px);display:flex;flex-wrap:wrap;gap:clamp(18px,2vw,32px);align-items:flex-start}
+.demo.col{flex-direction:column;align-items:stretch}
+.demo.pad0{padding:0;overflow:hidden}
+.demo.bleed{padding:0;display:block;overflow:hidden;background:transparent}
+.demo-iframe{width:100%;height:660px;border:0;display:block;background:var(--cream)}
+.demo-item{display:flex;flex-direction:column;gap:10px}
+.demo-item .cap{font:700 11px/1 Inter;letter-spacing:.13em;text-transform:uppercase;color:rgba(4,18,2,.5)}
+
+/* specimens (tokens) */
+.g-sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:16px;width:100%}
+.sw .chip{height:74px;border-radius:12px;border:1px solid rgba(4,18,2,.08)}
+.sw-n{font:600 13px/1.3 Inter;margin-top:8px}
+.sw-h{font-size:12px;color:rgba(4,18,2,.55);font-variant-numeric:tabular-nums}
+.g-pair{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;width:100%}
+.pair{border-radius:16px;padding:20px;min-height:118px;display:flex;flex-direction:column;justify-content:space-between}
+.pair-deep{font-family:Poppins,sans-serif;font-weight:900;font-size:34px;line-height:1}
+.pair-lab{font-size:12px;font-weight:600}
+.trow{display:grid;grid-template-columns:190px 1fr;gap:20px;align-items:baseline;padding-block:16px;border-top:1px solid rgba(4,18,2,.08);width:100%}
+.trow:first-child{border-top:0}
+.tmeta{display:flex;flex-direction:column;gap:3px}
+.tname{font-weight:700;font-size:14px}
+.tspec{font-size:12px;color:rgba(4,18,2,.55)}
+.tsample{color:var(--ink);overflow:hidden}
+.srow{display:flex;align-items:center;gap:14px;margin-bottom:8px;width:100%}
+.sbar{height:16px;background:var(--pink);border-radius:3px}
+.slab{font-size:12px;color:rgba(4,18,2,.6);font-variant-numeric:tabular-nums}
+.g-r{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:16px;width:100%}
+.rbox .rsq{height:80px;background:var(--blue);border:1.5px solid var(--ink)}
+
+/* notch demo helpers */
+.nc-demo{color:var(--ink);min-height:150px;width:230px}
+.nc-pad{padding:22px 48px}
+.nc-k{font-family:Poppins,sans-serif;font-weight:900;font-size:28px;line-height:1}
+.nc-h{font-size:16px;font-weight:700;margin-top:8px}
+.nc-b{font-size:13px;opacity:.72;margin-top:6px;line-height:1.4}
+
+/* nav demo sits in-flow (production nav is position:fixed) */
+.demo-nav{width:100%;border-radius:var(--r-card);overflow:hidden;border:1.5px solid rgba(4,18,2,.14)}
+
+/* code block */
+.code{position:relative;background:var(--ink);color:var(--cream);border-radius:var(--r-card);padding:22px 24px;margin-top:16px;overflow-x:auto}
+.code pre{margin:0;font:500 13.5px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre;color:var(--cream)}
+.code .tok-c{color:rgba(253,249,234,.5)}
+.code-copy{position:absolute;top:12px;right:12px;background:rgba(253,249,234,.1);color:var(--cream);border:0;border-radius:999px;padding:7px 14px;font:700 11px/1 Inter;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s ease}
+.code-copy:hover{background:rgba(253,249,234,.2)}
+.code-copy:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+.code-lab{font:700 11px/1 Inter;letter-spacing:.13em;text-transform:uppercase;color:rgba(4,18,2,.5);margin:22px 0 0}
+
+/* notes */
+.notes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px;max-width:70ch}
+.notes li{position:relative;padding-left:26px;font:500 15.5px/1.6 Inter;color:rgba(4,18,2,.8)}
+.notes li::before{content:"";position:absolute;left:0;top:.55em;width:12px;height:12px;border-radius:3px;background:var(--pink)}
+.notes li b{font-weight:700;color:var(--ink)}
+.notes code{background:rgba(4,18,2,.08);border-radius:6px;padding:2px 7px;font:600 13.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+  .card:hover{transform:none}
+}
+@media (max-width:620px){.trow{grid-template-columns:1fr;gap:8px}}
+</style></head><body><header class="top"><a class="brand" href="index.html">CROOKED MONKEY</a><span class="tag">Component Library</span></header><div class="wrap"><a class="back" href="index.html">← Library</a><div class="hero"><span class="eyebrow">Collection · 27 components</span><h1 class="h-display">Home Page</h1><p class="lead">Every component that makes up the Crooked Monkey home page.</p></div><div class="cat-group"><h2 class="h-display">Atoms</h2><div class="grid"><a class="card" href="notch-card.html" style="background:var(--blue)"><span class="c-eyebrow" style="color:var(--blue-deep)">ATOM</span><span class="c-title">K-Notch Card</span><span class="c-blurb">The signature K-cut card. A fixed-size SVG mask keeps the cut&#x27;s proportion at any card height.</span><span class="c-go" style="color:var(--blue-deep)">View <span class="ar">→</span></span></a><a class="card" href="button.html" style="background:var(--yellow)"><span class="c-eyebrow" style="color:var(--yellow-deep)">ATOM</span><span class="c-title">Buttons</span><span class="c-blurb">Primary (yellow CTA) and outline. Pill radius, uppercase, visible focus ring.</span><span class="c-go" style="color:var(--yellow-deep)">View <span class="ar">→</span></span></a><a class="card" href="pill.html" style="background:var(--pink)"><span class="c-eyebrow" style="color:var(--pink-deep)">ATOM</span><span class="c-title">Premium Pill</span><span class="c-blurb">The Premium-brand pill: Poppins 900, uppercase, with the brand &#x27;crooked&#x27; hover.</span><span class="c-go" style="color:var(--pink-deep)">View <span class="ar">→</span></span></a><a class="card" href="input.html" style="background:var(--mint)"><span class="c-eyebrow" style="color:var(--mint-deep)">ATOM</span><span class="c-title">Form Input</span><span class="c-blurb">A labelled field: uppercase label above, white fill, ink focus ring.</span><span class="c-go" style="color:var(--mint-deep)">View <span class="ar">→</span></span></a><a class="card" href="eyebrow.html" style="background:var(--pink)"><span class="c-eyebrow" style="color:var(--pink-deep)">ATOM</span><span class="c-title">Eyebrow</span><span class="c-blurb">The small uppercase label that sits above titles and on cards.</span><span class="c-go" style="color:var(--pink-deep)">View <span class="ar">→</span></span></a><a class="card" href="arrow-link.html" style="background:var(--mint)"><span class="c-eyebrow" style="color:var(--mint-deep)">ATOM</span><span class="c-title">Arrow Link</span><span class="c-blurb">The underlined uppercase link with a nudging arrow, used across cards and sections.</span><span class="c-go" style="color:var(--mint-deep)">View <span class="ar">→</span></span></a><a class="card" href="badge.html" style="background:var(--yellow)"><span class="c-eyebrow" style="color:var(--yellow-deep)">ATOM</span><span class="c-title">Monkey Badge</span><span class="c-blurb">The Crooked Monkey emblem — the circular &#x27;we are here for you, always&#x27; lockup.</span><span class="c-go" style="color:var(--yellow-deep)">View <span class="ar">→</span></span></a></div></div><div class="cat-group"><h2 class="h-display">Molecules</h2><div class="grid"><a class="card" href="faq.html" style="background:var(--mint)"><span class="c-eyebrow" style="color:var(--mint-deep)">MOLECULE</span><span class="c-title">FAQ Accordion</span><span class="c-blurb">Mint rows, ink titles, +/- indicator. One panel open at a time; height animates.</span><span class="c-go" style="color:var(--mint-deep)">View <span class="ar">→</span></span></a><a class="card" href="section-heading.html" style="background:var(--blue)"><span class="c-eyebrow" style="color:var(--blue-deep)">MOLECULE</span><span class="c-title">Section Heading</span><span class="c-blurb">Eyebrow + Poppins 900 title + intro — the standard section lead-in.</span><span class="c-go" style="color:var(--blue-deep)">View <span class="ar">→</span></span></a><a class="card" href="media-card.html" style="background:var(--yellow)"><span class="c-eyebrow" style="color:var(--yellow-deep)">MOLECULE</span><span class="c-title">Media Card</span><span class="c-blurb">Image on top, bright caption below (eyebrow + title + meta + optional link).</span><span class="c-go" style="color:var(--yellow-deep)">View <span class="ar">→</span></span></a><a class="card" href="feature-card.html" style="background:var(--blue)"><span class="c-eyebrow" style="color:var(--blue-deep)">MOLECULE</span><span class="c-title">Feature Card</span><span class="c-blurb">A numbered step card built on the K-notch atom — number, title, body.</span><span class="c-go" style="color:var(--blue-deep)">View <span class="ar">→</span></span></a><a class="card" href="checklist.html" style="background:var(--mint)"><span class="c-eyebrow" style="color:var(--mint-deep)">MOLECULE</span><span class="c-title">Checklist</span><span class="c-blurb">Reassurance list — ink check badges (yellow tick) beside short bold lines.</span><span class="c-go" style="color:var(--mint-deep)">View <span class="ar">→</span></span></a><a class="card" href="pill-group.html" style="background:var(--pink)"><span class="c-eyebrow" style="color:var(--pink-deep)">MOLECULE</span><span class="c-title">Pill Group</span><span class="c-blurb">A wrapping cluster of Premium pills — the reusable &#x27;text + brands&#x27; unit.</span><span class="c-go" style="color:var(--pink-deep)">View <span class="ar">→</span></span></a><a class="card" href="level-card.html" style="background:var(--blue)"><span class="c-eyebrow" style="color:var(--blue-deep)">MOLECULE</span><span class="c-title">Level Card</span><span class="c-blurb">The &#x27;Four Levels&#x27; content card — K-silhouette background, image + copy.</span><span class="c-go" style="color:var(--blue-deep)">View <span class="ar">→</span></span></a><a class="card" href="ticker.html" style="background:var(--mint)"><span class="c-eyebrow" style="color:var(--mint-deep)">MOLECULE</span><span class="c-title">Image Ticker</span><span class="c-blurb">An infinite marquee of tilted product photos with edge fade; pauses on hover.</span><span class="c-go" style="color:var(--mint-deep)">View <span class="ar">→</span></span></a></div></div><div class="cat-group"><h2 class="h-display">Organisms</h2><div class="grid"><a class="card" href="nav.html" style="background:var(--blue)"><span class="c-eyebrow" style="color:var(--blue-deep)">ORGANISM</span><span class="c-title">Nav</span><span class="c-blurb">Ink bar, cream logo, Poppins links, Services / Premium-brand dropdowns, yellow CTA.</span><span class="c-go" style="color:var(--blue-deep)">View <span class="ar">→</span></span></a><a class="card" href="hero.html" style="background:var(--blue)"><span class="c-eyebrow" style="color:var(--blue-deep)">ORGANISM</span><span class="c-title">Hero</span><span class="c-blurb">Top-of-page headline (highlighted phrase), subtitle, and two CTAs.</span><span class="c-go" style="color:var(--blue-deep)">View <span class="ar">→</span></span></a><a class="card" href="service-cards.html" style="background:var(--yellow)"><span class="c-eyebrow" style="color:var(--yellow-deep)">ORGANISM</span><span class="c-title">Service Cards</span><span class="c-blurb">The signature grid: photo + copy cards whose K-notch color panel slides on hover.</span><span class="c-go" style="color:var(--yellow-deep)">View <span class="ar">→</span></span></a><a class="card" href="text-pills.html" style="background:var(--pink)"><span class="c-eyebrow" style="color:var(--pink-deep)">ORGANISM</span><span class="c-title">Text + Pills</span><span class="c-blurb">Ink section: headline + intro on the left, a cluster of brand pills on the right.</span><span class="c-go" style="color:var(--pink-deep)">View <span class="ar">→</span></span></a><a class="card" href="faq-title.html" style="background:var(--mint)"><span class="c-eyebrow" style="color:var(--mint-deep)">ORGANISM</span><span class="c-title">FAQ + Title</span><span class="c-blurb">The full FAQ section — display title on the left, the accordion on the right.</span><span class="c-go" style="color:var(--mint-deep)">View <span class="ar">→</span></span></a><a class="card" href="form.html" style="background:var(--blue)"><span class="c-eyebrow" style="color:var(--blue-deep)">ORGANISM</span><span class="c-title">Form (Contact)</span><span class="c-blurb">The &#x27;Ready to start?&#x27; block — headline + checklist beside an accessible quote form.</span><span class="c-go" style="color:var(--blue-deep)">View <span class="ar">→</span></span></a><a class="card" href="footer.html" style="background:var(--yellow)"><span class="c-eyebrow" style="color:var(--yellow-deep)">ORGANISM</span><span class="c-title">Footer</span><span class="c-blurb">Ink footer — brand lockup + description, link columns, and a legal bar.</span><span class="c-go" style="color:var(--yellow-deep)">View <span class="ar">→</span></span></a><a class="card" href="gallery.html" style="background:var(--pink)"><span class="c-eyebrow" style="color:var(--pink-deep)">ORGANISM</span><span class="c-title">Gallery</span><span class="c-blurb">Oversized background wordmark behind the image ticker, with a CTA.</span><span class="c-go" style="color:var(--pink-deep)">View <span class="ar">→</span></span></a><a class="card" href="four-levels.html" style="background:var(--blue)"><span class="c-eyebrow" style="color:var(--blue-deep)">ORGANISM</span><span class="c-title">Four Levels</span><span class="c-blurb">The intro + four Level Cards — the &#x27;we go all the way to cut &amp; sew&#x27; sequence.</span><span class="c-go" style="color:var(--blue-deep)">View <span class="ar">→</span></span></a><a class="card" href="how-it-works.html" style="background:var(--blue)"><span class="c-eyebrow" style="color:var(--blue-deep)">ORGANISM</span><span class="c-title">How It Works</span><span class="c-blurb">Process line — a 2×2 of Feature Cards (blue ramp) under a title, with the spinning badge.</span><span class="c-go" style="color:var(--blue-deep)">View <span class="ar">→</span></span></a><a class="card" href="who.html" style="background:var(--mint)"><span class="c-eyebrow" style="color:var(--mint-deep)">ORGANISM</span><span class="c-title">Who We Make Merch For</span><span class="c-blurb">Buyer-type selector — an accessible vertical tablist that cross-fades a media card.</span><span class="c-go" style="color:var(--mint-deep)">View <span class="ar">→</span></span></a></div></div><div class="cat-group"><h2 class="h-display">Templates</h2><div class="grid"><a class="card" href="template-landing.html" style="background:var(--yellow)"><span class="c-eyebrow" style="color:var(--yellow-deep)">TEMPLATE</span><span class="c-title">Landing Page</span><span class="c-blurb">A full page composed from the organisms — Nav, Hero, Services, Text + Pills, FAQ, Form, Footer.</span><span class="c-go" style="color:var(--yellow-deep)">View <span class="ar">→</span></span></a></div></div></div><script>(function(){[].slice.call(document.querySelectorAll('.code-copy')).forEach(function(b){b.addEventListener('click',function(){var c=b.closest('.code').querySelector('pre');var t=c.innerText;if(navigator.clipboard){navigator.clipboard.writeText(t);}var o=b.textContent;b.textContent='Copied';setTimeout(function(){b.textContent=o;},1400);});});})();</script></body></html>
