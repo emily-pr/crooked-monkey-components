@@ -931,9 +931,18 @@ REGISTRY.extend([
      "blurb": "Centered brand headline over an image ticker, with an intro line and a mint CTA.",
      "builder": build_brand_hero,
      "api": [("Emit CSS once, then render",
-              'cm.brand_hero(\n  \'<span class="hl">Custom Patagonia</span> Embroidered<br>Apparel…\',\n  "Embroidery and patch decoration on every piece…",\n  [img1, img2, img3, img4], cta="Talk to a Merch Expert")')],
-     "notes": ["Wrap the brand name in <code>.hl</code> for the blue highlight.",
-               "Composes the Image Ticker; images are the only content you pass."]},
+              'cm.brand_hero(\n  \'Custom <span class="hl">Patagonia</span> Embroidered<br>Apparel for Corporate Gifts\',\n  "Embroidery and patch decoration on every piece…",\n  [img1, img2, img3, img4], cta="Talk to a Merch Expert")')],
+     "notes": [
+         "<b>Fills the viewport and centers.</b> On a page it must sit under <code>.cm-page</code> so <code>page_css()</code> gives it "
+         "<code>min-height:100vh</code>, vertical centering, and top clearance under the fixed nav — that's the nav→title gap.",
+         "<b>Built-in vertical rhythm (matches the brand pages):</b> title → gallery is "
+         "<code>margin-top:clamp(44px,6.5vh,72px)</code>; gallery → text/button is <code>clamp(56px,8vh,96px)</code>. "
+         "Don't add your own wrappers or padding around it — the spacing lives in the component.",
+         "<b>Title = two lines, always.</b> Wrap the brand name in <code>.hl</code> for the blue highlight and place the "
+         "<code>&lt;br&gt;</code> so <b>both lines fit</b> the ~1100px measure (e.g. break Lululemon after “Apparel”, not after “Gifts”). "
+         "A line that overflows becomes a third line and breaks the rhythm.",
+         "The gallery is the shared Image Ticker (tilted cards, edge fade, pauses on hover); pass 3–4 images — it loops seamlessly.",
+     ]},
     {"slug": "stat-strip", "name": "Stat Strip", "eyebrow": "MOLECULE", "color": "mint",
      "blurb": "Ink bar of quick facts — icon + label + value, evenly divided.",
      "builder": build_stat_strip,
@@ -1256,7 +1265,7 @@ def render_lululemon_preview():
                brands=["Lululemon", "Rhone", "Vuori", "Alo Yoga"])
         # HERO
         + cm.brand_hero(
-            'Custom <span class="hl">Lululemon</span> Apparel &amp; Gifts<br>with Logo Embroidery',
+            'Custom <span class="hl">Lululemon</span> Apparel<br>&amp; Gifts with Logo Embroidery',
             "We embroider Lululemon ABC pants, Define jackets, Scuba hoodies, and Everywhere Belt Bags for corporate "
             "gifting programs that need the apparel to be recognized — and worn — long after the event.",
             [IMG["pat01"], IMG["pat02"], IMG["pat03"], IMG["pat04"]], cta="Talk to a Merch Expert")

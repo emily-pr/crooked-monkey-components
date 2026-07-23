@@ -787,12 +787,12 @@ def badge(monkey_svg, size="140px", spin=True):
 # ---------------------------------------------------------------------------
 def ticker_css():
     return ("/* ---- CM: image ticker ---- */"
-            ".cm-ticker{position:relative;overflow:hidden;width:100%;padding:18px 0;"
+            ".cm-ticker{position:relative;overflow:hidden;width:100%;padding:clamp(20px,4vh,40px) 0;"
             "-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);"
             "mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}"
-            ".cm-ticker-track{display:flex;gap:clamp(40px,5vw,80px);width:max-content;animation:cm-tick 46s linear infinite}"
+            ".cm-ticker-track{display:flex;gap:clamp(34px,4vw,72px);width:max-content;animation:cm-tick 46s linear infinite}"
             ".cm-ticker:hover .cm-ticker-track{animation-play-state:paused}"
-            ".cm-ticker .tp{flex:0 0 auto;height:clamp(160px,26vh,300px);aspect-ratio:4/3;border-radius:16px;"
+            ".cm-ticker .tp{flex:0 0 auto;height:clamp(180px,30vh,340px);aspect-ratio:4/3;border-radius:16px;"
             "overflow:hidden;box-shadow:0 32px 60px -32px rgba(4,18,2,.45)}"
             ".cm-ticker .tp:nth-child(odd){transform:rotate(-2deg)}.cm-ticker .tp:nth-child(even){transform:rotate(1.6deg)}"
             ".cm-ticker .tp img{width:100%;height:100%;object-fit:cover}"
@@ -1146,9 +1146,10 @@ def brand_hero_css():
             "text-transform:uppercase;margin:0 auto;max-width:1100px;padding:0 clamp(16px,4vw,48px);color:var(--ink)}"
             ".cm-bhero-title .hl{position:relative;display:inline-block}"
             ".cm-bhero-title .hl::before{content:'';position:absolute;left:-.05em;right:-.05em;top:.12em;bottom:.05em;background:var(--blue);z-index:-1}"
-            ".cm-bhero .cm-ticker{margin-top:clamp(32px,5vw,56px)}"
+            # hero vertical rhythm (matches the brand pages): title -> gallery -> text/button
+            ".cm-bhero .cm-ticker{margin-top:clamp(44px,6.5vh,72px)}"
             ".cm-bhero-bottom{display:grid;grid-template-columns:1.35fr .65fr;gap:clamp(24px,4vw,56px);align-items:center;"
-            "max-width:1340px;margin:clamp(32px,5vh,60px) auto 0;padding:0 clamp(24px,5vw,72px)}"
+            "max-width:var(--maxw,1340px);margin:clamp(56px,8vh,96px) auto 0;padding:0 var(--pad,clamp(24px,5vw,72px))}"
             ".cm-bhero-sub{font:500 clamp(15px,1.4vw,19px)/1.55 Inter;color:rgba(4,18,2,.74);max-width:52ch;margin:0}"
             ".cm-bhero-cta{display:inline-flex;align-items:center;justify-content:center;background:var(--mint);color:var(--mint-deep);"
             "border-radius:999px;padding:17px 34px;font:800 14px/1 Inter;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;"
