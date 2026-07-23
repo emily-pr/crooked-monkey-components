@@ -590,7 +590,7 @@ def premium_section(title_html, sub, brands, cta="Browse all premium brands"):
 
 def faqsection_css():
     return (faq_css() + "/* ---- CM: FAQ + title ---- */"
-            ".cm-faqs{background:var(--cream);color:var(--ink)}"
+            ".cm-faqs{background:var(--cream);color:var(--ink);padding:clamp(48px,7vw,90px) clamp(24px,5vw,64px)}"
             ".cm-faqs-grid{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);"
             "gap:clamp(32px,5vw,72px);align-items:start;max-width:1180px;margin:0 auto}"
             ".cm-faqs-title{font-family:Poppins,sans-serif;font-weight:900;text-transform:uppercase;"
@@ -958,7 +958,7 @@ def stat_strip(items):
 # ---- Statement band (eyebrow + big statement + copy + quote + photo) — organism ----
 def statement_css():
     return ("/* ---- CM: statement band ---- */"
-            ".cm-stmt{background:#fff;color:var(--ink)}"
+            ".cm-stmt{background:#fff;color:var(--ink);padding:clamp(48px,7vw,90px) clamp(24px,5vw,64px)}"
             ".cm-stmt-in{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,64px);align-items:center}"
             ".cm-stmt-eyebrow{display:inline-block;font:900 12px/1 Poppins,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mint-deep);margin-bottom:18px}"
             ".cm-stmt-t{font:900 clamp(28px,4.4vw,52px)/1.02 Poppins,sans-serif;letter-spacing:-.02em;text-transform:uppercase;margin:0 0 22px;color:var(--ink)}"
@@ -1165,7 +1165,7 @@ def info_stack(items):
 # ---- Callout section (heading left + info-card stack right) — organism ----
 def callout_css():
     return (heading_css() + info_card_css() + "/* ---- CM: callout section ---- */"
-            ".cm-callout{background:var(--cream);color:var(--ink)}"
+            ".cm-callout{background:var(--cream);color:var(--ink);padding:clamp(48px,7vw,90px) clamp(24px,5vw,64px)}"
             ".cm-callout-in{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);"
             "gap:clamp(36px,6vw,88px);align-items:center}"
             "@media(max-width:820px){.cm-callout-in{grid-template-columns:1fr;gap:32px}}")

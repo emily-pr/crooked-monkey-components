@@ -44,7 +44,13 @@ on; each component page lists its pages under "Used on".
 | **Atoms** | K-Notch Card · Buttons · Premium Pill · Form Input · Eyebrow · Arrow Link *(shared)* |
 | **Molecules** | Stat Strip · Photo Card · Use-Case Card · Decoration Card · Product Card · Info Card · Image Ticker · Pill Group · FAQ Accordion |
 | **Organisms** | Nav · Brand Hero · Statement Band · Process Row · Callout Section · Text + Pills · FAQ + Title · Form · Footer |
-| **Templates** | Premium Brands Page |
+| **Templates** | Premium Brands Page (Patagonia) · **Custom Lululemon Page** |
+
+**Template variants.** Both brand pages share one skeleton — only the two post-hero
+sections change per brand (*Why* = Statement Band, *What to know* = Callout Section).
+The Patagonia template iframes its built page; the Lululemon template is composed live
+from kit components (`render_lululemon_preview()` in `build_catalog.py`) — the pattern
+to copy for the next brand: reuse the skeleton, swap those two sections.
 
 - **Per-component page** — three things together:
   1. **Live demo** of every relevant variant (e.g. notch card `side="r"/"l"/"both"`

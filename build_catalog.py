@@ -397,7 +397,7 @@ def build_faqsection():
         ("Can you match my exact brand colors?", "Yes — we PMS-match colors and proof every decoration method."),
         ("Do you ship internationally?", "Yes, we ship worldwide and can stage inventory regionally to cut transit time."),
     ]
-    demo = ('<div class="demo bleed" style="padding:clamp(28px,4vw,52px);background:var(--cream)">'
+    demo = ('<div class="demo bleed">'
             + cm.faq_section('CUSTOM<br>MERCH <span class="pink">FAQ.</span>', items) + '</div>')
     return demo, cm.faqsection_css(), cm.faq_js()
 
@@ -477,6 +477,7 @@ _IC = {
  "users": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0112 0M16 5.5a3 3 0 010 5.8M21 20a6 6 0 00-4-5.6"/></svg>',
  "note": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="M7 9.5h10M7 13.5h6"/></svg>',
  "history": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/></svg>',
+ "heart": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.5-9.5-9A5 5 0 0112 5a5 5 0 019.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>',
 }
 
 def build_brand_hero():
@@ -494,7 +495,7 @@ def build_stat_strip():
     return demo, cm.stat_strip_css(), ""
 
 def build_statement():
-    demo = ('<div class="demo bleed" style="background:#fff;padding:clamp(28px,4vw,52px)">' + cm.statement_band(
+    demo = ('<div class="demo bleed">' + cm.statement_band(
         "Why Custom Patagonia", "The brand your team actually wears.",
         ["If you own Patagonia, you know they're made to perfection — but they're not made for customization.",
          "Our team has worked hard to master the best embroidery techniques for each item in Patagonia's inventory."],
@@ -576,7 +577,7 @@ def build_callout():
          "Inventory changes daily and isn't fully visible in real time. Plan four to six weeks from approval — "
          "Lululemon projects are not recommended for rush orders.", "mint"),
     ]
-    demo = ('<div class="demo bleed" style="background:var(--cream);padding:clamp(28px,4vw,56px)">'
+    demo = ('<div class="demo bleed">'
             + cm.callout_section(
                 "What to know, before we get started",
                 "LULULEMON IS A<br>PREMIUM RETAIL BRAND.",
@@ -584,6 +585,11 @@ def build_callout():
                 "typical custom apparel order. We believe in being clear upfront so you can decide if it's the right fit.",
                 cards) + '</div>')
     return demo, cm.callout_css(), ""
+
+def build_lululemon_template():
+    demo = ('<div class="demo bleed"><iframe class="demo-iframe" src="preview-lululemon.html" '
+            'title="Custom Lululemon page template preview" loading="lazy"></iframe></div>')
+    return demo, "", ""
 
 # ---------------------------------------------------------------------------
 # REGISTRY — the single place to add a component. Each entry -> card + page.
@@ -983,6 +989,14 @@ REGISTRY.extend([
      "notes": ["Composes <code>heading</code> + the Info Card stack; heading title accepts inline HTML (<code>&lt;br&gt;</code>).",
                "The left eyebrow color is a param (default <code>--pink-deep</code>) — match it to the page's accent.",
                "Two columns on desktop, stacks on mobile; cream section, white cards."]},
+    {"slug": "template-lululemon", "name": "Custom Lululemon Page", "eyebrow": "TEMPLATE", "color": "pink",
+     "blurb": "A second brand-page variant — same template skeleton as Patagonia; only Why (Statement Band) and What-to-know (Callout) change.",
+     "builder": build_lululemon_template,
+     "api": [("Same skeleton, two swapped sections (composed from the kit)",
+              '# only these two change per brand:\nbody = ... hero + stat_strip \\\n  + cm.statement_band("Why Custom Lululemon", ...)      # section 3\n  + cm.callout_section("What to know…", ...)           # section 4\n  + photo_grid + usecase_grid + decoration_grid \\\n  + process_row + faq_section + premium_section + contact_form + footer')],
+     "notes": ["Demonstrates <b>template variants</b>: reuse one page skeleton, swap the brand-specific sections.",
+               "Composed live from kit components (unlike the Patagonia template, which iframes its built page).",
+               "Shown in an isolating <code>&lt;iframe&gt;</code>; a real page adds hero-pin + scroll motion at the page level."]},
 ])
 
 # ---------------------------------------------------------------------------
@@ -1016,7 +1030,7 @@ _assign(["badge", "media-card", "feature-card", "checklist", "level-card", "hero
 # premium-brands only
 _assign(["brand-hero", "stat-strip", "statement-band", "photo-card", "usecase-card",
          "decoration-card", "product-card", "process-row", "info-card", "callout",
-         "template-premium"], ["premium-brands"])
+         "template-premium", "template-lululemon"], ["premium-brands"])
 
 def pages_of(slug):
     return _PAGE_OF.get(slug, {"home"})
@@ -1157,6 +1171,154 @@ def render_landing_preview():
             + css + "</style></head><body>" + body
             + "<script>(function(){" + js + "})();</script></body></html>")
 
+def render_lululemon_preview():
+    """Second brand-page template — Custom Lululemon. Reuses the Premium Brands
+    skeleton; only the two post-hero sections (Why = Statement Band, What to know =
+    Callout) are brand-specific. Composed entirely from kit components."""
+    SEC = "padding:clamp(48px,7vw,90px) clamp(24px,5vw,64px)"
+
+    def wrap(bg, inner, mw="1240px"):
+        return f'<section style="background:{bg};{SEC}"><div style="max-width:{mw};margin:0 auto">{inner}</div></section>'
+
+    def heading(eyebrow, title, center=False, on_ink=False):
+        cls = " center" if center else ""
+        ec = "var(--mint)" if on_ink else "var(--pink-deep)"
+        tc = "color:var(--cream)" if on_ink else ""
+        return (f'<div class="cm-heading{cls}" style="margin-bottom:clamp(30px,4vw,48px)">'
+                f'<span class="cm-h-eyebrow" style="color:{ec}">{eyebrow}</span>'
+                f'<h2 style="{tc}">{title}</h2></div>')
+
+    FAQ = [
+        ("Can Lululemon be embroidered with our logo?",
+         "Yes. Custom Lululemon is typically done with clean, low-profile embroidery that complements the garment's "
+         "technical fabrics — never bulky or overpowering. Screen-print and heat-transfer are available on select styles."),
+        ("What's the minimum order for Custom Lululemon?",
+         "It varies by style, size run, and live inventory. Accessories and core styles like the Everywhere Belt Bag "
+         "run smaller; broad size-spread orders need more. We confirm exact minimums in your quote."),
+        ("How long does production take?",
+         "Plan four to six weeks from art approval. Lululemon inventory shifts daily, so we build in time to source and "
+         "decorate cleanly — it's not a rush-order program."),
+        ("Which Lululemon styles can we customize?",
+         "Most of the catalog — ABC and Commission pants, Define and City Sweat zips, Scuba and Steady State hoodies, "
+         "Metal Vent tees, Align and Wunder Train bottoms, and the Everywhere Belt Bag."),
+        ("Why is Lululemon priced differently than other custom apparel?",
+         "Because we source it at retail rather than wholesale: retail cost + a 10% sourcing fee + decoration, plus tax "
+         "and shipping. You're paying for genuine Lululemon your team will actually wear."),
+    ]
+
+    body = (
+        cm.nav(LOGO_URI, links=["Products"],
+               services=["Custom Screen Printing", "Embroidery & DTG", "Cut & Sew Manufacturing"],
+               brands=["Lululemon", "Rhone", "Vuori", "Alo Yoga"])
+        # HERO
+        + cm.brand_hero(
+            'Custom <span class="hl">Lululemon</span> Apparel &amp; Gifts<br>with Logo Embroidery',
+            "We embroider Lululemon ABC pants, Define jackets, Scuba hoodies, and Everywhere Belt Bags for corporate "
+            "gifting programs that need the apparel to be recognized — and worn — long after the event.",
+            [IMG["pat01"], IMG["pat02"], IMG["pat03"], IMG["pat04"]], cta="Talk to a Merch Expert")
+        + cm.stat_strip([(_IC["clock"], "Lead time", "4–6 weeks"), (_IC["box"], "MOQ", "Varies by style"),
+                         (_IC["needle"], "Decoration", "Embroidery"), (_IC["note"], "Pricing", "Retail + 10% + dec.")])
+        # SECTION 3 (variant) — Why = Statement Band
+        + cm.statement_band(
+            "Why Custom Lululemon", "Pieces people already trust.<br>Logos that don't get in the way.",
+            ["Lululemon has built a reputation for performance, comfort, and design that simply works — clean silhouettes, "
+             "technical fabrics, and pieces that move from workout to workday. That's a strong starting point for custom "
+             "apparel that already feels premium before your logo shows up.",
+             "When we add a logo with clean, low-profile embroidery, the result is subtle and intentional — never overdone. "
+             "These are pieces your team and clients will actually wear: on travel days, at the gym, or between meetings.",
+             "Custom Lululemon works hardest where the audience is brand-aware and the gift needs to feel earned — "
+             "onboarding kits, wellness programs, executive retreats, and small-batch client thank-yous."],
+            IMG["pat04"], alt="Lululemon embroidery detail")
+        # SECTION 4 (variant) — What to know = Callout
+        + cm.callout_section(
+            "What to know, before we get started", "LULULEMON IS A<br>PREMIUM RETAIL BRAND.",
+            "Lululemon operates as a premium retail brand, which calls for a different approach than standard "
+            "customization. We're clear upfront so you can decide if it's the right fit.",
+            [(_IC["note"], "Pricing model", "Retail cost + 10% sourcing fee + decoration (typically $10–15 per location), "
+              "plus applicable tax and shipping.", "pink"),
+             (_IC["box"], "MOQs vary", "Minimums depend on style, size run, and live inventory. Smaller runs are possible "
+              "on accessories and core styles like the Everywhere Belt Bag; larger size-spread orders need more lead time.", "yellow"),
+             (_IC["history"], "Flexible timelines", "Inventory changes daily and isn't fully visible in real time. Plan "
+              "four to six weeks from approval — not recommended for rush orders.", "mint")])
+        # 5 — What We Customize
+        + wrap("#fff", heading("What We Customize", "Across Lululemon&rsquo;s catalog.")
+               + cm.photo_grid([
+                   (IMG["pat01"], "Men&rsquo;s Tops, Layers &amp; Bottoms",
+                    "Metal Vent Tech tees · Evolution polos · Steady State &amp; Scuba hoodies · Define &amp; City Sweat "
+                    "zips · ABC &amp; Commission pants · Pace Breaker shorts", "mint"),
+                   (IMG["pat02"], "Women&rsquo;s Tops, Layers &amp; Bottoms",
+                    "Swiftly Tech tees · Define jacket · Scuba oversized hoodie · Ever-Wear tee · Align leggings · "
+                    "Wunder Train tights · Groove flared pants", "blue"),
+                   (IMG["pat03"], "Accessories &amp; Gifting",
+                    "Everywhere Belt Bag (1L, 2L) · Daily Multi-Pocket &amp; Command the Day duffels · Yoga Mat 5mm · "
+                    "Wunder Puff vest / jacket", "pink"),
+               ]), mw="1200px")
+        # 6 — Who Orders (ink)
+        + wrap("var(--ink)", heading("Who Orders Custom Lululemon", "Built for brand-aware gifting moments.",
+                                     center=True, on_ink=True)
+               + cm.usecase_grid([(_IC["gift"], "Client &amp; VIP gifts"), (_IC["heart"], "Wellness programs"),
+                                  (_IC["brief"], "Executive retreats"), (_IC["box"], "Onboarding kits")]))
+        # 7 — How We Decorate
+        + wrap("var(--cream)", heading("How We Decorate", "Four techniques. One signature.", center=True)
+               + cm.decoration_grid([
+                   (IMG["pat01"], "Embroidery", "Thread-stitched logos with tight digitizing.",
+                    ["Up to 15,000 stitches standard", "Metallic / tonal thread available", "3D puff on demand"], "yellow", "Signature"),
+                   (IMG["pat04"], "Woven Patches", "Leather, felt, PVC, or fully-woven patches.",
+                    ["Leather, felt, PVC, woven", "Stitch or heat-applied", "Rush-sampling available"], "mint", "Signature"),
+                   (IMG["pat03"], "Laser Etch", "Subtle, permanent, eye-catching on waxed canvas, leather, and synthetics.",
+                    ["Waxed canvas + leather", "Zero-ink, permanent", "Tonal, understated finish"], "blue", "New"),
+                   (IMG["pat02"], "Screen Print", "For tees, hoodies, and anywhere embroidery is too much.",
+                    ["Up to 6 colors", "Water-based + discharge inks", "Puff, metallic, glow"], "pink", "Signature"),
+               ]))
+        # 8 — Process
+        + wrap("#fff", heading("The Process", "Quote to doorstep, in under two weeks.")
+               + cm.process_row([
+                   ("01", "Quote", "24 hr reply", "Tell us what you want. We come back with pricing, lead time, and honest recommendations."),
+                   ("02", "Sample", "3–5 days", "We stitch or print a physical sample. You sign off before a single blank is touched."),
+                   ("03", "Production", "5–8 days", "Your run is decorated in-house — embroidery, patches, whatever the brief calls for."),
+                   ("04", "Ship", "Any address", "Bulk, split-ship to employees, or into our fulfillment program. We handle it."),
+               ]), mw="1280px")
+        # 9 — FAQ
+        + cm.faq_section('WHAT PEOPLE ASK ABOUT<br>CUSTOM <span class="pink">LULULEMON.</span>', FAQ)
+        # 10 — Alternatives (Text + Pills)
+        + f'<div style="{SEC};background:var(--cream)">' + cm.premium_section(
+            'PREMIUM BRANDS WE<br>HAVE <span class="acc">WHOLESALE</span> ON',
+            "If retail-plus pricing or rush timelines don't fit, we hold wholesale relationships with brands that compete "
+            "directly with Lululemon — same premium feel, easier process, better inventory visibility.",
+            ["Rhone", "Vuori", "Alo Yoga"], cta="Browse all premium brands") + '</div>'
+        # 12 — More Premium Brands
+        + wrap("var(--cream)", heading("More Premium Brands", "We decorate the names your team actually wants.", center=True)
+               + '<div style="display:flex;justify-content:center">'
+               + cm.pill_group(["Lululemon", "Rhone", "Vuori", "Alo Yoga", "Outdoor Voices", "Athleta", "Beyond Yoga"])
+               + '</div><div style="text-align:center;margin-top:clamp(28px,4vw,44px)">'
+               + cm.button("Browse all brands", "primary") + '</div>')
+        # 11 — Form
+        + f'<div style="{SEC};background:var(--cream)">' + cm.contact_form(quantities=["12–49", "50–199", "200–499", "500+"]) + '</div>'
+        # 13 — Footer
+        + cm.footer(LOGO_URI, columns=[
+            ("Services", ["Custom Screen Printing", "Cut & Sew", "Custom Dupes", "On-Demand Swag Stores", "Rush Orders", "Swag Fulfillment"]),
+            ("Locations", ["Louisville", "Washington DC", "Detroit", "Denver", "Miami", "Nashville", "New York"]),
+            ("Resources", ["FAQ", "Merch Glossary", "Request a Quote", "Custom Design", "Shopify Integration"]),
+          ])
+    )
+    css = (cm.root_css() + cm.nav_css() + ".cm-nav{position:sticky;top:0;z-index:50}"
+           + cm.brand_hero_css() + cm.stat_strip_css() + cm.statement_css() + cm.callout_css()
+           + cm.heading_css() + cm.photo_card_css() + cm.usecase_css() + cm.decoration_css()
+           + cm.process_css() + cm.faqsection_css() + cm.premium_css() + cm.pill_css()
+           + cm.pillgroup_css() + cm.button_css() + cm.form_css() + cm.footer_css())
+    js = cm.nav_js() + cm.faq_js() + cm.form_js()
+    return ("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
+            "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
+            "<title>Custom Lululemon — Crooked Monkey (template preview)</title>"
+            "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">"
+            "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
+            "<link href=\"https://fonts.googleapis.com/css2?family=Poppins:wght@900&"
+            "family=Inter:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\">"
+            "<style>*{box-sizing:border-box;margin:0}body{background:var(--cream);"
+            "font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}img{display:block;max-width:100%}"
+            + css + "</style></head><body>" + body
+            + "<script>(function(){" + js + "})();</script></body></html>")
+
 def main():
     n = 0
     open(os.path.join(_HERE, "index.html"), "w").write(render_index())
@@ -1165,6 +1327,8 @@ def main():
         open(os.path.join(_HERE, key + ".html"), "w").write(render_collection(key, label, blurb))
         n += 1
     open(os.path.join(_HERE, "preview-landing.html"), "w").write(render_landing_preview())
+    n += 1
+    open(os.path.join(_HERE, "preview-lululemon.html"), "w").write(render_lululemon_preview())
     n += 1
     # preview-premium.html is a committed static copy of the built Patagonia page
     # (keeps its scroll-pinning); it is not regenerated here.
