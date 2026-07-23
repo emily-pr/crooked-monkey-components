@@ -40,6 +40,16 @@ TIER_COLOR = {"TOKENS": "pink", "ATOM": "blue", "MOLECULE": "mint",
 def tier_color(eyebrow):
     return TIER_COLOR.get(eyebrow, "blue")
 
+def entry_call(e):
+    """The primary cm.* call for a component (or the page function for templates)."""
+    if e["slug"].startswith("template-"):
+        return "render_brand_page(config)"
+    calls = []
+    for _lab, snippet in e.get("api", []):
+        calls += re.findall(r'cm\.[a-z_]+', snippet)
+    pick = [c for c in calls if not c.endswith("_css")] or calls  # prefer the render helper
+    return (pick[0] + "(…)") if pick else None
+
 # ---------------------------------------------------------------------------
 # Page chrome (layout CSS lives in the build script; tokens+components in the kit)
 # ---------------------------------------------------------------------------
@@ -68,6 +78,10 @@ img{display:block;max-width:100%}
 .col-card .c-title{font-size:clamp(28px,2.8vw,40px)}
 .p-pages{margin-top:16px;font:600 13px/1.4 Inter;color:rgba(4,18,2,.55)}
 .p-pages a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.p-handle{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px}
+.p-handle .lab{font:700 11px/1 Inter;letter-spacing:.14em;text-transform:uppercase;color:rgba(4,18,2,.5)}
+.p-handle code{background:var(--ink);color:var(--cream);border-radius:8px;padding:8px 12px;font:600 14px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
+.p-handle .call{background:rgba(4,18,2,.07);color:var(--ink);border-radius:8px;padding:8px 12px;font:600 13px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
 .card{position:relative;display:flex;flex-direction:column;min-height:230px;border-radius:var(--r-card-lg);padding:clamp(22px,2vw,30px);text-decoration:none;color:var(--ink);overflow:hidden;transition:transform .22s cubic-bezier(.2,.75,.2,1),box-shadow .22s ease}
 .card:hover{transform:translateY(-5px) rotate(-1deg);box-shadow:0 30px 50px -30px rgba(4,18,2,.5)}
 .card:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
@@ -1177,6 +1191,7 @@ def render_collection(key, label, blurb):
 def render_component(e):
     demo, css, js = e["builder"]()
     col = tier_color(e["eyebrow"]); deep = DEEP[col]
+    _call = entry_call(e)
     # section 2: how to call it
     api_html = ""
     for i, (lab, snippet) in enumerate(e["api"]):
@@ -1189,6 +1204,10 @@ def render_component(e):
             f'<header class="p-head"><span class="eyebrow" style="color:var(--{deep})">{esc(e["eyebrow"])}</span>'
             f'<h1 class="h-display">{esc(e["name"])}</h1>'
             f'<p class="lead">{esc(e["blurb"])}</p>'
+            + '<div class="p-handle"><span class="lab">Handle</span>'
+            + f'<code>{esc(e["slug"])}</code>'
+            + (f'<span class="lab">Call</span><span class="call">{esc(_call)}</span>' if _call else "")
+            + '</div>'
             f'<p class="p-pages">Used on: {chips}</p></header>'
             '<section class="sect"><div class="sect-lab">01 — Live demo</div>'
             '<h2>Every variant, rendered</h2>' + demo + '</section>'
@@ -1558,19 +1577,10 @@ def main():
 
     # ---- Component manifest: the single lookup for "which component to call" ----
     # handle (kebab-case slug) is the stable name; call is the exact cm.* function.
-    def _call(e):
-        if e["slug"].startswith("template-"):
-            return "render_brand_page(config)"
-        calls = []
-        for _lab, snippet in e.get("api", []):
-            calls += re.findall(r'cm\.[a-z_]+', snippet)
-        # prefer the render helper over the emit-once *_css() utilities
-        pick = [c for c in calls if not c.endswith("_css")] or calls
-        return (pick[0] + "(…)") if pick else None
     manifest = {"components": [
         {"handle": e["slug"], "name": e["name"], "tier": e["eyebrow"].title(),
          "color": tier_color(e["eyebrow"]), "pages": sorted(pages_of(e["slug"])),
-         "call": _call(e), "url": e["slug"] + ".html"}
+         "call": entry_call(e), "url": e["slug"] + ".html"}
         for e in REGISTRY]}
     open(os.path.join(_HERE, "manifest.json"), "w").write(
         json.dumps(manifest, indent=2, ensure_ascii=False))
