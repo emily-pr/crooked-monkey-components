@@ -478,6 +478,9 @@ _IC = {
  "note": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="M7 9.5h10M7 13.5h6"/></svg>',
  "history": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/></svg>',
  "heart": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.5-9.5-9A5 5 0 0112 5a5 5 0 019.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>',
+ "trophy": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v4a5 5 0 01-10 0V4z"/><path d="M7 6H4v1a3 3 0 003 3M17 6h3v1a3 3 0 01-3 3M9 20h6M12 15v5"/></svg>',
+ "shield": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z"/></svg>',
+ "flag": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h12l-2.5 4L17 12H5"/></svg>',
 }
 
 def build_brand_hero():
@@ -589,6 +592,11 @@ def build_callout():
 def build_lululemon_template():
     demo = ('<div class="demo bleed"><iframe class="demo-iframe" src="preview-lululemon.html" '
             'title="Custom Lululemon page template preview" loading="lazy"></iframe></div>')
+    return demo, "", ""
+
+def build_underarmour_template():
+    demo = ('<div class="demo bleed"><iframe class="demo-iframe" src="preview-under-armour.html" '
+            'title="Custom Under Armour page template preview" loading="lazy"></iframe></div>')
     return demo, "", ""
 
 def build_layout():
@@ -1053,6 +1061,14 @@ REGISTRY.extend([
      "notes": ["Demonstrates <b>template variants</b>: reuse one page skeleton, swap the brand-specific sections.",
                "Composed live from kit components (unlike the Patagonia template, which iframes its built page).",
                "Shown in an isolating <code>&lt;iframe&gt;</code>; a real page adds hero-pin + scroll motion at the page level."]},
+    {"slug": "template-under-armour", "name": "Custom Under Armour Page", "eyebrow": "TEMPLATE", "color": "blue",
+     "blurb": "A third brand page — built from a content config alone, no layout work. Wholesale brand: skips the 'what to know' callout.",
+     "builder": build_underarmour_template,
+     "api": [("Content-only — same template, different config",
+              'UNDER_ARMOUR = { "hero": {...}, "why": {...}, "customize": {...}, ... }  # content only\nrender_brand_page(UNDER_ARMOUR)   # layout guaranteed; nothing hand-composed')],
+     "notes": ["<b>Proof of the content-only workflow:</b> this page is <code>render_brand_page(UNDER_ARMOUR)</code> — only the config changed.",
+               "Optional sections in action: no <code>callout</code> key, so the 'what to know' section is skipped for this wholesale brand.",
+               "The 'What We Customize' grid auto-fits — 4 cards here vs 3 on Lululemon, both in one clean row."]},
 ])
 
 # ---------------------------------------------------------------------------
@@ -1086,7 +1102,7 @@ _assign(["badge", "media-card", "feature-card", "checklist", "level-card", "hero
 # premium-brands only
 _assign(["brand-hero", "stat-strip", "statement-band", "photo-card", "usecase-card",
          "decoration-card", "product-card", "process-row", "info-card", "callout",
-         "template-premium", "template-lululemon"], ["premium-brands"])
+         "template-premium", "template-lululemon", "template-under-armour"], ["premium-brands"])
 
 def pages_of(slug):
     return _PAGE_OF.get(slug, {"home"})
@@ -1260,9 +1276,22 @@ def render_brand_page(cfg):
                 f'<span class="cm-h-eyebrow" style="color:{ec}">{eyebrow}</span>'
                 f'<h2 style="{tc}">{title}</h2></div>')
 
-    h, wy, co = cfg["hero"], cfg["why"], cfg["callout"]
+    h, wy = cfg["hero"], cfg["why"]
     cu, wo, de = cfg["customize"], cfg["who"], cfg["decorate"]
-    pr, fq, al, fm, ft = cfg["process"], cfg["faq"], cfg["alternatives"], cfg["form"], cfg["footer"]
+    pr, fq, fm, ft = cfg["process"], cfg["faq"], cfg["form"], cfg["footer"]
+
+    # Optional sections — rendered only if the config provides them, so a brand
+    # can drop e.g. the "what to know" callout (wholesale brands don't need it)
+    # without any change to the template.
+    callout_html = ""
+    if cfg.get("callout"):
+        co = cfg["callout"]
+        callout_html = cm.callout_section(co["eyebrow"], co["title"], co["body"],
+                                          [(_IC[i], e, b, a) for (i, e, b, a) in co["cards"]])
+    alt_html = ""
+    if cfg.get("alternatives"):
+        al = cfg["alternatives"]
+        alt_html = cm.premium_section(al["title"], al["sub"], al["brands"], cta=al.get("cta", "Browse all premium brands"))
 
     body = (
         cm.nav(LOGO_URI, links=["Products"],
@@ -1273,9 +1302,8 @@ def render_brand_page(cfg):
         # variant section 1 — Why = Statement Band
         + cm.statement_band(wy["eyebrow"], wy["title"], wy["paras"], IMG[wy["img"]],
                             quote=wy.get("quote"), cite=wy.get("cite"), alt=wy.get("alt", ""))
-        # variant section 2 — What to know = Callout
-        + cm.callout_section(co["eyebrow"], co["title"], co["body"],
-                            [(_IC[i], e, b, a) for (i, e, b, a) in co["cards"]])
+        # variant section 2 — What to know = Callout (optional)
+        + callout_html
         + wrap("#fff", heading(cu["eyebrow"], cu["title"])
                + cm.photo_grid([(IMG[im], t, b, a) for (im, t, b, a) in cu["cards"]]))
         + wrap("var(--ink)", heading(wo["eyebrow"], wo["title"], center=True, on_ink=True)
@@ -1284,7 +1312,7 @@ def render_brand_page(cfg):
                + cm.decoration_grid([(IMG[im], t, d, lst, a, bd) for (im, t, d, lst, a, bd) in de["cards"]]))
         + wrap("#fff", heading(pr["eyebrow"], pr["title"]) + cm.process_row(pr["steps"]))
         + cm.faq_section(fq["title"], fq["items"])
-        + cm.premium_section(al["title"], al["sub"], al["brands"], cta=al.get("cta", "Browse all premium brands"))
+        + alt_html
         + '<section class="cm-section" style="background:var(--cream)">'
         + cm.contact_form(quantities=fm["quantities"]) + '</section>'
         + cm.footer(LOGO_URI, columns=ft["columns"])
@@ -1407,6 +1435,100 @@ LULULEMON = {
 def render_lululemon_preview():
     return render_brand_page(LULULEMON)
 
+# ---- Content config for the Custom Under Armour page (content ONLY) ----
+# Wholesale brand → no "what to know" callout; 4 "what we customize" cards.
+UNDER_ARMOUR = {
+    "title": "Custom Under Armour",
+    "nav_brands": ["Patagonia", "Lululemon", "Under Armour", "Vuori"],
+    "hero": {
+        "title": 'Custom <span class="hl">Under Armour</span> Apparel<br>with Logo Embroidery',
+        "sub": "Crooked Monkey decorates Under Armour for corporate teams, golf tournaments and athletic departments — "
+               "Tech polos, Playoff polos, Storm fleece and Hustle backpacks with logo embroidery, ordered at wholesale.",
+        "images": ["pat02", "pat04", "pat03", "pat01"], "cta": "Talk to a Merch Expert"},
+    "stats": [("users", "Relationship", "Wholesale since '08"), ("clock", "Lead time", "2–3 weeks"),
+              ("box", "MOQ", "24 pieces"), ("needle", "Decoration", "Embroidery")],
+    "why": {
+        "eyebrow": "Why brand with Under Armour", "title": "Performance gear teams<br>actually want to wear.",
+        "paras": [
+            "Founded in Baltimore in 1996, Under Armour built its reputation on the locker-room basics that changed how "
+            "athletes dress — moisture-wicking Tech polos, Storm-treated fleece, and the Playoff polo that's become a "
+            "fixture in pro-am golf bags. It's an athletic, performance-driven aesthetic, and that's exactly why it lands "
+            "with corporate sports leagues, golf tournaments, and athletic departments.",
+            "Embroidery is the signature on Tech polos, Playoff polos, Storm fleece, 1/4-zips, hats and Hustle backpacks. "
+            "Heat transfer covers Tech 2.0 short-sleeves and Performance Tees where embroidery would compromise the "
+            "technical fabric, and sublimation handles event-day jerseys — clean branding that respects how the garment was built.",
+            "Because we hold a wholesale relationship with Under Armour, you get consistent inventory visibility, "
+            "color-matched kits across men's and women's cuts, and pricing that works for tournament gifting, employee "
+            "programs, and athletic-department uniforms."],
+        "img": "pat02", "alt": "Under Armour embroidery detail"},
+    # no "callout" key — wholesale brand, no retail-plus caveat to flag
+    "customize": {
+        "eyebrow": "What We Customize", "title": "Across Under Armour&rsquo;s performance catalog.",
+        "cards": [
+            ("pat02", "Tech &amp; Playoff Polos", "The Playoff polo is the golf-tournament signature; the Tech polo is the "
+             "year-round corporate workhorse. Embroidered at left chest, sleeve, or back yoke.", "mint"),
+            ("pat04", "Storm Fleece &amp; 1/4-Zips", "Storm-treated fleece, softshell jackets, and Tech 1/4-zips for "
+             "cooler-weather programs. Embroidered logos and team identifiers hold up cleanly.", "blue"),
+            ("pat03", "Tech 2.0 &amp; Performance Tees", "Tech 2.0 short-sleeves and Performance Tees decorated by heat "
+             "transfer where embroidery would compromise the moisture-wicking build. Sublimation on event-day jerseys.", "pink"),
+            ("pat01", "Hustle Backpacks, Hats &amp; Accessories", "Hustle backpacks and gym bags for travel kits and "
+             "onboarding, plus the Signature Low-Profile cap and other Under Armour silhouettes — all embroidered.", "yellow")]},
+    "who": {
+        "eyebrow": "Who Orders Custom Under Armour", "title": "Built for athletic and team-driven moments.",
+        "cards": [("trophy", "Golf tournaments"), ("users", "Corporate sports &amp; team-building"),
+                  ("flag", "School athletic departments"), ("shield", "Military &amp; first-responder programs")]},
+    "decorate": {
+        "eyebrow": "How We Decorate", "title": "Four techniques. One signature.",
+        "cards": [
+            ("pat01", "Embroidery", "Thread-stitched logos with tight digitizing. Our default for fleece and softshells.",
+             ["Up to 15,000 stitches standard", "Metallic + tonal thread available", "3D puff on demand"], "yellow", "Signature"),
+            ("pat04", "Woven Patches", "Leather, felt, PVC, or fully-woven patches applied via heat or stitch.",
+             ["Leather, felt, PVC, woven", "Stitch or heat-applied", "Rush-sampling available"], "mint", None),
+            ("pat03", "Laser Etch", "Subtle, permanent, eye-catching on waxed canvas, leather, and synthetics.",
+             ["Waxed canvas + leather", "Zero-ink, permanent", "Tonal, understated finish"], "blue", "New"),
+            ("pat02", "Screen Print", "For tees, hoodies, and anywhere embroidery is too much.",
+             ["Up to 6 colors", "Water-based + discharge inks", "Puff, metallic, glow"], "pink", None)]},
+    "process": {
+        "eyebrow": "The Process", "title": "Quote to doorstep, in under two weeks.",
+        "steps": [
+            ("01", "Quote", "24 hr reply", "Tell us what you want. We come back with pricing, lead time, and honest recommendations."),
+            ("02", "Sample", "3–5 days", "We stitch or print a physical sample. You sign off before a single blank is touched."),
+            ("03", "Production", "5–8 days", "Your run is decorated in-house — embroidery, patches, whatever the brief calls for."),
+            ("04", "Ship", "Any address", "Bulk, split-ship to employees, or into our fulfillment program. We handle it.")]},
+    "faq": {
+        "title": 'WHAT PEOPLE ASK ABOUT<br>CUSTOM <span class="pink">UNDER ARMOUR.</span>',
+        "items": [
+            ("What's the standard decoration method on Under Armour?",
+             "Embroidery is the signature on Tech polos, Playoff polos, Storm fleece, 1/4-zips, hats, and Hustle backpacks. "
+             "Heat transfer is used on Tech 2.0 short-sleeves and Performance Tees where embroidery would compromise the "
+             "technical fabric. Sublimation handles jerseys for event-day uniforms."),
+            ("Can I mix men's and women's cuts on one order?",
+             "Yes. Because we order at wholesale, we color-match kits across men's and women's cuts so a mixed team roster "
+             "ships as one coordinated set."),
+            ("What's the minimum order for custom Under Armour?",
+             "Minimums start at 24 pieces and can flex by style and decoration method. We confirm the exact minimum for "
+             "your garments in the quote."),
+            ("How long does production take?",
+             "About 2–3 weeks from art approval — faster than retail-sourced brands because we hold a wholesale account. "
+             "Rush options are available on many styles."),
+            ("Where does Under Armour sit on the premium ladder?",
+             "It's the athletic, performance-driven pick — ideal for golf, corporate sports, and athletic departments. For a "
+             "country-club or athleisure feel, Peter Millar, TravisMathew, or Vuori tend to land better.")]},
+    "alternatives": {
+        "title": 'OTHER PREMIUM BRANDS<br>WE <span class="acc">CUSTOMIZE</span>',
+        "sub": "Under Armour leans athletic and performance-driven. If you want a country-club or heritage look, or a softer "
+               "athleisure feel for client gifting, a few sibling brands tend to land better.",
+        "brands": ["Peter Millar", "TravisMathew", "Vuori"], "cta": "Browse all premium brands"},
+    "form": {"quantities": ["12–49", "50–199", "200–499", "500+"]},
+    "footer": {"columns": [
+        ("Services", ["Custom Screen Printing", "Cut & Sew Manufacturing", "Custom Apparel Dupes", "On-Demand Swag Stores", "Rush Orders", "Swag Fulfillment"]),
+        ("Locations", ["Louisville", "Washington DC", "Detroit", "Denver", "Miami", "Nashville", "New York"]),
+        ("Resources", ["FAQ", "Merch Glossary", "Request a Quote", "Custom Design", "Shopify Integration"])]},
+}
+
+def render_underarmour_preview():
+    return render_brand_page(UNDER_ARMOUR)
+
 def main():
     n = 0
     open(os.path.join(_HERE, "index.html"), "w").write(render_index())
@@ -1417,6 +1539,8 @@ def main():
     open(os.path.join(_HERE, "preview-landing.html"), "w").write(render_landing_preview())
     n += 1
     open(os.path.join(_HERE, "preview-lululemon.html"), "w").write(render_lululemon_preview())
+    n += 1
+    open(os.path.join(_HERE, "preview-under-armour.html"), "w").write(render_underarmour_preview())
     n += 1
     # preview-premium.html is a committed static copy of the built Patagonia page
     # (keeps its scroll-pinning); it is not regenerated here.

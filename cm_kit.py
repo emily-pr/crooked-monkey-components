@@ -1035,7 +1035,8 @@ def statement_band(eyebrow, title, paras, img, quote=None, cite=None, alt=""):
 # ---- Photo caption card (photo + bright caption) — molecule ----
 def photo_card_css():
     return ("/* ---- CM: photo caption card ---- */"
-            ".cm-photocard-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2vw,26px)}"
+            # auto-fit so 3 or 4 cards each land in one clean row (1-up on mobile)
+            ".cm-photocard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(16px,2vw,26px)}"
             ".cm-photocard{border-radius:16px;overflow:hidden;background:#fff;display:flex;flex-direction:column;margin:0}"
             ".cm-photocard-photo{aspect-ratio:4/3.4;overflow:hidden;background:var(--cream)}"
             ".cm-photocard-photo img{width:100%;height:100%;object-fit:cover;display:block}"
