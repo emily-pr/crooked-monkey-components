@@ -1068,24 +1068,39 @@ def usecase_css():
             ".cm-usecase-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,1.6vw,22px)}"
             ".cm-usecase{position:relative;background:var(--blue);color:var(--blue-deep);border-radius:22px 6px 6px 22px;"
             "overflow:hidden;min-height:220px;padding:24px;display:flex;flex-direction:column}"
+            # Default motion (from the brand pages): the K silhouette sweeps in as the
+            # card enters view — staggered by --i — and also on hover. Needs usecase_js().
             ".cm-usecase .cm-kx{position:absolute;top:0;right:0;height:100%;width:46px;transform:scaleX(0);"
-            "transform-origin:right center;transition:transform .6s cubic-bezier(.2,.75,.2,1);pointer-events:none}"
-            ".cm-usecase:hover .cm-kx,.cm-usecase:focus-within .cm-kx{transform:scaleX(1)}"
+            "transform-origin:right center;transition:transform .6s cubic-bezier(.2,.75,.2,1);"
+            "transition-delay:calc(var(--i,0)*90ms);pointer-events:none}"
+            ".cm-usecase.in .cm-kx,.cm-usecase:hover .cm-kx,.cm-usecase:focus-within .cm-kx{transform:scaleX(1)}"
+            ".cm-usecase:hover .cm-kx{transition-delay:0s}"
             ".cm-usecase-chip{width:44px;height:44px;border-radius:11px;background:var(--yellow);color:var(--yellow-deep);"
             "display:flex;align-items:center;justify-content:center}.cm-usecase-chip svg{width:22px;height:22px}"
             ".cm-usecase-t{margin-top:auto;font:800 clamp(16px,1.5vw,19px)/1.18 Inter;letter-spacing:-.01em;max-width:11ch;color:var(--blue-deep)}"
             "@media(max-width:820px){.cm-usecase-grid{grid-template-columns:1fr 1fr}}"
             "@media(max-width:460px){.cm-usecase-grid{grid-template-columns:1fr}}"
-            "@media (prefers-reduced-motion:reduce){.cm-usecase .cm-kx{transition:none}}")
+            "@media (prefers-reduced-motion:reduce){.cm-usecase .cm-kx{transition:none}.cm-usecase.in .cm-kx{transform:scaleX(1)}}")
 
-def usecase_card(icon_svg, title):
-    return (f'<article class="cm-usecase">{_CM_KX}'
+def usecase_card(icon_svg, title, i=0):
+    return (f'<article class="cm-usecase" style="--i:{i}">{_CM_KX}'
             f'<div class="cm-usecase-chip">{icon_svg}</div>'
             f'<h3 class="cm-usecase-t">{title}</h3></article>')
 
 def usecase_grid(items):
-    """items = list of (icon_svg, title)."""
-    return '<div class="cm-usecase-grid">' + "".join(usecase_card(*it) for it in items) + '</div>'
+    """items = list of (icon_svg, title). Cards are staggered (--i) for the K sweep."""
+    return ('<div class="cm-usecase-grid">'
+            + "".join(usecase_card(ic, t, i) for i, (ic, t) in enumerate(items)) + '</div>')
+
+def usecase_js():
+    """Sweep the K silhouette in as each card enters view (staggered via --i). Emit once."""
+    return ("/* CM use-case: K-sweep on scroll-entry + on hover (matches the brand pages). */"
+            "var _uk=matchMedia('(prefers-reduced-motion:reduce)').matches;"
+            "var _ukc=[].slice.call(document.querySelectorAll('.cm-usecase'));"
+            "if(_uk||!('IntersectionObserver' in window)){_ukc.forEach(function(c){c.classList.add('in');});}"
+            "else{var _uko=new IntersectionObserver(function(es){es.forEach(function(e){"
+            "if(e.isIntersecting){e.target.classList.add('in');_uko.unobserve(e.target);}});},"
+            "{threshold:.2,rootMargin:'0px 0px -10% 0px'});_ukc.forEach(function(c){_uko.observe(c);});}")
 
 # ---- Decoration card (photo + badge + bright caption + bullet list) — molecule ----
 def decoration_css():

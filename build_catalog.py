@@ -544,7 +544,7 @@ def build_usecase():
              (_IC["box"], "Onboarding kits"), (_IC["users"], "Field &amp; event teams")]
     demo = ('<div class="demo bleed" style="background:var(--ink);padding:clamp(28px,4vw,52px)">'
             + cm.usecase_grid(items) + '</div>')
-    return demo, cm.usecase_css(), ""
+    return demo, cm.usecase_css(), cm.usecase_js()
 
 def build_decoration():
     items = [
@@ -1029,13 +1029,14 @@ REGISTRY.extend([
      "notes": ["<code>accent</code> sets the caption surface; the title uses its matching deep accent.",
                "Differs from Media Card: full-bright caption, no eyebrow."]},
     {"slug": "usecase-card", "name": "Use-Case Card", "eyebrow": "MOLECULE", "color": "blue",
-     "blurb": "Blue K-cut chip card — icon badge + label, with a K silhouette that sweeps in on hover.",
+     "blurb": "Blue K-cut chip card — icon badge + label; the K silhouette sweeps in on scroll-entry, staggered (and on hover).",
      "builder": build_usecase,
-     "api": [("Emit CSS once, render a grid (pass inline SVG icons)",
-              'cm.usecase_grid([\n  (gift_svg,  "Client gifts"),\n  (brief_svg, "Executive merch"),\n  (box_svg,   "Onboarding kits"),\n])')],
-     "notes": ["Rounded-left, near-straight right; the ink K silhouette scales in on hover/focus.",
-               "Designed for a dark (ink) section — blue cards pop against it.",
-               "Reduced-motion disables the sweep."]},
+     "api": [("Emit CSS once, render a grid, wire the JS once",
+              'style  = cm.usecase_css()\nhtml   = cm.usecase_grid([\n  (gift_svg,  "Client gifts"),\n  (brief_svg, "Executive merch"),\n  (box_svg,   "Onboarding kits"),\n])\nscript = cm.usecase_js()   # sweeps the K in on scroll-entry (staggered via --i)')],
+     "notes": ["<b>Default motion is the brand-page one:</b> the ink K silhouette sweeps in as each card enters view, "
+               "<b>staggered</b> left→right (via <code>--i</code>), and also on hover. Wire <code>usecase_js()</code> once for the scroll behavior.",
+               "Rounded-left, near-straight right. Designed for a dark (ink) section — blue cards pop against it.",
+               "Reduced-motion (or no <code>usecase_js()</code>): the K just shows, no sweep."]},
     {"slug": "decoration-card", "name": "Decoration Card", "eyebrow": "MOLECULE", "color": "yellow",
      "blurb": "Photo (optional badge) + bright caption with a title, description, and bullet list.",
      "builder": build_decoration,
@@ -1390,7 +1391,7 @@ def render_brand_page(cfg):
            + cm.heading_css() + cm.photo_card_css() + cm.usecase_css() + cm.decoration_css()
            + cm.process_css() + cm.faqsection_css() + cm.premium_css() + cm.pill_css()
            + cm.pillgroup_css() + cm.button_css() + cm.form_css() + cm.footer_css())
-    js = cm.motion_js() + cm.nav_js() + cm.faq_js() + cm.form_js()
+    js = cm.motion_js() + cm.usecase_js() + cm.nav_js() + cm.faq_js() + cm.form_js()
     return ("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
             "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
             "<title>" + esc(cfg.get("title", "Custom Brand")) + " — Crooked Monkey (template preview)</title>"
