@@ -1,0 +1,107 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Typography — Crooked Monkey Components</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><style>:root{--cream:#FDF9EA;--ink:#041202;--yellow:#FBF79E;--blue:#94DFFA;--pink:#F580B1;--mint:#6EE8BE;--yellow-deep:#474400;--blue-deep:#003547;--pink-deep:#47001E;--mint-deep:#05432D;--bg:var(--cream);--fg:var(--ink);--cta:var(--yellow);--border:var(--ink);--surface-yellow:var(--yellow);--surface-blue:var(--blue);--surface-pink:var(--pink);--surface-mint:var(--mint);--on-yellow:var(--yellow-deep);--on-blue:var(--blue-deep);--on-pink:var(--pink-deep);--on-mint:var(--mint-deep);--r-pill:999px;--r-card:clamp(18px,1.6vw,26px);--r-card-lg:clamp(22px,2.4vw,40px);--r-sm:10px;--r-flat:6px;}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+a{color:inherit}
+img{display:block;max-width:100%}
+.top{position:sticky;top:0;z-index:20;background:var(--ink);color:var(--cream);display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;padding:18px clamp(20px,5vw,64px)}
+.top .brand{font-family:Poppins,sans-serif;font-weight:900;font-size:19px;letter-spacing:-.01em;color:var(--cream);text-decoration:none}
+.top .brand:hover{color:var(--yellow)}
+.top .tag{font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.7}
+.wrap{max-width:1180px;margin:0 auto;padding:clamp(40px,6vw,80px) clamp(20px,5vw,64px) clamp(80px,10vw,140px)}
+.eyebrow{font-size:13px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(4,18,2,.5)}
+.h-display{font-family:Poppins,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;line-height:.98;color:var(--ink)}
+
+/* ---- Index: hero + card grid (modelled on the brand's card-grid nav) ---- */
+.hero{max-width:52ch;margin-bottom:clamp(40px,6vw,72px)}
+.hero h1{font-size:clamp(44px,7vw,96px)}
+.hero .lead{margin-top:22px;font:500 clamp(16px,1.4vw,20px)/1.55 Inter;color:rgba(4,18,2,.66);max-width:44ch}
+.cat-group{margin-top:clamp(36px,5vw,56px)}
+.cat-group > h2{font-size:clamp(22px,2.4vw,30px);margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:clamp(16px,1.8vw,26px)}
+.card{position:relative;display:flex;flex-direction:column;min-height:230px;border-radius:var(--r-card-lg);padding:clamp(22px,2vw,30px);text-decoration:none;color:var(--ink);overflow:hidden;transition:transform .22s cubic-bezier(.2,.75,.2,1),box-shadow .22s ease}
+.card:hover{transform:translateY(-5px) rotate(-1deg);box-shadow:0 30px 50px -30px rgba(4,18,2,.5)}
+.card:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.card .c-eyebrow{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.card .c-title{font-family:Poppins,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;line-height:1.0;font-size:clamp(24px,2.3vw,32px);margin-top:12px;color:var(--ink)}
+.card .c-blurb{margin-top:12px;font:500 14.5px/1.5 Inter;color:rgba(4,18,2,.72);max-width:34ch}
+.card .c-go{margin-top:auto;padding-top:18px;font:800 12px/1 Inter;letter-spacing:.14em;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px}
+.card .c-go .ar{transition:transform .22s ease}
+.card:hover .c-go .ar{transform:translateX(5px)}
+
+/* ---- Component page ---- */
+.back{display:inline-flex;align-items:center;gap:8px;font:800 12px/1 Inter;letter-spacing:.14em;text-transform:uppercase;color:rgba(4,18,2,.6);text-decoration:none;margin-bottom:clamp(26px,4vw,44px)}
+.back:hover{color:var(--ink)}
+.p-head{margin-bottom:clamp(36px,5vw,60px);max-width:60ch}
+.p-head h1{font-size:clamp(38px,5.2vw,72px);margin-top:12px}
+.p-head .lead{margin-top:18px;font:500 clamp(16px,1.3vw,19px)/1.55 Inter;color:rgba(4,18,2,.66)}
+.sect{padding-top:clamp(34px,4.5vw,54px);margin-top:clamp(34px,4.5vw,54px);border-top:1.5px solid rgba(4,18,2,.12)}
+.sect-lab{font-size:13px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(4,18,2,.5);margin-bottom:6px}
+.sect h2{font-family:Poppins,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;font-size:clamp(24px,2.6vw,34px);margin-bottom:24px;color:var(--ink)}
+
+/* demo canvas */
+.demo{background:#fff;border:1.5px solid rgba(4,18,2,.14);border-radius:var(--r-card);padding:clamp(24px,3vw,40px);display:flex;flex-wrap:wrap;gap:clamp(18px,2vw,32px);align-items:flex-start}
+.demo.col{flex-direction:column}
+.demo.pad0{padding:0;overflow:hidden}
+.demo-item{display:flex;flex-direction:column;gap:10px}
+.demo-item .cap{font:700 11px/1 Inter;letter-spacing:.13em;text-transform:uppercase;color:rgba(4,18,2,.5)}
+
+/* specimens (tokens) */
+.g-sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:16px;width:100%}
+.sw .chip{height:74px;border-radius:12px;border:1px solid rgba(4,18,2,.08)}
+.sw-n{font:600 13px/1.3 Inter;margin-top:8px}
+.sw-h{font-size:12px;color:rgba(4,18,2,.55);font-variant-numeric:tabular-nums}
+.g-pair{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;width:100%}
+.pair{border-radius:16px;padding:20px;min-height:118px;display:flex;flex-direction:column;justify-content:space-between}
+.pair-deep{font-family:Poppins,sans-serif;font-weight:900;font-size:34px;line-height:1}
+.pair-lab{font-size:12px;font-weight:600}
+.trow{display:grid;grid-template-columns:190px 1fr;gap:20px;align-items:baseline;padding-block:16px;border-top:1px solid rgba(4,18,2,.08);width:100%}
+.trow:first-child{border-top:0}
+.tmeta{display:flex;flex-direction:column;gap:3px}
+.tname{font-weight:700;font-size:14px}
+.tspec{font-size:12px;color:rgba(4,18,2,.55)}
+.tsample{color:var(--ink);overflow:hidden}
+.srow{display:flex;align-items:center;gap:14px;margin-bottom:8px;width:100%}
+.sbar{height:16px;background:var(--pink);border-radius:3px}
+.slab{font-size:12px;color:rgba(4,18,2,.6);font-variant-numeric:tabular-nums}
+.g-r{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:16px;width:100%}
+.rbox .rsq{height:80px;background:var(--blue);border:1.5px solid var(--ink)}
+
+/* notch demo helpers */
+.nc-demo{color:var(--ink);min-height:150px;width:230px}
+.nc-pad{padding:22px 48px}
+.nc-k{font-family:Poppins,sans-serif;font-weight:900;font-size:28px;line-height:1}
+.nc-h{font-size:16px;font-weight:700;margin-top:8px}
+.nc-b{font-size:13px;opacity:.72;margin-top:6px;line-height:1.4}
+
+/* nav demo sits in-flow (production nav is position:fixed) */
+.demo-nav{width:100%;border-radius:var(--r-card);overflow:hidden;border:1.5px solid rgba(4,18,2,.14)}
+
+/* code block */
+.code{position:relative;background:var(--ink);color:var(--cream);border-radius:var(--r-card);padding:22px 24px;margin-top:16px;overflow-x:auto}
+.code pre{margin:0;font:500 13.5px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre;color:var(--cream)}
+.code .tok-c{color:rgba(253,249,234,.5)}
+.code-copy{position:absolute;top:12px;right:12px;background:rgba(253,249,234,.1);color:var(--cream);border:0;border-radius:999px;padding:7px 14px;font:700 11px/1 Inter;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s ease}
+.code-copy:hover{background:rgba(253,249,234,.2)}
+.code-copy:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+.code-lab{font:700 11px/1 Inter;letter-spacing:.13em;text-transform:uppercase;color:rgba(4,18,2,.5);margin:22px 0 0}
+
+/* notes */
+.notes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px;max-width:70ch}
+.notes li{position:relative;padding-left:26px;font:500 15.5px/1.6 Inter;color:rgba(4,18,2,.8)}
+.notes li::before{content:"";position:absolute;left:0;top:.55em;width:12px;height:12px;border-radius:3px;background:var(--pink)}
+.notes li b{font-weight:700;color:var(--ink)}
+.notes code{background:rgba(4,18,2,.08);border-radius:6px;padding:2px 7px;font:600 13.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+  .card:hover{transform:none}
+}
+@media (max-width:620px){.trow{grid-template-columns:1fr;gap:8px}}
+</style></head><body><header class="top"><a class="brand" href="index.html">CROOKED MONKEY</a><span class="tag">Component Library</span></header><div class="wrap"><a class="back" href="index.html">← All components</a><header class="p-head"><span class="eyebrow" style="color:var(--yellow-deep)">TOKENS</span><h1 class="h-display">Typography</h1><p class="lead">Two families, sharp roles: Poppins 900 for display, Inter for everything else.</p></header><section class="sect"><div class="sect-lab">01 — Live demo</div><h2>Every variant, rendered</h2><div class="demo col"><div class="trow"><div class="tmeta"><span class="tname">Display XL</span><span class="tspec">Poppins 900 · clamp(30px,6vw,72px)</span></div><div class="tsample" style="font-family:Poppins,sans-serif;font-weight:900;font-size:clamp(30px,6vw,72px);letter-spacing:-.02em;line-height:1.05">BRANDED SWAG</div></div><div class="trow"><div class="tmeta"><span class="tname">Display L</span><span class="tspec">Poppins 900 · clamp(26px,4vw,52px)</span></div><div class="tsample" style="font-family:Poppins,sans-serif;font-weight:900;font-size:clamp(26px,4vw,52px);letter-spacing:-.02em;line-height:1.05">How it works</div></div><div class="trow"><div class="tmeta"><span class="tname">Heading</span><span class="tspec">Poppins 900 · clamp(22px,3vw,34px)</span></div><div class="tsample" style="font-family:Poppins,sans-serif;font-weight:900;font-size:clamp(22px,3vw,34px);letter-spacing:-.02em;line-height:1.05">We kit, store &amp; ship</div></div><div class="trow"><div class="tmeta"><span class="tname">Subhead</span><span class="tspec">Inter 600 · clamp(17px,2vw,24px)</span></div><div class="tsample" style="font-family:Inter,sans-serif;font-weight:600;font-size:clamp(17px,2vw,24px);letter-spacing:0;line-height:1.05">Mocks back in one business day.</div></div><div class="trow"><div class="tmeta"><span class="tname">Body</span><span class="tspec">Inter 400 · 16px</span></div><div class="tsample" style="font-family:Inter,sans-serif;font-weight:400;font-size:16px;letter-spacing:0;line-height:1.05">Quote in 30 minutes; we'll recommend blanks.</div></div><div class="trow"><div class="tmeta"><span class="tname">Label</span><span class="tspec">Inter 700 · 13px</span></div><div class="tsample" style="font-family:Inter,sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;line-height:1.05">MARKETING &amp; BRAND TEAMS</div></div></div></section><section class="sect"><div class="sect-lab">02 — How to call it</div><h2>Reuse it on a new page</h2><p class="code-lab">Font families</p><div class="code"><button class="code-copy" type="button" aria-label="Copy code">Copy</button><pre>/* Poppins 900 ONLY for display / nav / Premium pills */
+font-family: Poppins, sans-serif; font-weight: 900;
+
+/* Inter (system-ui fallback) for body / UI / labels */
+font-family: Inter, system-ui, sans-serif;   /* 400–700 */
+
+/* Load once via Google Fonts (the only external dependency): */
+/* Poppins:wght@900 + Inter:wght@400;500;600;700;800 */</pre></div></section><section class="sect"><div class="sect-lab">03 — When to use it</div><h2>Notes &amp; gotchas</h2><ul class="notes"><li><b>Never set Poppins below 900.</b> If a heading needs to feel lighter, it becomes Inter — not lighter Poppins.</li><li><b>Tracking:</b> Poppins display <code>-0.02em</code>; uppercase labels <code>+0.13–0.16em</code>; nav/buttons <code>+0.04–0.05em</code>.</li><li>Display sizes are fluid <code>clamp(min, vw, max)</code> so they shrink on mobile.</li></ul></section></div><script>(function(){[].slice.call(document.querySelectorAll('.code-copy')).forEach(function(b){b.addEventListener('click',function(){var c=b.closest('.code').querySelector('pre');var t=c.innerText;if(navigator.clipboard){navigator.clipboard.writeText(t);}var o=b.textContent;b.textContent='Copied';setTimeout(function(){b.textContent=o;},1400);});});})();</script></body></html>
