@@ -1227,13 +1227,29 @@ def render_landing_preview():
             + css + "</style></head><body>" + body
             + "<script>(function(){" + js + "})();</script></body></html>")
 
-def render_lululemon_preview():
-    """Second brand-page template — Custom Lululemon. Reuses the Premium Brands
-    skeleton; only the two post-hero sections (Why = Statement Band, What to know =
-    Callout) are brand-specific. Composed entirely from kit components."""
+# ===========================================================================
+# BRAND PAGE TEMPLATE — the fixed skeleton. Pass a content config; layout is
+# guaranteed. To add a brand page you ONLY edit content: copy a config like
+# LULULEMON below, change the strings/keys, and call render_brand_page(NEW).
+# Nothing about the composition/spacing changes — so pages can't drift.
+#
+# Config keys (all content; icons are keys into _IC, images are keys into IMG):
+#   title, nav_brands,
+#   hero{title, sub, images[], cta},
+#   stats[(icon,label,value)],
+#   why{eyebrow, title, paras[], img, quote?, cite?, alt?},          # Statement Band
+#   callout{eyebrow, title, body, cards[(icon,eyebrow,body,accent)]},# Callout Section
+#   customize{eyebrow, title, cards[(img,title,body,accent)]},       # Photo Cards
+#   who{eyebrow, title, cards[(icon,label)]},                        # Use-Case Cards
+#   decorate{eyebrow, title, cards[(img,title,desc,[bullets],accent,badge)]},
+#   process{eyebrow, title, steps[(num,title,meta,body)]},
+#   faq{title, items[(q,a)]},
+#   alternatives{title, sub, brands[], cta},                         # Text + Pills
+#   form{quantities[]},
+#   footer{columns[(title,[items])]}
+# ===========================================================================
+def render_brand_page(cfg):
     def wrap(bg, inner):
-        # one section band: shared gutter (--pad) + max-width container (--maxw),
-        # viewport-fill + centering all come from page_css() via .cm-page.
         return f'<section class="cm-section" style="background:{bg}"><div class="cm-container">{inner}</div></section>'
 
     def heading(eyebrow, title, center=False, on_ink=False):
@@ -1244,113 +1260,34 @@ def render_lululemon_preview():
                 f'<span class="cm-h-eyebrow" style="color:{ec}">{eyebrow}</span>'
                 f'<h2 style="{tc}">{title}</h2></div>')
 
-    FAQ = [
-        ("Can Lululemon be embroidered with our logo?",
-         "Yes. Custom Lululemon is typically done with clean, low-profile embroidery that complements the garment's "
-         "technical fabrics — never bulky or overpowering. Screen-print and heat-transfer are available on select styles."),
-        ("What's the minimum order for Custom Lululemon?",
-         "It varies by style, size run, and live inventory. Accessories and core styles like the Everywhere Belt Bag "
-         "run smaller; broad size-spread orders need more. We confirm exact minimums in your quote."),
-        ("How long does production take?",
-         "Plan four to six weeks from art approval. Lululemon inventory shifts daily, so we build in time to source and "
-         "decorate cleanly — it's not a rush-order program."),
-        ("Which Lululemon styles can we customize?",
-         "Most of the catalog — ABC and Commission pants, Define and City Sweat zips, Scuba and Steady State hoodies, "
-         "Metal Vent tees, Align and Wunder Train bottoms, and the Everywhere Belt Bag."),
-        ("Why is Lululemon priced differently than other custom apparel?",
-         "Because we source it at retail rather than wholesale: retail cost + a 10% sourcing fee + decoration, plus tax "
-         "and shipping. You're paying for genuine Lululemon your team will actually wear."),
-    ]
+    h, wy, co = cfg["hero"], cfg["why"], cfg["callout"]
+    cu, wo, de = cfg["customize"], cfg["who"], cfg["decorate"]
+    pr, fq, al, fm, ft = cfg["process"], cfg["faq"], cfg["alternatives"], cfg["form"], cfg["footer"]
 
     body = (
         cm.nav(LOGO_URI, links=["Products"],
                services=["Custom Screen Printing", "Embroidery & DTG", "Cut & Sew Manufacturing"],
-               brands=["Lululemon", "Rhone", "Vuori", "Alo Yoga"])
-        # HERO
-        + cm.brand_hero(
-            'Custom <span class="hl">Lululemon</span> Apparel<br>&amp; Gifts with Logo Embroidery',
-            "We embroider Lululemon ABC pants, Define jackets, Scuba hoodies, and Everywhere Belt Bags for corporate "
-            "gifting programs that need the apparel to be recognized — and worn — long after the event.",
-            [IMG["pat01"], IMG["pat02"], IMG["pat03"], IMG["pat04"]], cta="Talk to a Merch Expert")
-        + cm.stat_strip([(_IC["clock"], "Lead time", "4–6 weeks"), (_IC["box"], "MOQ", "Varies by style"),
-                         (_IC["needle"], "Decoration", "Embroidery"), (_IC["note"], "Pricing", "Retail + 10% + dec.")])
-        # SECTION 3 (variant) — Why = Statement Band
-        + cm.statement_band(
-            "Why Custom Lululemon", "Pieces people already trust.<br>Logos that don't get in the way.",
-            ["Lululemon has built a reputation for performance, comfort, and design that simply works — clean silhouettes, "
-             "technical fabrics, and pieces that move from workout to workday. That's a strong starting point for custom "
-             "apparel that already feels premium before your logo shows up.",
-             "When we add a logo with clean, low-profile embroidery, the result is subtle and intentional — never overdone. "
-             "These are pieces your team and clients will actually wear: on travel days, at the gym, or between meetings.",
-             "Custom Lululemon works hardest where the audience is brand-aware and the gift needs to feel earned — "
-             "onboarding kits, wellness programs, executive retreats, and small-batch client thank-yous."],
-            IMG["pat04"], alt="Lululemon embroidery detail")
-        # SECTION 4 (variant) — What to know = Callout
-        + cm.callout_section(
-            "What to know, before we get started", "LULULEMON IS A<br>PREMIUM RETAIL BRAND.",
-            "Lululemon operates as a premium retail brand, which calls for a different approach than standard "
-            "customization. We're clear upfront so you can decide if it's the right fit.",
-            [(_IC["note"], "Pricing model", "Retail cost + 10% sourcing fee + decoration (typically $10–15 per location), "
-              "plus applicable tax and shipping.", "pink"),
-             (_IC["box"], "MOQs vary", "Minimums depend on style, size run, and live inventory. Smaller runs are possible "
-              "on accessories and core styles like the Everywhere Belt Bag; larger size-spread orders need more lead time.", "yellow"),
-             (_IC["history"], "Flexible timelines", "Inventory changes daily and isn't fully visible in real time. Plan "
-              "four to six weeks from approval — not recommended for rush orders.", "mint")])
-        # 5 — What We Customize
-        + wrap("#fff", heading("What We Customize", "Across Lululemon&rsquo;s catalog.")
-               + cm.photo_grid([
-                   (IMG["pat01"], "Men&rsquo;s Tops, Layers &amp; Bottoms",
-                    "Metal Vent Tech tees · Evolution polos · Steady State &amp; Scuba hoodies · Define &amp; City Sweat "
-                    "zips · ABC &amp; Commission pants · Pace Breaker shorts", "mint"),
-                   (IMG["pat02"], "Women&rsquo;s Tops, Layers &amp; Bottoms",
-                    "Swiftly Tech tees · Define jacket · Scuba oversized hoodie · Ever-Wear tee · Align leggings · "
-                    "Wunder Train tights · Groove flared pants", "blue"),
-                   (IMG["pat03"], "Accessories &amp; Gifting",
-                    "Everywhere Belt Bag (1L, 2L) · Daily Multi-Pocket &amp; Command the Day duffels · Yoga Mat 5mm · "
-                    "Wunder Puff vest / jacket", "pink"),
-               ]))
-        # 6 — Who Orders (ink)
-        + wrap("var(--ink)", heading("Who Orders Custom Lululemon", "Built for brand-aware gifting moments.",
-                                     center=True, on_ink=True)
-               + cm.usecase_grid([(_IC["gift"], "Client &amp; VIP gifts"), (_IC["heart"], "Wellness programs"),
-                                  (_IC["brief"], "Executive retreats"), (_IC["box"], "Onboarding kits")]))
-        # 7 — How We Decorate
-        + wrap("var(--cream)", heading("How We Decorate", "Four techniques. One signature.", center=True)
-               + cm.decoration_grid([
-                   (IMG["pat01"], "Embroidery", "Thread-stitched logos with tight digitizing.",
-                    ["Up to 15,000 stitches standard", "Metallic / tonal thread available", "3D puff on demand"], "yellow", "Signature"),
-                   (IMG["pat04"], "Woven Patches", "Leather, felt, PVC, or fully-woven patches.",
-                    ["Leather, felt, PVC, woven", "Stitch or heat-applied", "Rush-sampling available"], "mint", "Signature"),
-                   (IMG["pat03"], "Laser Etch", "Subtle, permanent, eye-catching on waxed canvas, leather, and synthetics.",
-                    ["Waxed canvas + leather", "Zero-ink, permanent", "Tonal, understated finish"], "blue", "New"),
-                   (IMG["pat02"], "Screen Print", "For tees, hoodies, and anywhere embroidery is too much.",
-                    ["Up to 6 colors", "Water-based + discharge inks", "Puff, metallic, glow"], "pink", "Signature"),
-               ]))
-        # 8 — Process
-        + wrap("#fff", heading("The Process", "Quote to doorstep, in under two weeks.")
-               + cm.process_row([
-                   ("01", "Quote", "24 hr reply", "Tell us what you want. We come back with pricing, lead time, and honest recommendations."),
-                   ("02", "Sample", "3–5 days", "We stitch or print a physical sample. You sign off before a single blank is touched."),
-                   ("03", "Production", "5–8 days", "Your run is decorated in-house — embroidery, patches, whatever the brief calls for."),
-                   ("04", "Ship", "Any address", "Bulk, split-ship to employees, or into our fulfillment program. We handle it."),
-               ]))
-        # 9 — FAQ
-        + cm.faq_section('WHAT PEOPLE ASK ABOUT<br>CUSTOM <span class="pink">LULULEMON.</span>', FAQ)
-        # 10 — Alternatives (Text + Pills) — full-bleed ink, like Patagonia
-        + cm.premium_section(
-            'PREMIUM BRANDS WE<br>HAVE <span class="acc">WHOLESALE</span> ON',
-            "If retail-plus pricing or rush timelines don't fit, we hold wholesale relationships with brands that compete "
-            "directly with Lululemon — same premium feel, easier process, better inventory visibility.",
-            ["Rhone", "Vuori", "Alo Yoga"], cta="Browse all premium brands")
-        # 11 — Form (blue card centered to the shared max-width)
+               brands=cfg.get("nav_brands", ["Patagonia", "YETI", "Lululemon", "The North Face"]))
+        + cm.brand_hero(h["title"], h["sub"], [IMG[k] for k in h["images"]], cta=h.get("cta", "Talk to a Merch Expert"))
+        + cm.stat_strip([(_IC[i], l, v) for (i, l, v) in cfg["stats"]])
+        # variant section 1 — Why = Statement Band
+        + cm.statement_band(wy["eyebrow"], wy["title"], wy["paras"], IMG[wy["img"]],
+                            quote=wy.get("quote"), cite=wy.get("cite"), alt=wy.get("alt", ""))
+        # variant section 2 — What to know = Callout
+        + cm.callout_section(co["eyebrow"], co["title"], co["body"],
+                            [(_IC[i], e, b, a) for (i, e, b, a) in co["cards"]])
+        + wrap("#fff", heading(cu["eyebrow"], cu["title"])
+               + cm.photo_grid([(IMG[im], t, b, a) for (im, t, b, a) in cu["cards"]]))
+        + wrap("var(--ink)", heading(wo["eyebrow"], wo["title"], center=True, on_ink=True)
+               + cm.usecase_grid([(_IC[i], l) for (i, l) in wo["cards"]]))
+        + wrap("var(--cream)", heading(de["eyebrow"], de["title"], center=True)
+               + cm.decoration_grid([(IMG[im], t, d, lst, a, bd) for (im, t, d, lst, a, bd) in de["cards"]]))
+        + wrap("#fff", heading(pr["eyebrow"], pr["title"]) + cm.process_row(pr["steps"]))
+        + cm.faq_section(fq["title"], fq["items"])
+        + cm.premium_section(al["title"], al["sub"], al["brands"], cta=al.get("cta", "Browse all premium brands"))
         + '<section class="cm-section" style="background:var(--cream)">'
-        + cm.contact_form(quantities=["12–49", "50–199", "200–499", "500+"]) + '</section>'
-        # 12 — Footer
-        + cm.footer(LOGO_URI, columns=[
-            ("Services", ["Custom Screen Printing", "Cut & Sew", "Custom Dupes", "On-Demand Swag Stores", "Rush Orders", "Swag Fulfillment"]),
-            ("Locations", ["Louisville", "Washington DC", "Detroit", "Denver", "Miami", "Nashville", "New York"]),
-            ("Resources", ["FAQ", "Merch Glossary", "Request a Quote", "Custom Design", "Shopify Integration"]),
-          ])
+        + cm.contact_form(quantities=fm["quantities"]) + '</section>'
+        + cm.footer(LOGO_URI, columns=ft["columns"])
     )
     css = (cm.root_css() + cm.layout_css() + cm.page_css() + cm.nav_css()
            + cm.brand_hero_css() + cm.stat_strip_css() + cm.statement_css() + cm.callout_css()
@@ -1360,7 +1297,7 @@ def render_lululemon_preview():
     js = cm.nav_js() + cm.faq_js() + cm.form_js()
     return ("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
             "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
-            "<title>Custom Lululemon — Crooked Monkey (template preview)</title>"
+            "<title>" + esc(cfg.get("title", "Custom Brand")) + " — Crooked Monkey (template preview)</title>"
             "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">"
             "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
             "<link href=\"https://fonts.googleapis.com/css2?family=Poppins:wght@900&"
@@ -1369,6 +1306,106 @@ def render_lululemon_preview():
             "font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}img{display:block;max-width:100%}"
             + css + "</style></head><body><div class=\"cm-page\">" + body
             + "</div><script>(function(){" + js + "})();</script></body></html>")
+
+# ---- Content config for the Custom Lululemon page (content ONLY) ----
+LULULEMON = {
+    "title": "Custom Lululemon",
+    "nav_brands": ["Lululemon", "Rhone", "Vuori", "Alo Yoga"],
+    "hero": {
+        "title": 'Custom <span class="hl">Lululemon</span> Apparel<br>&amp; Gifts with Logo Embroidery',
+        "sub": "We embroider Lululemon ABC pants, Define jackets, Scuba hoodies, and Everywhere Belt Bags for corporate "
+               "gifting programs that need the apparel to be recognized — and worn — long after the event.",
+        "images": ["pat01", "pat02", "pat03", "pat04"], "cta": "Talk to a Merch Expert"},
+    "stats": [("clock", "Lead time", "4–6 weeks"), ("box", "MOQ", "Varies by style"),
+              ("needle", "Decoration", "Embroidery"), ("note", "Pricing", "Retail + 10% + dec.")],
+    "why": {
+        "eyebrow": "Why Custom Lululemon", "title": "Pieces people already trust.<br>Logos that don't get in the way.",
+        "paras": [
+            "Lululemon has built a reputation for performance, comfort, and design that simply works — clean silhouettes, "
+            "technical fabrics, and pieces that move from workout to workday. That's a strong starting point for custom "
+            "apparel that already feels premium before your logo shows up.",
+            "When we add a logo with clean, low-profile embroidery, the result is subtle and intentional — never overdone. "
+            "These are pieces your team and clients will actually wear: on travel days, at the gym, or between meetings.",
+            "Custom Lululemon works hardest where the audience is brand-aware and the gift needs to feel earned — "
+            "onboarding kits, wellness programs, executive retreats, and small-batch client thank-yous."],
+        "img": "pat04", "alt": "Lululemon embroidery detail"},
+    "callout": {
+        "eyebrow": "What to know, before we get started", "title": "LULULEMON IS A<br>PREMIUM RETAIL BRAND.",
+        "body": "Lululemon operates as a premium retail brand, which calls for a different approach than standard "
+                "customization. We're clear upfront so you can decide if it's the right fit.",
+        "cards": [
+            ("note", "Pricing model", "Retail cost + 10% sourcing fee + decoration (typically $10–15 per location), "
+             "plus applicable tax and shipping.", "pink"),
+            ("box", "MOQs vary", "Minimums depend on style, size run, and live inventory. Smaller runs are possible on "
+             "accessories and core styles like the Everywhere Belt Bag; larger size-spread orders need more lead time.", "yellow"),
+            ("history", "Flexible timelines", "Inventory changes daily and isn't fully visible in real time. Plan four to "
+             "six weeks from approval — not recommended for rush orders.", "mint")]},
+    "customize": {
+        "eyebrow": "What We Customize", "title": "Across Lululemon&rsquo;s catalog.",
+        "cards": [
+            ("pat01", "Men&rsquo;s Tops, Layers &amp; Bottoms",
+             "Metal Vent Tech tees · Evolution polos · Steady State &amp; Scuba hoodies · Define &amp; City Sweat zips · "
+             "ABC &amp; Commission pants · Pace Breaker shorts", "mint"),
+            ("pat02", "Women&rsquo;s Tops, Layers &amp; Bottoms",
+             "Swiftly Tech tees · Define jacket · Scuba oversized hoodie · Ever-Wear tee · Align leggings · "
+             "Wunder Train tights · Groove flared pants", "blue"),
+            ("pat03", "Accessories &amp; Gifting",
+             "Everywhere Belt Bag (1L, 2L) · Daily Multi-Pocket &amp; Command the Day duffels · Yoga Mat 5mm · "
+             "Wunder Puff vest / jacket", "pink")]},
+    "who": {
+        "eyebrow": "Who Orders Custom Lululemon", "title": "Built for brand-aware gifting moments.",
+        "cards": [("gift", "Client &amp; VIP gifts"), ("heart", "Wellness programs"),
+                  ("brief", "Executive retreats"), ("box", "Onboarding kits")]},
+    "decorate": {
+        "eyebrow": "How We Decorate", "title": "Four techniques. One signature.",
+        "cards": [
+            ("pat01", "Embroidery", "Thread-stitched logos with tight digitizing.",
+             ["Up to 15,000 stitches standard", "Metallic / tonal thread available", "3D puff on demand"], "yellow", "Signature"),
+            ("pat04", "Woven Patches", "Leather, felt, PVC, or fully-woven patches.",
+             ["Leather, felt, PVC, woven", "Stitch or heat-applied", "Rush-sampling available"], "mint", "Signature"),
+            ("pat03", "Laser Etch", "Subtle, permanent, eye-catching on waxed canvas, leather, and synthetics.",
+             ["Waxed canvas + leather", "Zero-ink, permanent", "Tonal, understated finish"], "blue", "New"),
+            ("pat02", "Screen Print", "For tees, hoodies, and anywhere embroidery is too much.",
+             ["Up to 6 colors", "Water-based + discharge inks", "Puff, metallic, glow"], "pink", "Signature")]},
+    "process": {
+        "eyebrow": "The Process", "title": "Quote to doorstep, in under two weeks.",
+        "steps": [
+            ("01", "Quote", "24 hr reply", "Tell us what you want. We come back with pricing, lead time, and honest recommendations."),
+            ("02", "Sample", "3–5 days", "We stitch or print a physical sample. You sign off before a single blank is touched."),
+            ("03", "Production", "5–8 days", "Your run is decorated in-house — embroidery, patches, whatever the brief calls for."),
+            ("04", "Ship", "Any address", "Bulk, split-ship to employees, or into our fulfillment program. We handle it.")]},
+    "faq": {
+        "title": 'WHAT PEOPLE ASK ABOUT<br>CUSTOM <span class="pink">LULULEMON.</span>',
+        "items": [
+            ("Can Lululemon be embroidered with our logo?",
+             "Yes. Custom Lululemon is typically done with clean, low-profile embroidery that complements the garment's "
+             "technical fabrics — never bulky or overpowering. Screen-print and heat-transfer are available on select styles."),
+            ("What's the minimum order for Custom Lululemon?",
+             "It varies by style, size run, and live inventory. Accessories and core styles like the Everywhere Belt Bag "
+             "run smaller; broad size-spread orders need more. We confirm exact minimums in your quote."),
+            ("How long does production take?",
+             "Plan four to six weeks from art approval. Lululemon inventory shifts daily, so we build in time to source and "
+             "decorate cleanly — it's not a rush-order program."),
+            ("Which Lululemon styles can we customize?",
+             "Most of the catalog — ABC and Commission pants, Define and City Sweat zips, Scuba and Steady State hoodies, "
+             "Metal Vent tees, Align and Wunder Train bottoms, and the Everywhere Belt Bag."),
+            ("Why is Lululemon priced differently than other custom apparel?",
+             "Because we source it at retail rather than wholesale: retail cost + a 10% sourcing fee + decoration, plus tax "
+             "and shipping. You're paying for genuine Lululemon your team will actually wear.")]},
+    "alternatives": {
+        "title": 'PREMIUM BRANDS WE<br>HAVE <span class="acc">WHOLESALE</span> ON',
+        "sub": "If retail-plus pricing or rush timelines don't fit, we hold wholesale relationships with brands that compete "
+               "directly with Lululemon — same premium feel, easier process, better inventory visibility.",
+        "brands": ["Rhone", "Vuori", "Alo Yoga"], "cta": "Browse all premium brands"},
+    "form": {"quantities": ["12–49", "50–199", "200–499", "500+"]},
+    "footer": {"columns": [
+        ("Services", ["Custom Screen Printing", "Cut & Sew", "Custom Dupes", "On-Demand Swag Stores", "Rush Orders", "Swag Fulfillment"]),
+        ("Locations", ["Louisville", "Washington DC", "Detroit", "Denver", "Miami", "Nashville", "New York"]),
+        ("Resources", ["FAQ", "Merch Glossary", "Request a Quote", "Custom Design", "Shopify Integration"])]},
+}
+
+def render_lululemon_preview():
+    return render_brand_page(LULULEMON)
 
 def main():
     n = 0
