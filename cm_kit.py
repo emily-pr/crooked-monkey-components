@@ -429,15 +429,10 @@ def nav_js():
 # ===========================================================================
 # ATOMS — eyebrow + arrow link
 # ===========================================================================
-def eyebrow_css():
-    return ("/* ---- CM: eyebrow / label ---- */"
-            ".cm-eyebrow{display:inline-block;font:800 12px/1 Inter,system-ui,sans-serif;"
-            "letter-spacing:.16em;text-transform:uppercase;color:rgba(4,18,2,.55)}")
-
-def eyebrow(text, color=None):
-    st = f' style="color:{color}"' if color else ""
-    return f'<span class="cm-eyebrow"{st}>{_html.escape(text)}</span>'
-
+# NOTE: the "eyebrow" (kicker label above a title) has been RETIRED. The heading,
+# statement band, callout and media card all still accept an `eyebrow` argument for
+# backward-compatibility, but they IGNORE it — so any eyebrow in page content is
+# dropped from the design automatically.
 def arrow_css():
     return ("/* ---- CM: arrow link ---- */"
             ".cm-arrow{display:inline-flex;align-items:center;gap:.45em;font:700 13px/1 Inter,system-ui,sans-serif;"
@@ -464,9 +459,9 @@ def heading_css():
             "color:rgba(4,18,2,.66)}.cm-heading.center .cm-h-sub{margin-inline:auto}")
 
 def heading(title, eyebrow=None, sub=None, center=False):
-    eb = f'<span class="cm-h-eyebrow">{_html.escape(eyebrow)}</span>' if eyebrow else ""
+    # eyebrow retired — ignored if provided.
     sb = f'<p class="cm-h-sub">{_html.escape(sub)}</p>' if sub else ""
-    return f'<div class="cm-heading{" center" if center else ""}">{eb}<h2>{title}</h2>{sb}</div>'
+    return f'<div class="cm-heading{" center" if center else ""}"><h2>{title}</h2>{sb}</div>'
 
 def media_css():
     return ("/* ---- CM: media card (image + text) ---- */"
@@ -486,7 +481,7 @@ def media_css():
             ".cm-media-link .ar{transition:transform .2s ease}.cm-media-link:hover .ar{transform:translateX(4px)}")
 
 def media_card(img, title, meta, eyebrow=None, accent="var(--yellow)", alt="", link=None):
-    eb = f'<span class="cm-media-eyebrow">{_html.escape(eyebrow)}</span>' if eyebrow else ""
+    eb = ""  # eyebrow retired — ignored if provided
     lk = f'<a class="cm-media-link" href="#">{_html.escape(link)} <span class="ar">→</span></a>' if link else ""
     return (f'<figure class="cm-media" style="--accent:{accent}">'
             f'<div class="cm-media-photo"><img src="{img}" alt="{_html.escape(alt or title)}" loading="lazy"></div>'
@@ -1030,8 +1025,8 @@ def statement_band(eyebrow, title, paras, img, quote=None, cite=None, alt=""):
     if quote:
         c = f'<cite>{_html.escape(cite)}</cite>' if cite else ""
         q = f'<div class="cm-quote"><p>{quote}</p>{c}</div>'
+    # eyebrow retired — ignored if provided.
     return ('<section class="cm-stmt"><div class="cm-stmt-in"><div>'
-            f'<span class="cm-stmt-eyebrow">{_html.escape(eyebrow)}</span>'
             f'<h2 class="cm-stmt-t">{title}</h2>{ps}{q}</div>'
             f'<figure class="cm-stmt-photo"><img src="{img}" alt="{_html.escape(alt)}"></figure>'
             '</div></section>')
@@ -1299,9 +1294,9 @@ def callout_css():
 
 def callout_section(eyebrow, title, body, cards, eyebrow_color="var(--pink-deep)"):
     """Two-column 'what to know' callout: heading on the left, info cards on the right.
-    cards = list of (icon_svg, eyebrow, body, accent)."""
-    left = (f'<div class="cm-heading"><span class="cm-h-eyebrow" style="color:{eyebrow_color}">{_html.escape(eyebrow)}</span>'
-            f'<h2>{title}</h2><p class="cm-h-sub">{_html.escape(body)}</p></div>')
+    cards = list of (icon_svg, label, body, accent). The section eyebrow is retired (ignored)."""
+    left = (f'<div class="cm-heading"><h2>{title}</h2>'
+            f'<p class="cm-h-sub">{_html.escape(body)}</p></div>')
     return f'<section class="cm-callout"><div class="cm-callout-in"><div>{left}</div>{info_stack(cards)}</div></section>'
 
 

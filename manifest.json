@@ -117,18 +117,6 @@
       "url": "nav.html"
     },
     {
-      "handle": "eyebrow",
-      "name": "Eyebrow",
-      "tier": "Atom",
-      "color": "blue",
-      "pages": [
-        "home",
-        "premium-brands"
-      ],
-      "call": "cm.eyebrow(…)",
-      "url": "eyebrow.html"
-    },
-    {
       "handle": "arrow-link",
       "name": "Arrow Link",
       "tier": "Atom",

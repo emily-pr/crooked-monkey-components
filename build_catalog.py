@@ -330,11 +330,6 @@ def build_nav():
     return demo, css, cm.nav_js()
 
 # ---- new atoms ----
-def build_eyebrow():
-    demo = ('<div class="demo">' + cm.eyebrow("COMPONENT")
-            + cm.eyebrow("TOKENS", color="var(--pink-deep)") + cm.eyebrow("New · 2026") + '</div>')
-    return demo, cm.eyebrow_css(), ""
-
 def build_arrow():
     demo = ('<div class="demo">' + cm.arrow_link("Browse premium brands")
             + cm.arrow_link("See all services", color="var(--blue-deep)") + '</div>')
@@ -348,7 +343,7 @@ def build_badge():
 # ---- new molecules ----
 def build_heading():
     demo = ('<div class="demo col">' + cm.heading(
-        "Custom merch services<br>for every format", eyebrow="What we do",
+        "Custom merch services<br>for every format",
         sub="Six buyer-intent categories, each linking into a leaf service page with scope and minimums.") + '</div>')
     return demo, cm.heading_css(), ""
 
@@ -356,10 +351,10 @@ def build_media():
     demo = ('<div class="demo">'
             + cm.media_card(IMG["chief"], "Marketing & Brand Teams",
                             "Campaign launches and client gifts that look retail-quality.",
-                            eyebrow="Buyer type", accent="var(--yellow)", link="Learn more")
+                            accent="var(--yellow)", link="Learn more")
             + cm.media_card(IMG["sonoma"], "HR & People Teams",
                             "Onboarding kits and culture swag people actually keep.",
-                            eyebrow="Buyer type", accent="var(--mint)")
+                            accent="var(--mint)")
             + '</div>')
     return demo, cm.media_css(), ""
 
@@ -827,13 +822,7 @@ REGISTRY = [
 
 REGISTRY.extend([
     # ---- ATOMS ----
-    {"slug": "eyebrow", "name": "Eyebrow", "eyebrow": "ATOM", "color": "pink",
-     "blurb": "The small uppercase label that sits above titles and on cards.",
-     "builder": build_eyebrow,
-     "api": [("Emit CSS once, then render",
-              'cm.eyebrow("What we do")\ncm.eyebrow("TOKENS", color="var(--pink-deep)")')],
-     "notes": ["Inter 800, uppercase, <code>+0.16em</code> tracking — the Label type role.",
-               "Defaults to dim ink; pass a deep accent when it sits on a matching bright surface."]},
+    # (The "Eyebrow" atom was retired — the kicker label is no longer part of the design.)
     {"slug": "arrow-link", "name": "Arrow Link", "eyebrow": "ATOM", "color": "mint",
      "blurb": "The underlined uppercase link with a nudging arrow, used across cards and sections.",
      "builder": build_arrow,
@@ -851,19 +840,21 @@ REGISTRY.extend([
 
     # ---- MOLECULES ----
     {"slug": "section-heading", "name": "Section Heading", "eyebrow": "MOLECULE", "color": "blue",
-     "blurb": "Eyebrow + Poppins 900 title + intro — the standard section lead-in.",
+     "blurb": "Poppins 900 title + intro — the standard section lead-in.",
      "builder": build_heading,
      "api": [("Emit CSS once, then render",
-              'cm.heading("Custom merch services",\n           eyebrow="What we do",\n           sub="Six buyer-intent categories…",\n           center=False)')],
+              'cm.heading("Custom merch services",\n           sub="Six buyer-intent categories…",\n           center=False)')],
      "notes": ["Title accepts inline HTML (<code>&lt;br&gt;</code>, highlight spans).",
-               "Pass <code>center=True</code> for centered section intros."]},
+               "Pass <code>center=True</code> for centered section intros.",
+               "The kicker eyebrow is retired — an <code>eyebrow</code> passed here is ignored."]},
     {"slug": "media-card", "name": "Media Card", "eyebrow": "MOLECULE", "color": "yellow",
-     "blurb": "Image on top, bright caption below (eyebrow + title + meta + optional link).",
+     "blurb": "Image on top, bright caption below (title + meta + optional link).",
      "builder": build_media,
      "api": [("Emit CSS once, then render",
-              'cm.media_card(img_src, "Marketing & Brand Teams",\n    "Client gifts that look retail-quality.",\n    eyebrow="Buyer type", accent="var(--yellow)", link="Learn more")')],
+              'cm.media_card(img_src, "Marketing & Brand Teams",\n    "Client gifts that look retail-quality.",\n    accent="var(--yellow)", link="Learn more")')],
      "notes": ["The caption surface is a bright (<code>accent</code>); title + text stay ink.",
-               "3:2 photo, object-fit cover — pass any image; the card sizes to it."]},
+               "3:2 photo, object-fit cover — pass any image; the card sizes to it.",
+               "The kicker eyebrow is retired — an <code>eyebrow</code> passed here is ignored."]},
     {"slug": "feature-card", "name": "Feature Card", "eyebrow": "MOLECULE", "color": "blue",
      "blurb": "A numbered step card built on the K-notch atom — number, title, body.",
      "builder": build_feature,
@@ -1015,7 +1006,7 @@ REGISTRY.extend([
      "notes": ["Icons render in mint; four across on desktop, 2×2 on mobile.",
                "Great directly under a hero to answer the first practical questions."]},
     {"slug": "statement-band", "name": "Statement Band", "eyebrow": "ORGANISM", "color": "mint",
-     "blurb": "Eyebrow + big statement + copy + a mint pull-quote, beside a tall photo.",
+     "blurb": "A big statement + copy + a mint pull-quote, beside a tall photo.",
      "builder": build_statement,
      "api": [("Emit CSS once, then render",
               'cm.statement_band("Why Custom Patagonia",\n  "The brand your team actually wears.",\n  ["Paragraph one…", "Paragraph two…"],\n  img, quote="&ldquo;Best embroidery…&rdquo;", cite="Dana K. · Sonos")')],
@@ -1027,7 +1018,7 @@ REGISTRY.extend([
      "api": [("Emit CSS once, render a grid",
               'cm.photo_grid([\n  (img, "Fleece &amp; Softshells", "Better Sweater, Synchilla…", "mint"),\n  (img, "Headwear &amp; Bags", "P-6 trucker hats…", "blue"),\n])')],
      "notes": ["<code>accent</code> sets the caption surface; the title uses its matching deep accent.",
-               "Differs from Media Card: full-bright caption, no eyebrow."]},
+               "Differs from Media Card: full-bright caption, title-first."]},
     {"slug": "usecase-card", "name": "Use-Case Card", "eyebrow": "MOLECULE", "color": "blue",
      "blurb": "Blue K-cut chip card — icon badge + label; the K silhouette sweeps in on scroll-entry, staggered (and on hover).",
      "builder": build_usecase,
@@ -1079,20 +1070,20 @@ REGISTRY.extend([
 
 REGISTRY.extend([
     {"slug": "info-card", "name": "Info Card", "eyebrow": "MOLECULE", "color": "yellow",
-     "blurb": "White card: a bright icon chip + an eyebrow label + a line of body. For facts, pricing notes, callouts.",
+     "blurb": "White card: a bright icon chip + a label + a line of body. For facts, pricing notes, callouts.",
      "builder": build_info_card,
      "api": [("Emit CSS once, render a stack (pass inline SVG icons)",
               'cm.info_stack([\n  (note_svg, "Pricing model", "Retail cost + 10% sourcing fee…", "pink"),\n  (box_svg,  "MOQs vary",     "Minimums depend on style…",      "yellow"),\n  (clock_svg,"Flexible timelines","Plan four to six weeks…",     "mint"),\n])')],
-     "notes": ["<code>accent</code> colors both the chip and the eyebrow (chip = bright, eyebrow = its deep accent).",
-               "<b>Accessibility:</b> the eyebrow uses the deep accent, not the bright — a bright label on white/cream fails contrast.",
+     "notes": ["The <b>label</b> is the card's title (e.g. \"Pricing model\") — not the retired section eyebrow; it stays.",
+               "<code>accent</code> colors both the chip and the label (chip = bright, label = its deep accent, for contrast).",
                "Body stays dim ink; keep each card to one idea."]},
     {"slug": "callout", "name": "Callout Section", "eyebrow": "ORGANISM", "color": "pink",
      "blurb": "Two-column 'what to know' — a section heading beside a stack of info cards. The brand-page primer block.",
      "builder": build_callout,
      "api": [("Emit CSS once, then render",
-              'cm.callout_section(\n  "What to know, before we get started",\n  "LULULEMON IS A<br>PREMIUM RETAIL BRAND.",\n  "We don\'t hold a wholesale account...",\n  cards)   # cards = list of (icon, eyebrow, body, accent)')],
+              'cm.callout_section(\n  None,                                     # section eyebrow — retired, ignored\n  "LULULEMON IS A<br>PREMIUM RETAIL BRAND.",\n  "We don\'t hold a wholesale account...",\n  cards)   # cards = list of (icon, label, body, accent)')],
      "notes": ["Composes <code>heading</code> + the Info Card stack; heading title accepts inline HTML (<code>&lt;br&gt;</code>).",
-               "The left eyebrow color is a param (default <code>--pink-deep</code>) — match it to the page's accent.",
+               "The section eyebrow is retired — the 1st argument is ignored.",
                "Two columns on desktop, stacks on mobile; cream section, white cards."]},
     {"slug": "layout", "name": "Layout & Grid", "eyebrow": "TOKENS", "color": "blue",
      "blurb": "The page-level rules — one gutter, one max content width, viewport-filling sections. What makes a page cohesive.",
@@ -1156,7 +1147,7 @@ def _assign(slugs, keys):
 
 _assign(["color", "typography", "spacing", "radius", "layout", "motion"], ["tokens"])
 # shared across both pages
-_assign(["nav", "button", "pill", "input", "eyebrow", "arrow-link", "pill-group",
+_assign(["nav", "button", "pill", "input", "arrow-link", "pill-group",
          "section-heading", "text-pills", "faq-title", "form", "footer", "faq",
          "notch-card", "ticker"], ["home", "premium-brands"])
 # home only
@@ -1273,7 +1264,7 @@ def render_landing_preview():
                 "and DTG; design, kitting, fulfillment, and premium retail brands — shipped from studios across the US."),
         '<section style="background:#fff;padding:clamp(48px,7vw,96px) clamp(24px,5vw,64px)">'
         + '<div style="max-width:1180px;margin:0 auto">'
-        + cm.heading("Custom merch services<br>for every format", eyebrow="What we do", center=True)
+        + cm.heading("Custom merch services<br>for every format", center=True)
         + '<div style="margin-top:clamp(32px,5vw,56px)"></div>'
         + cm.services_grid([
             (IMG["chief"], "Fully Custom Branded Merch", "Unique pieces, built from scratch.", "Cut &amp; sew", "yellow"),
@@ -1338,11 +1329,10 @@ def render_brand_page(cfg):
         return f'<section class="cm-section" style="background:{bg}"><div class="cm-container">{inner}</div></section>'
 
     def heading(eyebrow, title, center=False, on_ink=False):
+        # eyebrow retired — ignored if provided.
         cls = " center" if center else ""
-        ec = "var(--mint)" if on_ink else "var(--pink-deep)"
         tc = "color:var(--cream)" if on_ink else ""
         return (f'<div class="cm-heading{cls}" style="margin-bottom:clamp(30px,4vw,48px)">'
-                f'<span class="cm-h-eyebrow" style="color:{ec}">{eyebrow}</span>'
                 f'<h2 style="{tc}">{title}</h2></div>')
 
     h, wy = cfg["hero"], cfg["why"]

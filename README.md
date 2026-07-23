@@ -70,6 +70,13 @@ That's the whole job: **change the content, the template guarantees it matches.*
 Keep the two content rules the components enforce — hero title = 2 lines that both fit,
 and don't wrap sections in your own padding (the rhythm is in the components).
 
+**Retired: the eyebrow (kicker).** The small uppercase label above section titles is no
+longer part of the design. `heading`, `statement_band`, `callout_section`, and
+`media_card` still accept an `eyebrow` argument for compatibility but **ignore it** — so
+if the content you provide includes an eyebrow, it's dropped automatically. (Component
+labels that happen to look similar — the Info Card's label, the Who panel's name — are
+each element's *title*, not a kicker, so they stay.)
+
 - **Per-component page** — three things together:
   1. **Live demo** of every relevant variant (e.g. notch card `side="r"/"l"/"both"`
      and both height modes; service cards; the interactive Who tabs).
