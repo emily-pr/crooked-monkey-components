@@ -591,6 +591,28 @@ def build_lululemon_template():
             'title="Custom Lululemon page template preview" loading="lazy"></iframe></div>')
     return demo, "", ""
 
+def build_layout():
+    css = (cm.layout_css() +
+           ".lay-tok{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}"
+           ".lay-tok code{background:rgba(4,18,2,.06);border-radius:8px;padding:9px 13px;"
+           "font:600 13px/1 ui-monospace,SFMono-Regular,Menlo,monospace}"
+           ".lay-demo{width:100%;background:#fff;border:1.5px solid rgba(4,18,2,.14);border-radius:var(--r-card);overflow:hidden}"
+           ".lay-band{position:relative;background:var(--cream);padding:26px var(--pad);border-bottom:1.5px dashed rgba(4,18,2,.18)}"
+           ".lay-band:last-child{border-bottom:0}"
+           ".lay-cont{max-width:var(--maxw);margin:0 auto;background:var(--blue);color:var(--blue-deep);border-radius:12px;"
+           "padding:20px;font:800 12px/1.4 Inter;text-transform:uppercase;letter-spacing:.12em;text-align:center}"
+           ".lay-gut{position:absolute;top:0;bottom:0;width:var(--pad);"
+           "background:repeating-linear-gradient(45deg,rgba(245,128,177,.28),rgba(245,128,177,.28) 6px,transparent 6px,transparent 12px)}"
+           ".lay-gut.l{left:0}.lay-gut.r{right:0}"
+           ".lay-cap{font:700 11px/1 Inter;letter-spacing:.13em;text-transform:uppercase;color:rgba(4,18,2,.5);margin-bottom:10px}")
+    bands = "".join('<div class="lay-band"><div class="lay-gut l"></div><div class="lay-gut r"></div>'
+                    '<div class="lay-cont">.cm-container — max-width var(--maxw)</div></div>' for _ in range(3))
+    demo = ('<div class="demo col">'
+            '<div class="lay-tok"><code>--pad: clamp(24px, 5vw, 72px)</code><code>--maxw: 1340px</code></div>'
+            '<div class="lay-cap">Pink = the shared gutter (--pad) · Blue = the max-width content column (--maxw)</div>'
+            '<div class="lay-demo">' + bands + '</div></div>')
+    return demo, css, ""
+
 # ---------------------------------------------------------------------------
 # REGISTRY — the single place to add a component. Each entry -> card + page.
 #   slug/name/eyebrow/color/blurb + a builder() -> (demo_html, css, js)
@@ -989,6 +1011,19 @@ REGISTRY.extend([
      "notes": ["Composes <code>heading</code> + the Info Card stack; heading title accepts inline HTML (<code>&lt;br&gt;</code>).",
                "The left eyebrow color is a param (default <code>--pink-deep</code>) — match it to the page's accent.",
                "Two columns on desktop, stacks on mobile; cream section, white cards."]},
+    {"slug": "layout", "name": "Layout & Grid", "eyebrow": "TOKENS", "color": "blue",
+     "blurb": "The page-level rules — one gutter, one max content width, viewport-filling sections. What makes a page cohesive.",
+     "builder": build_layout,
+     "api": [("Build any page with the shell",
+              'style = cm.root_css() + cm.layout_css() + cm.page_css() + <component css…>\n\n'
+              '# wrap the whole page:\n<body><div class="cm-page"> … sections … </div></body>\n\n'
+              '# each content section:\n<section class="cm-section"><div class="cm-container"> … </div></section>')],
+     "notes": [
+         "<b>One gutter, one width.</b> Every section shares <code>--pad</code> (side margin) and <code>--maxw</code> (1340px), so content edges line up down the whole page.",
+         "<b>Sections fill the viewport.</b> Under <code>.cm-page</code>, each content section is <code>min-height:100vh</code> and centers its content — nav / stat strip / footer are exempt.",
+         "<b>Display headings: 2 lines max.</b> Keep hero/section titles tight or use <code>&lt;br&gt;</code>; never let one wrap to three.",
+         "<b>Spacing scale is 4-based</b> (4·8·12·16·20·24·32·40·56·64·72·96·120); section rhythm lives at the big end via the section padding token.",
+         "This is the layer that makes the two brand pages (Patagonia, Lululemon) read as one system — build every new page on it."]},
     {"slug": "template-lululemon", "name": "Custom Lululemon Page", "eyebrow": "TEMPLATE", "color": "pink",
      "blurb": "A second brand-page variant — same template skeleton as Patagonia; only Why (Statement Band) and What-to-know (Callout) change.",
      "builder": build_lululemon_template,
@@ -1018,7 +1053,7 @@ def _assign(slugs, keys):
     for s in slugs:
         _PAGE_OF.setdefault(s, set()).update(keys)
 
-_assign(["color", "typography", "spacing", "radius"], ["tokens"])
+_assign(["color", "typography", "spacing", "radius", "layout"], ["tokens"])
 # shared across both pages
 _assign(["nav", "button", "pill", "input", "eyebrow", "arrow-link", "pill-group",
          "section-heading", "text-pills", "faq-title", "form", "footer", "faq",
@@ -1175,10 +1210,10 @@ def render_lululemon_preview():
     """Second brand-page template — Custom Lululemon. Reuses the Premium Brands
     skeleton; only the two post-hero sections (Why = Statement Band, What to know =
     Callout) are brand-specific. Composed entirely from kit components."""
-    SEC = "padding:clamp(48px,7vw,90px) clamp(24px,5vw,64px)"
-
-    def wrap(bg, inner, mw="1240px"):
-        return f'<section style="background:{bg};{SEC}"><div style="max-width:{mw};margin:0 auto">{inner}</div></section>'
+    def wrap(bg, inner):
+        # one section band: shared gutter (--pad) + max-width container (--maxw),
+        # viewport-fill + centering all come from page_css() via .cm-page.
+        return f'<section class="cm-section" style="background:{bg}"><div class="cm-container">{inner}</div></section>'
 
     def heading(eyebrow, title, center=False, on_ink=False):
         cls = " center" if center else ""
@@ -1252,7 +1287,7 @@ def render_lululemon_preview():
                    (IMG["pat03"], "Accessories &amp; Gifting",
                     "Everywhere Belt Bag (1L, 2L) · Daily Multi-Pocket &amp; Command the Day duffels · Yoga Mat 5mm · "
                     "Wunder Puff vest / jacket", "pink"),
-               ]), mw="1200px")
+               ]))
         # 6 — Who Orders (ink)
         + wrap("var(--ink)", heading("Who Orders Custom Lululemon", "Built for brand-aware gifting moments.",
                                      center=True, on_ink=True)
@@ -1277,31 +1312,26 @@ def render_lululemon_preview():
                    ("02", "Sample", "3–5 days", "We stitch or print a physical sample. You sign off before a single blank is touched."),
                    ("03", "Production", "5–8 days", "Your run is decorated in-house — embroidery, patches, whatever the brief calls for."),
                    ("04", "Ship", "Any address", "Bulk, split-ship to employees, or into our fulfillment program. We handle it."),
-               ]), mw="1280px")
+               ]))
         # 9 — FAQ
         + cm.faq_section('WHAT PEOPLE ASK ABOUT<br>CUSTOM <span class="pink">LULULEMON.</span>', FAQ)
-        # 10 — Alternatives (Text + Pills)
-        + f'<div style="{SEC};background:var(--cream)">' + cm.premium_section(
+        # 10 — Alternatives (Text + Pills) — full-bleed ink, like Patagonia
+        + cm.premium_section(
             'PREMIUM BRANDS WE<br>HAVE <span class="acc">WHOLESALE</span> ON',
             "If retail-plus pricing or rush timelines don't fit, we hold wholesale relationships with brands that compete "
             "directly with Lululemon — same premium feel, easier process, better inventory visibility.",
-            ["Rhone", "Vuori", "Alo Yoga"], cta="Browse all premium brands") + '</div>'
-        # 12 — More Premium Brands
-        + wrap("var(--cream)", heading("More Premium Brands", "We decorate the names your team actually wants.", center=True)
-               + '<div style="display:flex;justify-content:center">'
-               + cm.pill_group(["Lululemon", "Rhone", "Vuori", "Alo Yoga", "Outdoor Voices", "Athleta", "Beyond Yoga"])
-               + '</div><div style="text-align:center;margin-top:clamp(28px,4vw,44px)">'
-               + cm.button("Browse all brands", "primary") + '</div>')
-        # 11 — Form
-        + f'<div style="{SEC};background:var(--cream)">' + cm.contact_form(quantities=["12–49", "50–199", "200–499", "500+"]) + '</div>'
-        # 13 — Footer
+            ["Rhone", "Vuori", "Alo Yoga"], cta="Browse all premium brands")
+        # 11 — Form (blue card centered to the shared max-width)
+        + '<section class="cm-section" style="background:var(--cream)">'
+        + cm.contact_form(quantities=["12–49", "50–199", "200–499", "500+"]) + '</section>'
+        # 12 — Footer
         + cm.footer(LOGO_URI, columns=[
             ("Services", ["Custom Screen Printing", "Cut & Sew", "Custom Dupes", "On-Demand Swag Stores", "Rush Orders", "Swag Fulfillment"]),
             ("Locations", ["Louisville", "Washington DC", "Detroit", "Denver", "Miami", "Nashville", "New York"]),
             ("Resources", ["FAQ", "Merch Glossary", "Request a Quote", "Custom Design", "Shopify Integration"]),
           ])
     )
-    css = (cm.root_css() + cm.nav_css() + ".cm-nav{position:sticky;top:0;z-index:50}"
+    css = (cm.root_css() + cm.layout_css() + cm.page_css() + cm.nav_css()
            + cm.brand_hero_css() + cm.stat_strip_css() + cm.statement_css() + cm.callout_css()
            + cm.heading_css() + cm.photo_card_css() + cm.usecase_css() + cm.decoration_css()
            + cm.process_css() + cm.faqsection_css() + cm.premium_css() + cm.pill_css()
@@ -1316,8 +1346,8 @@ def render_lululemon_preview():
             "family=Inter:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\">"
             "<style>*{box-sizing:border-box;margin:0}body{background:var(--cream);"
             "font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}img{display:block;max-width:100%}"
-            + css + "</style></head><body>" + body
-            + "<script>(function(){" + js + "})();</script></body></html>")
+            + css + "</style></head><body><div class=\"cm-page\">" + body
+            + "</div><script>(function(){" + js + "})();</script></body></html>")
 
 def main():
     n = 0

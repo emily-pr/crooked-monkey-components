@@ -67,6 +67,28 @@ Everything is ported faithfully from the live pages, stays on-brand (brand token
 only, Poppins 900 + Inter), keeps ARIA roles + focus states, and honors
 `prefers-reduced-motion`.
 
+## Building a page (the Layout system)
+
+Components own their *look*; the **page** owns its *rhythm*. The rules that make a page
+cohesive live in `layout_css()` + `page_css()` (documented in the catalog's
+**Tokens → Layout & Grid** page), not in individual components:
+
+- **One gutter, one width:** every section shares `--pad` (side margin) and `--maxw`
+  (1340px) → content edges line up down the whole page.
+- **Sections fill the viewport:** under `.cm-page`, each content section is
+  `min-height:100vh` and centers its content (nav / stat strip / footer are exempt).
+- **Display headings ≤ 2 lines.** Spacing is the 4-based scale.
+
+To build a page:
+
+```python
+style = cm.root_css() + cm.layout_css() + cm.page_css() + <component css…>
+# <body><div class="cm-page"> … </div></body>
+# each content section:  <section class="cm-section"><div class="cm-container"> … </div></section>
+```
+
+`render_lululemon_preview()` in `build_catalog.py` is the reference implementation.
+
 ## How it fits together
 
 | File | Role |

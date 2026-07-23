@@ -294,17 +294,25 @@ _NAV_CARET = ("<svg class='cm-nav-caret' viewBox='0 0 10 6' aria-hidden='true'>"
               "<path d='M1 1l4 4 4-4' fill='none' stroke='currentColor' stroke-width='1.6' "
               "stroke-linecap='round' stroke-linejoin='round'/></svg>")
 
+_NAV_CART = ("<svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='currentColor' "
+             "stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>"
+             "<circle cx='9' cy='20' r='1.4'/><circle cx='18' cy='20' r='1.4'/>"
+             "<path d='M2 3h2.2l2.3 11.4a1.5 1.5 0 0 0 1.5 1.2h8.7a1.5 1.5 0 0 0 1.5-1.2L21 7H6.2'/></svg>")
+
 def nav_css():
-    """CSS for .cm-nav. Emit once. NOTE: on a real page use position:fixed
-    (add .cm-nav{position:fixed;top:0;left:0;right:0} or wrap in your own)."""
+    """CSS for .cm-nav (ink bar, dropdowns, sign-in + cart, mobile drawer).
+    Fixed by default; on a real page add top nav clearance to the first section."""
     return (
         "/* ---- CM: nav ---- */"
-        ".cm-nav{background:var(--ink);color:var(--cream);border-bottom:1px solid rgba(253,249,234,.1)}"
+        ".cm-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--ink);color:var(--cream);"
+        "border-bottom:1px solid rgba(253,249,234,.1)}"
         ".cm-nav-in{max-width:1480px;margin:0 auto;display:flex;align-items:center;"
-        "gap:clamp(16px,1.8vw,28px);padding:0 clamp(18px,4vw,40px);height:clamp(60px,8vh,74px)}"
+        "gap:clamp(16px,1.8vw,28px);padding:0 clamp(18px,4vw,56px);height:clamp(62px,8vh,76px)}"
         ".cm-nav-logo{flex:none;display:flex;align-items:center}"
-        ".cm-nav-logo img{height:26px;width:auto;display:block}"
+        ".cm-nav-logo img{height:clamp(22px,1.9vw,28px);width:auto;display:block}"
+        ".cm-nav-drawer{display:contents}"
         ".cm-nav-mid{display:flex;align-items:center;gap:clamp(16px,1.9vw,30px);margin-left:auto}"
+        ".cm-nav-actions{display:flex;align-items:center;gap:clamp(16px,1.6vw,24px);margin-left:auto}"
         ".cm-nav-link,.cm-nav-trigger{font:900 12.5px/1 Poppins,sans-serif;letter-spacing:.05em;"
         "text-transform:uppercase;color:var(--cream);text-decoration:none;background:none;border:0;"
         "cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:10px 0;white-space:nowrap;"
@@ -313,7 +321,7 @@ def nav_css():
         ".cm-nav-caret{width:9px;height:6px;transition:transform .22s ease}"
         ".cm-nav-dd{position:relative}"
         ".cm-nav-dd.open .cm-nav-caret{transform:rotate(180deg)}"
-        ".cm-nav-menu{position:absolute;top:calc(100% + 9px);left:50%;min-width:240px;background:var(--cream);"
+        ".cm-nav-menu{position:absolute;top:calc(100% + 9px);left:50%;min-width:248px;background:var(--cream);"
         "color:var(--ink);border-radius:16px;padding:10px;box-shadow:0 30px 60px -24px rgba(4,18,2,.55);"
         "display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;"
         "transform:translateX(-50%) translateY(8px);"
@@ -327,18 +335,44 @@ def nav_css():
         "font:900 12.5px/1 Poppins,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;"
         "white-space:nowrap;transition:transform .2s ease,filter .2s ease}"
         ".cm-nav-cta:hover{transform:translateY(-1px);filter:brightness(1.03)}"
+        ".cm-nav-signin{font:900 12.5px/1 Poppins,sans-serif;letter-spacing:.05em;text-transform:uppercase;"
+        "color:var(--cream);text-decoration:none;white-space:nowrap;transition:color .18s ease}"
+        ".cm-nav-signin:hover{color:var(--yellow)}"
+        ".cm-nav-cart{color:var(--cream);display:inline-flex;align-items:center;transition:color .18s ease}"
+        ".cm-nav-cart:hover{color:var(--yellow)}"
         ".cm-nav-link:focus-visible,.cm-nav-trigger:focus-visible,.cm-nav-cta:focus-visible,"
-        ".cm-nav-logo:focus-visible,.cm-nav-menu a:focus-visible{outline:3px solid var(--yellow);"
+        ".cm-nav-signin:focus-visible,.cm-nav-cart:focus-visible,.cm-nav-logo:focus-visible,"
+        ".cm-nav-burger:focus-visible,.cm-nav-menu a:focus-visible{outline:3px solid var(--yellow);"
         "outline-offset:3px;border-radius:6px}"
-        "@media (max-width:820px){.cm-nav-mid{gap:14px}"
+        ".cm-nav-burger{display:none;flex:none;width:42px;height:42px;background:none;border:0;cursor:pointer;"
+        "flex-direction:column;align-items:center;justify-content:center;gap:5px;margin-left:auto;color:var(--cream)}"
+        ".cm-nav-burger span{display:block;width:24px;height:2px;background:currentColor;border-radius:2px;"
+        "transition:transform .25s ease,opacity .2s ease}"
+        ".cm-nav.open .cm-nav-burger span:nth-child(1){transform:translateY(7px) rotate(45deg)}"
+        ".cm-nav.open .cm-nav-burger span:nth-child(2){opacity:0}"
+        ".cm-nav.open .cm-nav-burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}"
+        "@media (max-width:980px){"
+        ".cm-nav-burger{display:flex}"
+        ".cm-nav-drawer{position:absolute;top:100%;left:0;right:0;background:var(--ink);"
+        "border-bottom:1px solid rgba(253,249,234,.1);display:flex;flex-direction:column;align-items:stretch;"
+        "gap:4px;padding:14px clamp(18px,4vw,40px) 24px;opacity:0;visibility:hidden;transform:translateY(-10px);"
+        "transition:opacity .22s ease,transform .22s ease,visibility .22s;max-height:calc(100vh - 62px);overflow:auto}"
+        ".cm-nav.open .cm-nav-drawer{opacity:1;visibility:visible;transform:none}"
+        ".cm-nav-mid{flex-direction:column;align-items:stretch;gap:2px;margin-left:0}"
+        ".cm-nav-actions{margin:12px 0 0;padding-top:14px;border-top:1px solid rgba(253,249,234,.1);"
+        "justify-content:flex-start;gap:26px}"
+        ".cm-nav-link,.cm-nav-trigger{font-size:15px;padding:14px 2px;width:100%;justify-content:space-between}"
+        ".cm-nav-dd{width:100%}"
         ".cm-nav-menu{position:static;min-width:0;transform:none;opacity:1;visibility:visible;display:none;"
         "box-shadow:none;background:rgba(253,249,234,.05);color:var(--cream);margin:0}"
-        ".cm-nav-dd.open .cm-nav-menu{display:flex}.cm-nav-menu a{color:rgba(253,249,234,.82)}}"
+        ".cm-nav-dd.open .cm-nav-menu{display:flex}.cm-nav-menu a{color:rgba(253,249,234,.82)}"
+        ".cm-nav-cta{text-align:center;margin-top:10px}}"
     )
 
-def nav(logo_src, links=None, services=None, brands=None, cta="Request a quote"):
+def nav(logo_src, links=None, services=None, brands=None, cta="Request a quote",
+        signin=True, cart=True):
     """Render the nav bar. logo_src = data URI / path to the cream logo.
-    links = plain links; services/brands = dropdown item lists."""
+    signin/cart add the secondary actions (as on the live site)."""
     links = links or ["Products"]
     services = services or ["Custom Screen Printing", "Embroidery & DTG", "Cut & Sew Manufacturing"]
     brands = brands or ["Patagonia", "YETI", "Lululemon", "The North Face"]
@@ -348,30 +382,43 @@ def nav(logo_src, links=None, services=None, brands=None, cta="Request a quote")
                 f'aria-haspopup="true" aria-controls="{mid}">{_html.escape(label)}{_NAV_CARET}</button>'
                 f'<div class="cm-nav-menu" id="{mid}" role="menu">{a}</div></div>')
     plain = "".join(f'<a class="cm-nav-link" href="#">{_html.escape(t)}</a>' for t in links)
+    actions = ""
+    if signin or cart:
+        a = ('<a class="cm-nav-signin" href="#">Sign in</a>' if signin else "")
+        c = (f'<a class="cm-nav-cart" href="#" aria-label="Cart">{_NAV_CART}</a>' if cart else "")
+        actions = f'<div class="cm-nav-actions">{a}{c}</div>'
     return (
         '<header class="cm-nav"><div class="cm-nav-in">'
         f'<a class="cm-nav-logo" href="#" aria-label="Crooked Monkey home">'
         f'<img src="{logo_src}" alt="Crooked Monkey"></a>'
+        '<div class="cm-nav-drawer">'
         '<nav class="cm-nav-mid" aria-label="Primary">'
         + plain
         + _menu("cm-dd-services", "Services", services)
         + _menu("cm-dd-brands", "Premium brands", brands)
         + f'<a class="cm-nav-cta" href="#">{_html.escape(cta)}</a>'
-        + '</nav></div></header>'
+        + '</nav>' + actions + '</div>'
+        '<button class="cm-nav-burger" aria-label="Open menu" aria-expanded="false" aria-controls="cm-nav">'
+        '<span></span><span></span><span></span></button>'
+        '</div></header>'
     )
 
 def nav_js():
-    """JS wiring for .cm-nav dropdowns (click to pin; hover opens via CSS)."""
+    """JS wiring for .cm-nav: click-to-pin dropdowns + mobile drawer; Escape closes."""
     return (
-        "/* CM nav: click-to-pin dropdowns; Escape closes. */"
+        "/* CM nav: dropdowns (click to pin) + mobile drawer. */"
         "var cmDD=[].slice.call(document.querySelectorAll('.cm-nav-dd'));"
         "function cmClose(x){cmDD.forEach(function(d){if(d!==x){d.classList.remove('open');"
         "var t=d.querySelector('.cm-nav-trigger');if(t)t.setAttribute('aria-expanded','false');}});}"
         "cmDD.forEach(function(dd){var t=dd.querySelector('.cm-nav-trigger');"
         "t.addEventListener('click',function(e){e.preventDefault();"
         "var o=dd.classList.toggle('open');t.setAttribute('aria-expanded',o?'true':'false');cmClose(dd);});});"
-        "document.addEventListener('click',function(e){if(!e.target.closest('.cm-nav-dd'))cmClose(null);});"
-        "document.addEventListener('keydown',function(e){if(e.key==='Escape')cmClose(null);});"
+        "var cmNav=document.querySelector('.cm-nav'),cmB=document.querySelector('.cm-nav-burger');"
+        "if(cmB){cmB.addEventListener('click',function(){var o=cmNav.classList.toggle('open');"
+        "cmB.setAttribute('aria-expanded',o?'true':'false');if(!o)cmClose(null);});}"
+        "document.addEventListener('click',function(e){if(!e.target.closest('.cm-nav-dd'))cmClose(null);"
+        "if(cmNav&&cmNav.classList.contains('open')&&!e.target.closest('.cm-nav')){cmNav.classList.remove('open');}});"
+        "document.addEventListener('keydown',function(e){if(e.key==='Escape'){cmClose(null);if(cmNav)cmNav.classList.remove('open');}});"
     )
 
 
@@ -557,7 +604,7 @@ def services_grid(items):
 _PR_ACC = ["yellow", "blue", "pink", "mint"]
 def premium_css():
     return ("/* ---- CM: text + pills (premium brands) ---- */"
-            ".cm-pr{background:var(--ink);color:var(--cream);border-radius:var(--r-card-lg);"
+            ".cm-pr{background:var(--ink);color:var(--cream);"
             "padding:clamp(48px,7vw,88px) clamp(28px,5vw,72px)}"
             ".cm-pr-grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);"
             "gap:clamp(32px,5vw,72px);align-items:center;max-width:1180px;margin:0 auto}"
@@ -610,7 +657,8 @@ _CM_CHEV = "data:image/svg+xml," + urllib.parse.quote(
 
 def form_css():
     return (check_css() + "/* ---- CM: contact form ---- */"
-            ".cm-cta{background:var(--blue);border-radius:var(--r-card-lg);padding:clamp(34px,4.6vw,72px)}"
+            ".cm-cta{background:var(--blue);border-radius:var(--r-card-lg);padding:clamp(34px,4.6vw,72px);"
+            "max-width:var(--maxw,1340px);margin-inline:auto}"
             ".cm-cta-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);"
             "gap:clamp(32px,5vw,80px);align-items:center;max-width:1180px;margin:0 auto}"
             ".cm-cta-title{font-family:Poppins,sans-serif;font-weight:900;text-transform:uppercase;"
@@ -1114,28 +1162,56 @@ def brand_hero(title_html, sub, images, cta="Talk to a Merch Expert"):
             + f'<div class="cm-bhero-bottom"><p class="cm-bhero-sub">{_html.escape(sub)}</p>'
             f'<div><a class="cm-bhero-cta" href="#">{_html.escape(cta)}</a></div></div></section>')
 
-# ---- Process row (4-across numbered steps w/ meta, K-notch bg) — organism ----
+# ---- Process row (drawn Card_Shape silhouettes, blue ramp) — organism ----
+# Uses the original 346×173 silhouettes (same art as the home page), so the row
+# matches the brand pages exactly — NOT the adaptive K-notch.
+_PROC1 = ("M305.71,86.51c11.69-7.96,21.21-18.78,28.56-32.43,7.35-13.67,11.25-30.54,11.73-50.61,"
+          "0-.92-.35-1.73-1.05-2.42-.69-.7-1.5-1.04-2.43-1.04H18.11C8.11,0,.01,8.1.01,18.1.01,51.32,0,121.66,0,154.87"
+          "c0,10,8.1,18.09,18.1,18.09l324.43.03c.92,0,1.73-.34,2.43-1.04.69-.69,1.05-1.5,1.05-2.42"
+          "-.48-20.08-4.38-36.93-11.73-50.6-7.35-13.67-16.87-24.47-28.56-32.43Z")
+_PROC2 = ("M305.70,86.51c11.69-7.96,21.21-18.78,28.56-32.43,7.35-13.67,11.25-30.54,11.73-50.61,"
+          "0-.92-.35-1.73-1.05-2.42-.69-.7-1.5-1.04-2.43-1.04H40.32c0,.99-.02,2.45-.02,3.37"
+          "-.48,20.07-4.38,36.95-11.74,50.63-7.36,13.66-16.88,24.49-28.57,32.45,11.69,7.96,21.22,18.77,28.57,32.45,"
+          "7.35,13.67,11.26,30.53,11.74,50.62,0,.92,0,3.45,0,3.45l302.21.03c.92,0,1.73-.34,2.43-1.04"
+          ".69-.69,1.05-1.5,1.05-2.42-.48-20.08-4.38-36.93-11.73-50.6-7.35-13.67-16.87-24.47-28.56-32.43Z")
+def _proc_mask(d, flip=False):
+    g = "<path fill='white' d='" + d + "'/>"
+    if flip:
+        g = "<g transform='translate(346,0) scale(-1,1)'>" + g + "</g>"
+    s = ("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 346 173' preserveAspectRatio='none'>" + g + "</svg>")
+    return "data:image/svg+xml," + urllib.parse.quote(s, safe="")
+_PM1, _PM2, _PM1F = _proc_mask(_PROC1), _proc_mask(_PROC2), _proc_mask(_PROC1, True)
+
 def process_css():
-    return (notch_css() + "/* ---- CM: process row ---- */"
+    return ("/* ---- CM: process row (drawn silhouettes, blue ramp) ---- */"
             ".cm-proc-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}"
-            ".cm-proc{color:var(--blue-deep);min-height:280px}"
-            ".cm-proc .cm-proc-in{height:100%;display:flex;flex-direction:column;padding:30px 52px}"
+            ".cm-proc{position:relative;min-height:300px}"
+            ".cm-proc-bg{position:absolute;inset:0;-webkit-mask:no-repeat center/100% 100%;mask:no-repeat center/100% 100%}"
+            ".cm-proc.m1 .cm-proc-bg{background:#BCEDFC}.cm-proc.m2 .cm-proc-bg{background:#9DE1FA}"
+            ".cm-proc.m3 .cm-proc-bg{background:#80D5F4}.cm-proc.m4 .cm-proc-bg{background:#63C6EC}"
+            ".cm-proc.m1 .cm-proc-bg{-webkit-mask-image:url(\"" + _PM1 + "\");mask-image:url(\"" + _PM1 + "\")}"
+            ".cm-proc.m2 .cm-proc-bg,.cm-proc.m3 .cm-proc-bg{-webkit-mask-image:url(\"" + _PM2 + "\");mask-image:url(\"" + _PM2 + "\")}"
+            ".cm-proc.m4 .cm-proc-bg{-webkit-mask-image:url(\"" + _PM1F + "\");mask-image:url(\"" + _PM1F + "\")}"
+            ".cm-proc-in{position:relative;z-index:1;height:100%;min-height:300px;display:flex;flex-direction:column;padding:30px}"
+            ".cm-proc.tl .cm-proc-in{padding-left:52px}.cm-proc.nr .cm-proc-in{padding-right:52px}"
             ".cm-proc-num{font:900 clamp(38px,3.6vw,54px)/1 Poppins,sans-serif;letter-spacing:-.02em;color:var(--blue-deep);margin-bottom:16px}"
             ".cm-proc-t{font:900 clamp(17px,1.5vw,21px)/1.05 Poppins,sans-serif;letter-spacing:-.01em;text-transform:uppercase;color:var(--blue-deep);margin:auto 0 8px}"
             ".cm-proc-meta{font:700 11px/1 Inter;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,53,71,.6);margin-bottom:12px}"
             ".cm-proc-b{font:500 clamp(13px,1vw,14.5px)/1.5 Inter;color:rgba(4,18,2,.72);margin:0}"
-            "@media(max-width:1000px){.cm-proc-row{grid-template-columns:1fr;gap:16px}.cm-proc .cm-proc-in{padding:30px 64px 30px 34px}}")
+            "@media(max-width:1000px){.cm-proc-row{grid-template-columns:1fr;gap:16px}"
+            ".cm-proc,.cm-proc-in{min-height:240px}.cm-proc-in{padding:34px 40px 34px 36px}.cm-proc-t{margin:26px 0 10px}"
+            ".cm-proc-bg{-webkit-mask:none;mask:none;border-radius:28px 8px 8px 28px}}")
 
 def process_row(steps):
-    """steps = list of (num, title, meta, body). Blue ramp, alternating notch sides."""
-    cols = ["#BCEDFC", "#9DE1FA", "#80D5F4", "#63C6EC"]
-    sides = ["r", "both", "both", "l"]
+    """steps = list of (num, title, meta, body). Blue ramp; drawn Card_Shape cuts."""
+    shapes = ["m1 nr", "m2 tl nr", "m3 tl nr", "m4 tl"]
     out = []
     for i, (num, title, meta, body) in enumerate(steps):
-        inner = (f'<div class="cm-proc-in"><div class="cm-proc-num">{_html.escape(num)}</div>'
-                 f'<h3 class="cm-proc-t">{_html.escape(title)}</h3>'
-                 f'<div class="cm-proc-meta">{meta}</div><p class="cm-proc-b">{body}</p></div>')
-        out.append(notch_card(inner=inner, side=sides[i % 4], bg=cols[i % 4], cls="cm-proc"))
+        out.append(
+            f'<article class="cm-proc {shapes[i % 4]}"><div class="cm-proc-bg"></div>'
+            f'<div class="cm-proc-in"><div class="cm-proc-num">{_html.escape(num)}</div>'
+            f'<h3 class="cm-proc-t">{_html.escape(title)}</h3>'
+            f'<div class="cm-proc-meta">{meta}</div><p class="cm-proc-b">{body}</p></div></article>')
     return '<div class="cm-proc-row">' + "".join(out) + '</div>'
 
 
@@ -1178,6 +1254,56 @@ def callout_section(eyebrow, title, body, cards, eyebrow_color="var(--pink-deep)
     return f'<section class="cm-callout"><div class="cm-callout-in"><div>{left}</div>{info_stack(cards)}</div></section>'
 
 
+# ===========================================================================
+# LAYOUT SYSTEM — page-level rules (spacing, grid, section sizes)
+# ===========================================================================
+# Components own their look; the PAGE owns its rhythm. These rules are what make
+# a page feel cohesive: one gutter, one max content width, sections that fill the
+# viewport and center their content. Emit layout_css() everywhere; on a real page
+# also emit page_css() and wrap the body in <div class="cm-page">.
+#
+# Tokens:
+#   --pad   clamp(24px,5vw,72px)   the single horizontal gutter (side margin)
+#   --maxw  1340px                 the single content max-width
+# Utilities:
+#   .cm-section    one section band — the gutter + standard vertical padding
+#   .cm-container  the centered, max-width content column (use inside a section)
+# Rules (guidelines that pair with the CSS):
+#   • Every content section fills the viewport (min-height:100vh) and centers.
+#   • One gutter (--pad) + one max-width (--maxw) across the whole page → aligned edges.
+#   • Display headings: 2 lines max — constrain width or use <br>.
+
+def layout_css():
+    """Layout tokens + the .cm-section / .cm-container utilities. Safe anywhere."""
+    return ("/* ---- CM: layout tokens + utilities ---- */"
+            ":root{--pad:clamp(24px,5vw,72px);--maxw:1340px}"
+            ".cm-section{padding:clamp(56px,9vh,96px) var(--pad)}"
+            ".cm-container{width:100%;max-width:var(--maxw);margin-inline:auto}"
+            ".cm-2line{overflow-wrap:break-word}")
+
+# The kit section-level classes + their inner containers (page rules target these).
+_SECT = ("cm-bhero", "cm-stmt", "cm-callout", "cm-faqs", "cm-pr", "cm-cta-band", "cm-section")
+_INNER = ("cm-bhero-bottom", "cm-stmt-in", "cm-callout-in", "cm-faqs-grid", "cm-pr-grid",
+          "cm-cta", "cm-section>.cm-container")
+
+def page_css():
+    """Page-shell rules. Emit on a real page and wrap the body in .cm-page:
+    every content section fills the viewport, centers, and shares one gutter +
+    max content width. (Nav / stat strip / footer are intentionally exempt.)"""
+    sect = ",".join(f".cm-page .{c}" for c in _SECT)
+    inner = ",".join((f".cm-page .{c}" if ">" not in c else f".cm-page .{c}") for c in _INNER)
+    return (
+        layout_css()
+        + sect + "{min-height:100vh;display:flex;align-items:center;padding-inline:var(--pad)}"
+        + inner + "{width:100%;max-width:var(--maxw);margin-inline:auto}"
+        # hero: column layout + clearance under the fixed nav
+        + ".cm-page .cm-bhero{flex-direction:column;justify-content:center;padding-inline:0;padding-top:clamp(94px,13vh,120px)}"
+        # exempt bands: full-bleed, natural height
+        + ".cm-page .cm-nav,.cm-page .cm-strip,.cm-page .cm-ft{min-height:0;display:block}"
+        + "@media(max-width:820px){" + sect + "{min-height:auto;padding-block:clamp(56px,12vw,88px)}}"
+    )
+
+
 if __name__ == "__main__":
     # tiny smoke test
     print(root_css()[:60], "...")
@@ -1185,6 +1311,9 @@ if __name__ == "__main__":
     print("button:", button("Request a quote")[:60], "...")
     print("info_card ok:", "cm-info" in info_card("<svg/>", "PRICING", "body"))
     print("callout ok:", "cm-callout" in callout_section("Eyebrow", "<b>T</b>", "body", [("<svg/>", "A", "b", "pink")]))
+    print("layout ok:", "--pad" in layout_css() and ".cm-page" in page_css())
+    print("nav actions:", "cm-nav-signin" in nav("x"))
+    print("process silhouette:", "cm-proc-bg" in process_row([("01", "Quote", "24h", "b")]))
     print("media_card ok:", "cm-media" in media_card("x", "T", "m"))
     print("service_card ok:", "cm-svc" in service_card("x", "T", "m", "L"))
     print("footer ok:", "cm-ft" in footer("x"))
