@@ -978,12 +978,21 @@ REGISTRY.extend([
      "notes": ["Swatch hexes are <b>real garment colorways</b> — content, not brand tokens (the one place literal hex is right).",
                "4:5 photo; four across on desktop, down to one on mobile."]},
     {"slug": "process-row", "name": "Process Row", "eyebrow": "ORGANISM", "color": "blue",
-     "blurb": "Four K-notch steps across — number, title, a meta tag, and body. The 'quote → ship' line.",
+     "blurb": "Four interlocking Card_Shape steps — number, title, a meta tag, and body. The 'quote → ship' line.",
      "builder": build_process,
-     "api": [("Emit CSS once, then render",
-              'cm.process_row([\n  ("01", "Quote", "24 hr reply", "Tell us what you want…"),\n  ("02", "Sample", "3–5 days", "We stitch a physical sample…"),\n])')],
-     "notes": ["Reuses the kit notch (blue ramp, alternating sides) — same cut as How It Works.",
-               "Adds a uppercase <b>meta</b> tag (lead time) above the body."]},
+     "api": [("Self-contained — emit CSS once, pass exactly 4 steps",
+              'style  = cm.process_css()          # includes all four silhouette masks\nhtml   = cm.process_row([\n  ("01", "Quote",      "24 hr reply", "Tell us what you want…"),\n  ("02", "Sample",     "3–5 days",    "We stitch a physical sample…"),\n  ("03", "Production",  "5–8 days",    "Your run is decorated in-house…"),\n  ("04", "Ship",        "Any address", "Bulk, split-ship, or fulfillment…"),\n])')],
+     "notes": [
+         "<b>The four cards are four DIFFERENT silhouettes, not one mirrored.</b> "
+         "01 = round-left + tooth-right; 02 &amp; 03 = notch-left + tooth-right; "
+         "04 = notch-left + round-right. Each right-hand tooth seats into the next card's left notch — that's the interlock.",
+         "<b>Built for exactly four steps</b> (the shape classes are <code>m1/m2/m3/m4</code> with <code>tl</code>/<code>nr</code> padding). "
+         "Pass four items; the helper assigns the shapes and the light→dark blue ramp automatically.",
+         "The art is the original 346×173 <code>Card_Shape</code> drawing (same as the brand pages), stretched with "
+         "<code>preserveAspectRatio=none</code> — so it matches Patagonia exactly at any card width.",
+         "<b>Self-contained:</b> <code>process_css()</code> carries every mask + the mobile fallback (single column, plain rounded-left). "
+         "Card height is <code>min-height:300px</code>; the row is a 4-up grid with an 8px gutter — drop it into a <code>.cm-container</code> on any page.",
+     ]},
     {"slug": "template-premium", "name": "Premium Brands Page", "eyebrow": "TEMPLATE", "color": "mint",
      "blurb": "The full brand landing (Patagonia) — hero, stat strip, statement, cards, process, FAQ, form, footer.",
      "builder": build_premium_template,

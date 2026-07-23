@@ -1174,13 +1174,17 @@ _PROC2 = ("M305.70,86.51c11.69-7.96,21.21-18.78,28.56-32.43,7.35-13.67,11.25-30.
           "-.48,20.07-4.38,36.95-11.74,50.63-7.36,13.66-16.88,24.49-28.57,32.45,11.69,7.96,21.22,18.77,28.57,32.45,"
           "7.35,13.67,11.26,30.53,11.74,50.62,0,.92,0,3.45,0,3.45l302.21.03c.92,0,1.73-.34,2.43-1.04"
           ".69-.69,1.05-1.5,1.05-2.42-.48-20.08-4.38-36.93-11.73-50.6-7.35-13.67-16.87-24.47-28.56-32.43Z")
-def _proc_mask(d, flip=False):
-    g = "<path fill='white' d='" + d + "'/>"
-    if flip:
-        g = "<g transform='translate(346,0) scale(-1,1)'>" + g + "</g>"
-    s = ("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 346 173' preserveAspectRatio='none'>" + g + "</svg>")
+# Card 4 is NOT card 1 mirrored: it needs a concave notch on the LEFT (to receive
+# card 3's tooth) + a rounded RIGHT. This is its own drawn silhouette.
+_PROC4 = ("M40.32,0.74c0,.99-.02,2.45-.02,3.37-.48,20.07-4.38,36.95-11.74,50.63-7.36,13.66-16.88,24.49-28.57,32.45,"
+          "11.69,7.96,21.22,18.77,28.57,32.45,7.35,13.67,11.26,30.53,11.74,50.62,0,.92,0,3.45,0,3.45"
+          "L327.9,173.71C337.9,172.96 346,164.87 346,154.87C346,121.66 345.99,51.32 345.99,18.1"
+          "C345.99,8.1 337.89,0 327.89,0L40.32,0.74Z")
+def _proc_mask(d):
+    s = ("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 346 173' preserveAspectRatio='none'>"
+         "<path fill='white' d='" + d + "'/></svg>")
     return "data:image/svg+xml," + urllib.parse.quote(s, safe="")
-_PM1, _PM2, _PM1F = _proc_mask(_PROC1), _proc_mask(_PROC2), _proc_mask(_PROC1, True)
+_PM1, _PM2, _PM4 = _proc_mask(_PROC1), _proc_mask(_PROC2), _proc_mask(_PROC4)
 
 def process_css():
     return ("/* ---- CM: process row (drawn silhouettes, blue ramp) ---- */"
@@ -1191,7 +1195,7 @@ def process_css():
             ".cm-proc.m3 .cm-proc-bg{background:#80D5F4}.cm-proc.m4 .cm-proc-bg{background:#63C6EC}"
             ".cm-proc.m1 .cm-proc-bg{-webkit-mask-image:url(\"" + _PM1 + "\");mask-image:url(\"" + _PM1 + "\")}"
             ".cm-proc.m2 .cm-proc-bg,.cm-proc.m3 .cm-proc-bg{-webkit-mask-image:url(\"" + _PM2 + "\");mask-image:url(\"" + _PM2 + "\")}"
-            ".cm-proc.m4 .cm-proc-bg{-webkit-mask-image:url(\"" + _PM1F + "\");mask-image:url(\"" + _PM1F + "\")}"
+            ".cm-proc.m4 .cm-proc-bg{-webkit-mask-image:url(\"" + _PM4 + "\");mask-image:url(\"" + _PM4 + "\")}"
             ".cm-proc-in{position:relative;z-index:1;height:100%;min-height:300px;display:flex;flex-direction:column;padding:30px}"
             ".cm-proc.tl .cm-proc-in{padding-left:52px}.cm-proc.nr .cm-proc-in{padding-right:52px}"
             ".cm-proc-num{font:900 clamp(38px,3.6vw,54px)/1 Poppins,sans-serif;letter-spacing:-.02em;color:var(--blue-deep);margin-bottom:16px}"
