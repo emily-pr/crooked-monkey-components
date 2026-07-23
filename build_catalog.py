@@ -32,6 +32,14 @@ MONKEY = open(_asset("monkey_inner.svg")).read()  # brand mark inner markup
 # Bright surface -> matching deep accent (design-system: deep accent = text on that bright).
 DEEP = {"yellow": "yellow-deep", "blue": "blue-deep", "pink": "pink-deep", "mint": "mint-deep"}
 
+# One color per atomic tier, so every card in a section reads as a set.
+# (TOKENS lives on its own collection page, so sharing pink with TEMPLATE never
+# collides — Atoms/Molecules/Organisms/Templates are all distinct on a page.)
+TIER_COLOR = {"TOKENS": "pink", "ATOM": "blue", "MOLECULE": "mint",
+              "ORGANISM": "yellow", "TEMPLATE": "pink"}
+def tier_color(eyebrow):
+    return TIER_COLOR.get(eyebrow, "blue")
+
 # ---------------------------------------------------------------------------
 # Page chrome (layout CSS lives in the build script; tokens+components in the kit)
 # ---------------------------------------------------------------------------
@@ -1114,7 +1122,7 @@ def entries_for(key):
 # Build
 # ---------------------------------------------------------------------------
 def component_card(e):
-    col, deep = e["color"], DEEP[e["color"]]
+    col = tier_color(e["eyebrow"]); deep = DEEP[col]
     return (f'<a class="card" href="{e["slug"]}.html" style="background:var(--{col})">'
             f'<span class="c-eyebrow" style="color:var(--{deep})">{esc(e["eyebrow"])}</span>'
             f'<span class="c-title">{esc(e["name"])}</span>'
@@ -1168,7 +1176,7 @@ def render_collection(key, label, blurb):
 
 def render_component(e):
     demo, css, js = e["builder"]()
-    col, deep = e["color"], DEEP[e["color"]]
+    col = tier_color(e["eyebrow"]); deep = DEEP[col]
     # section 2: how to call it
     api_html = ""
     for i, (lab, snippet) in enumerate(e["api"]):
