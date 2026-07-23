@@ -787,7 +787,9 @@ def badge(monkey_svg, size="140px", spin=True):
 # ---------------------------------------------------------------------------
 def ticker_css():
     return ("/* ---- CM: image ticker ---- */"
-            ".cm-ticker{position:relative;overflow:hidden;width:100%;padding:clamp(20px,4vh,40px) 0;"
+            # vertical padding MUST leave room for the tilted cards' drop-shadow, or
+            # overflow:hidden clips it (and the shorter gallery throws off hero centering).
+            ".cm-ticker{position:relative;overflow:hidden;width:100%;padding:clamp(40px,6vh,64px) 0;"
             "-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);"
             "mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}"
             ".cm-ticker-track{display:flex;gap:clamp(34px,4vw,72px);width:max-content;animation:cm-tick 46s linear infinite}"

@@ -942,6 +942,9 @@ REGISTRY.extend([
          "<code>&lt;br&gt;</code> so <b>both lines fit</b> the ~1100px measure (e.g. break Lululemon after “Apparel”, not after “Gifts”). "
          "A line that overflows becomes a third line and breaks the rhythm.",
          "The gallery is the shared Image Ticker (tilted cards, edge fade, pauses on hover); pass 3–4 images — it loops seamlessly.",
+         "<b>Don't shrink the gallery's vertical padding.</b> It's sized to clear the tilted cards' drop-shadow "
+         "(<code>clamp(40px,6vh,64px)</code>); reduce it and <code>overflow:hidden</code> clips the shadow, "
+         "the gallery gets shorter, and the viewport-centered hero drifts. This is what keeps two brand heroes identical.",
      ]},
     {"slug": "stat-strip", "name": "Stat Strip", "eyebrow": "MOLECULE", "color": "mint",
      "blurb": "Ink bar of quick facts — icon + label + value, evenly divided.",
