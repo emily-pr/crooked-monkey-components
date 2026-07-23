@@ -16,19 +16,32 @@ component. Open `index.html` in a browser — no server, no npm.
 
 ## What's in it
 
-- **Index / landing** — a bright card grid grouped by category (`TOKENS`,
-  `COMPONENT`, …), modelled on the brand's card-grid navigation. Each card links to a
-  component page.
+The catalog is organized by **atomic design** — the index groups everything into five
+tiers, smallest to largest:
+
+| Tier | Components |
+|---|---|
+| **Tokens** | Color · Typography · Spacing · Radius |
+| **Atoms** | K-Notch Card · Buttons · Premium Pill · Form Input · Eyebrow · Arrow Link · Monkey Badge |
+| **Molecules** | Section Heading · Media Card · Feature Card · Checklist · Pill Group · Level Card · Image Ticker · FAQ Accordion |
+| **Organisms** | Nav · Hero · Service Cards · Text + Pills · FAQ + Title · Form · Footer · Gallery · Four Levels · How It Works · Who We Make Merch For |
+| **Templates** | Landing Page (organisms composed into a real page) |
+
+- **Index / landing** — a bright card grid grouped by tier, modelled on the brand's
+  card-grid navigation. Each card links to a component page.
 - **Per-component page** — three things together:
   1. **Live demo** of every relevant variant (e.g. notch card `side="r"/"l"/"both"`
-     and both height modes).
+     and both height modes; service cards; the interactive Who tabs).
   2. **How to call it** — the exact `cm_kit` API snippet (the render helper + the
-     `*_css()` you emit once), with the underlying classes as a fallback.
+     `*_css()` you emit once, plus any `*_js()`), with underlying classes as a fallback.
   3. **When to use it / gotchas.**
+- **Template preview** — the Landing Page composes Nav + Hero + Services + Text + Pills
+  + FAQ + Form + Footer into a full page (`preview-landing.html`), shown inside an
+  isolating `<iframe>` so its styles never touch the catalog chrome.
 
-Seeded on day one with: **Tokens** (Color, Typography, Spacing, Radius), the
-**K-Notch Card**, **Buttons**, the **Premium Pill**, the **Form Input**, the
-**FAQ Accordion**, and the **Nav**.
+Everything is ported faithfully from the live home page, stays on-brand (brand tokens
+only, Poppins 900 + Inter), keeps ARIA roles + focus states, and honors
+`prefers-reduced-motion`.
 
 ## How it fits together
 
@@ -76,11 +89,15 @@ entry in the build — a new card **and** a new page appear automatically.
 3. **Rebuild:** `python3 build_catalog.py`. A `badge.html` page and a Badge card on the
    index appear automatically.
 
-**Descriptor fields:** `slug` (output filename + URL), `name`, `eyebrow`
-(`TOKENS` / `COMPONENT` / `PATTERN` — sets the index grouping), `color` (a bright:
-`yellow`/`blue`/`pink`/`mint` — the card surface + matching deep accent), `blurb`,
-`builder` (`() -> (demo_html, css, js)`), `api` (list of `(label, code)`), `notes`
-(list of HTML bullet strings).
+**Descriptor fields:** `slug` (output filename + URL), `name`, `eyebrow` — the atomic
+tier: `TOKENS` / `ATOM` / `MOLECULE` / `ORGANISM` / `TEMPLATE` (sets the index
+grouping), `color` (a bright: `yellow`/`blue`/`pink`/`mint` — the card surface +
+matching deep accent), `blurb`, `builder` (`() -> (demo_html, css, js)`), `api` (list
+of `(label, code)`), `notes` (list of HTML bullet strings).
+
+Interactive components also expose a `*_js()` from the kit — return it as the third
+item of your `builder` tuple and it's wired into the page automatically (see the FAQ,
+Nav, Form, and Who components).
 
 ## Brand rules (kept throughout)
 

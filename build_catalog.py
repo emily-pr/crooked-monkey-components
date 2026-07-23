@@ -22,10 +22,12 @@ def _asset(name):
 
 esc = html.escape
 
-# Cream logo, inlined as a data URI for the nav demo (keeps output self-contained).
+# Cream logo, inlined as a data URI for the nav/footer demos (keeps output self-contained).
 _logo_svg = open(_asset("cm_logo_cream.svg")).read()
-import urllib.parse
+import urllib.parse, json
 LOGO_URI = "data:image/svg+xml," + urllib.parse.quote(_logo_svg, safe="")
+IMG = json.load(open(_asset("imgs.json")))        # product photos as data URIs
+MONKEY = open(_asset("monkey_inner.svg")).read()  # brand mark inner markup
 
 # Bright surface -> matching deep accent (design-system: deep accent = text on that bright).
 DEEP = {"yellow": "yellow-deep", "blue": "blue-deep", "pink": "pink-deep", "mint": "mint-deep"}
@@ -71,12 +73,14 @@ img{display:block;max-width:100%}
 .p-head .lead{margin-top:18px;font:500 clamp(16px,1.3vw,19px)/1.55 Inter;color:rgba(4,18,2,.66)}
 .sect{padding-top:clamp(34px,4.5vw,54px);margin-top:clamp(34px,4.5vw,54px);border-top:1.5px solid rgba(4,18,2,.12)}
 .sect-lab{font-size:13px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(4,18,2,.5);margin-bottom:6px}
-.sect h2{font-family:Poppins,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;font-size:clamp(24px,2.6vw,34px);margin-bottom:24px;color:var(--ink)}
+.sect > h2{font-family:Poppins,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;font-size:clamp(24px,2.6vw,34px);margin-bottom:24px;color:var(--ink)}
 
 /* demo canvas */
 .demo{background:#fff;border:1.5px solid rgba(4,18,2,.14);border-radius:var(--r-card);padding:clamp(24px,3vw,40px);display:flex;flex-wrap:wrap;gap:clamp(18px,2vw,32px);align-items:flex-start}
-.demo.col{flex-direction:column}
+.demo.col{flex-direction:column;align-items:stretch}
 .demo.pad0{padding:0;overflow:hidden}
+.demo.bleed{padding:0;display:block;overflow:hidden;background:transparent}
+.demo-iframe{width:100%;height:660px;border:0;display:block;background:var(--cream)}
 .demo-item{display:flex;flex-direction:column;gap:10px}
 .demo-item .cap{font:700 11px/1 Inter;letter-spacing:.13em;text-transform:uppercase;color:rgba(4,18,2,.5)}
 
@@ -295,6 +299,168 @@ def build_nav():
     css = cm.nav_css() + ".demo-nav .cm-nav{position:static}"
     return demo, css, cm.nav_js()
 
+# ---- new atoms ----
+def build_eyebrow():
+    demo = ('<div class="demo">' + cm.eyebrow("COMPONENT")
+            + cm.eyebrow("TOKENS", color="var(--pink-deep)") + cm.eyebrow("New · 2026") + '</div>')
+    return demo, cm.eyebrow_css(), ""
+
+def build_arrow():
+    demo = ('<div class="demo">' + cm.arrow_link("Browse premium brands")
+            + cm.arrow_link("See all services", color="var(--blue-deep)") + '</div>')
+    return demo, cm.arrow_css(), ""
+
+def build_badge():
+    demo = ('<div class="demo">' + cm.badge(MONKEY, size="150px")
+            + cm.badge(MONKEY, size="96px", spin=False) + '</div>')
+    return demo, cm.badge_css(), ""
+
+# ---- new molecules ----
+def build_heading():
+    demo = ('<div class="demo col">' + cm.heading(
+        "Custom merch services<br>for every format", eyebrow="What we do",
+        sub="Six buyer-intent categories, each linking into a leaf service page with scope and minimums.") + '</div>')
+    return demo, cm.heading_css(), ""
+
+def build_media():
+    demo = ('<div class="demo">'
+            + cm.media_card(IMG["chief"], "Marketing & Brand Teams",
+                            "Campaign launches and client gifts that look retail-quality.",
+                            eyebrow="Buyer type", accent="var(--yellow)", link="Learn more")
+            + cm.media_card(IMG["sonoma"], "HR & People Teams",
+                            "Onboarding kits and culture swag people actually keep.",
+                            eyebrow="Buyer type", accent="var(--mint)")
+            + '</div>')
+    return demo, cm.media_css(), ""
+
+def build_feature():
+    demo = ('<div class="demo">'
+            + cm.feature_card("01", "Tell us what you need",
+                              "Quote in 30 minutes; we recommend blanks and a timeline.", side="r", bg="var(--blue)")
+            + cm.feature_card("02", "We design your art",
+                              "Mocks back in one business day. PMS-matched.", side="l", bg="var(--mint)")
+            + '</div>')
+    return demo, cm.feature_css(), ""
+
+def build_checklist():
+    demo = ('<div class="demo">' + cm.checklist(
+        ["Reply within 1 business hour", "Dedicated account rep", "No commitment to quote"]) + '</div>')
+    return demo, cm.check_css(), ""
+
+def build_pillgroup():
+    demo = ('<div class="demo">' + cm.pill_group(
+        ["Patagonia", "YETI", "Lululemon", "The North Face", "Stanley", "Cotopaxi"]) + '</div>')
+    return demo, cm.pill_css() + cm.pillgroup_css(), ""
+
+def build_level():
+    demo = ('<div class="demo bleed" style="padding:clamp(18px,3vw,32px);background:#fff">'
+            + cm.level_card("01 / 04", "Decorate", "Print, embroider, DTG on premium blanks",
+              "Screen printing, embroidery, DTG, sublimation, and laser etch — all in-house at every US studio.",
+              "Screen printing", IMG["chief"], color="blue") + '</div>')
+    return demo, cm.level_css(), ""
+
+# ---- new organisms ----
+def build_hero():
+    demo = ('<div class="demo bleed">' + cm.hero(
+        'CUSTOM MERCH &amp;<br><span class="cm-hero-hl">BRANDED SWAG</span><br>FOR COMPANIES AND TEAMS',
+        "Crooked Monkey is a full-service custom merch agency. In-house screen printing, embroidery and DTG; "
+        "design, kitting, fulfillment, and premium retail brands — shipped from studios across the US.") + '</div>')
+    return demo, cm.hero_css(), ""
+
+def build_services():
+    items = [
+        (IMG["chief"], "Fully Custom Branded Merch", "Unique pieces, built from scratch.", "Cut &amp; sew", "yellow"),
+        (IMG["hoodie"], "Swag Storage, Kitting &amp; Distribution", "Stored, kitted and shipped worldwide.", "Swag fulfillment", "blue"),
+        (IMG["duffel"], "Merch Design That Elevates Your Brand", "Your brand, on every detail.", "Design &amp; packaging", "pink"),
+        (IMG["sonoma"], "Custom Employee &amp; Client Swag Kits", "Curated unboxing, delivered.", "Custom swag kits", "mint"),
+    ]
+    demo = '<div class="demo col">' + cm.services_grid(items) + '</div>'
+    return demo, cm.service_css(), ""
+
+def build_premium():
+    demo = ('<div class="demo bleed">' + cm.premium_section(
+        'PREMIUM RETAIL<br>BRANDS YOU CAN<br><span class="acc">CO-BRAND</span>',
+        "We partner with a wide selection of premium retail brands so your merch feels bought, not made.",
+        ["Patagonia", "YETI", "Lululemon", "The North Face", "Under Armour", "Stanley",
+         "Hydro Flask", "Cotopaxi", "Carhartt", "Herschel"]) + '</div>')
+    return demo, cm.premium_css(), ""
+
+def build_faqsection():
+    items = [
+        ("What is the minimum order for custom merch?", "MOQs vary by item: apparel from 25 pieces, hard goods from 50, swag kits from 25 boxes."),
+        ("How fast can you produce custom merch?", "Standard production runs about two weeks after art approval; rush is 5 business days or less."),
+        ("Can you match my exact brand colors?", "Yes — we PMS-match colors and proof every decoration method."),
+        ("Do you ship internationally?", "Yes, we ship worldwide and can stage inventory regionally to cut transit time."),
+    ]
+    demo = ('<div class="demo bleed" style="padding:clamp(28px,4vw,52px);background:var(--cream)">'
+            + cm.faq_section('CUSTOM<br>MERCH <span class="pink">FAQ.</span>', items) + '</div>')
+    return demo, cm.faqsection_css(), cm.faq_js()
+
+def build_form():
+    demo = ('<div class="demo bleed" style="padding:clamp(20px,3vw,40px);background:var(--cream)">'
+            + cm.contact_form() + '</div>')
+    return demo, cm.form_css(), cm.form_js()
+
+def build_footer():
+    demo = '<div class="demo bleed">' + cm.footer(LOGO_URI) + '</div>'
+    return demo, cm.footer_css(), ""
+
+def build_ticker():
+    demo = ('<div class="demo bleed">' + cm.ticker(
+        [IMG["chief"], IMG["hoodie"], IMG["duffel"], IMG["sonoma"]]) + '</div>')
+    return demo, cm.ticker_css(), ""
+
+def build_gallery():
+    demo = ('<div class="demo bleed">' + cm.gallery(
+        ["Transforming", "Companies", "Into Brands"],
+        [IMG["chief"], IMG["hoodie"], IMG["duffel"], IMG["sonoma"], IMG["chief"], IMG["sonoma"]]) + '</div>')
+    return demo, cm.gallery_css(), ""
+
+def build_fourlevels():
+    levels = [
+        ("01 / 04", "Decorate", "Print, embroider, DTG on premium blanks",
+         "Screen printing, embroidery, DTG, sublimation, and laser etch — all in-house.", "Screen printing", IMG["chief"], "blue"),
+        ("02 / 04", "Co-Brand", "Your logo on Patagonia, YETI, Lululemon",
+         "Add your mark to the brands your team already wears.", "Browse premium brands", IMG["hoodie"], "yellow"),
+        ("03 / 04", "Dupe", "Recreate a retail favorite, your way",
+         "Your fabric, your fit, your finish — without the licensing.", "See custom dupes", IMG["sonoma"], "mint"),
+        ("04 / 04", "Cut &amp; Sew", "Designed from a flat pattern",
+         "Custom hats, hoodies, jackets, bags — built from scratch.", "Cut &amp; sew", IMG["duffel"], "pink"),
+    ]
+    demo = ('<div class="demo bleed" style="padding:clamp(18px,3vw,32px);background:#fff">'
+            + cm.four_levels('<span class="hl">Four</span> Levels Of Custom',
+              "Most agencies stop at level one. We go all the way to pattern-up cut & sew when the project deserves it.",
+              levels) + '</div>')
+    return demo, cm.level_css(), ""
+
+def build_hiw():
+    steps = [
+        ("01", "Tell us what you need", "Quote in 30 minutes; we recommend blanks, methods, and a realistic timeline."),
+        ("02", "We design or polish your art", "Mocks back in one business day. PMS-matched, retail-grade finishes."),
+        ("03", "We produce in-house at a US studio", "Screen print, embroidery, DTG, sublimation. Standard 2 weeks; rush 5 days."),
+        ("04", "We kit, store, and ship", "Drop-ship to homes, stage in our warehouses, or stand up a swag shop."),
+    ]
+    demo = ('<div class="demo bleed" style="padding:clamp(28px,4vw,52px);background:var(--cream)">'
+            + cm.how_it_works(steps, monkey_svg=MONKEY) + '</div>')
+    return demo, cm.hiw_css(), ""
+
+def build_who():
+    items = [
+        ("Marketing & Brand Teams", "var(--yellow)", IMG["chief"], "Campaign launches, conference giveaways, and client gifts that look retail-quality."),
+        ("Founders & Ops Leaders", "var(--blue)", IMG["duffel"], "Investor kits, all-hands swag, and milestone drops that punch above your headcount."),
+        ("HR & People Teams", "var(--mint)", IMG["sonoma"], "Onboarding kits, work anniversaries, and culture swag people actually keep."),
+        ("Agencies", "var(--pink)", IMG["hoodie"], "White-label production and client-ready merch you can put your own name on."),
+    ]
+    demo = ('<div class="demo bleed" style="padding:clamp(28px,4vw,52px);background:#fff">'
+            + cm.who_section(items) + '</div>')
+    return demo, cm.who_css(), cm.who_js()
+
+# ---- template ----
+def build_landing():
+    demo = ('<div class="demo bleed"><iframe class="demo-iframe" src="preview-landing.html" '
+            'title="Landing page template preview" loading="lazy"></iframe></div>')
+    return demo, "", ""
+
 # ---------------------------------------------------------------------------
 # REGISTRY — the single place to add a component. Each entry -> card + page.
 #   slug/name/eyebrow/color/blurb + a builder() -> (demo_html, css, js)
@@ -358,7 +524,7 @@ REGISTRY = [
         ],
     },
     {
-        "slug": "notch-card", "name": "K-Notch Card", "eyebrow": "COMPONENT", "color": "blue",
+        "slug": "notch-card", "name": "K-Notch Card", "eyebrow": "ATOM", "color": "blue",
         "blurb": "The signature K-cut card. A fixed-size SVG mask keeps the cut's proportion at any card height.",
         "builder": build_notch,
         "api": [
@@ -377,7 +543,7 @@ REGISTRY = [
         ],
     },
     {
-        "slug": "button", "name": "Buttons", "eyebrow": "COMPONENT", "color": "yellow",
+        "slug": "button", "name": "Buttons", "eyebrow": "ATOM", "color": "yellow",
         "blurb": "Primary (yellow CTA) and outline. Pill radius, uppercase, visible focus ring.",
         "builder": build_button,
         "api": [
@@ -391,7 +557,7 @@ REGISTRY = [
         ],
     },
     {
-        "slug": "pill", "name": "Premium Pill", "eyebrow": "COMPONENT", "color": "pink",
+        "slug": "pill", "name": "Premium Pill", "eyebrow": "ATOM", "color": "pink",
         "blurb": "The Premium-brand pill: Poppins 900, uppercase, with the brand 'crooked' hover.",
         "builder": build_pill,
         "api": [
@@ -404,7 +570,7 @@ REGISTRY = [
         ],
     },
     {
-        "slug": "input", "name": "Form Input", "eyebrow": "COMPONENT", "color": "mint",
+        "slug": "input", "name": "Form Input", "eyebrow": "ATOM", "color": "mint",
         "blurb": "A labelled field: uppercase label above, white fill, ink focus ring.",
         "builder": build_input,
         "api": [
@@ -417,7 +583,7 @@ REGISTRY = [
         ],
     },
     {
-        "slug": "faq", "name": "FAQ Accordion", "eyebrow": "COMPONENT", "color": "mint",
+        "slug": "faq", "name": "FAQ Accordion", "eyebrow": "MOLECULE", "color": "mint",
         "blurb": "Mint rows, ink titles, +/- indicator. One panel open at a time; height animates.",
         "builder": build_faq,
         "api": [
@@ -431,7 +597,7 @@ REGISTRY = [
         ],
     },
     {
-        "slug": "nav", "name": "Nav", "eyebrow": "COMPONENT", "color": "blue",
+        "slug": "nav", "name": "Nav", "eyebrow": "ORGANISM", "color": "blue",
         "blurb": "Ink bar, cream logo, Poppins links, Services / Premium-brand dropdowns, yellow CTA.",
         "builder": build_nav,
         "api": [
@@ -446,11 +612,172 @@ REGISTRY = [
     },
 ]
 
+REGISTRY.extend([
+    # ---- ATOMS ----
+    {"slug": "eyebrow", "name": "Eyebrow", "eyebrow": "ATOM", "color": "pink",
+     "blurb": "The small uppercase label that sits above titles and on cards.",
+     "builder": build_eyebrow,
+     "api": [("Emit CSS once, then render",
+              'cm.eyebrow("What we do")\ncm.eyebrow("TOKENS", color="var(--pink-deep)")')],
+     "notes": ["Inter 800, uppercase, <code>+0.16em</code> tracking — the Label type role.",
+               "Defaults to dim ink; pass a deep accent when it sits on a matching bright surface."]},
+    {"slug": "arrow-link", "name": "Arrow Link", "eyebrow": "ATOM", "color": "mint",
+     "blurb": "The underlined uppercase link with a nudging arrow, used across cards and sections.",
+     "builder": build_arrow,
+     "api": [("Emit CSS once, then render",
+              'cm.arrow_link("Browse premium brands")\ncm.arrow_link("See all services", color="var(--blue-deep)")')],
+     "notes": ["Arrow slides on hover; underline is the current text color.",
+               "Use the matching deep accent when placed on a bright surface."]},
+    {"slug": "badge", "name": "Monkey Badge", "eyebrow": "ATOM", "color": "yellow",
+     "blurb": "The Crooked Monkey emblem — the circular 'we are here for you, always' lockup.",
+     "builder": build_badge,
+     "api": [("Emit CSS once, then render (pass the SVG markup)",
+              'monkey = open("assets/monkey_inner.svg").read()\ncm.badge(monkey, size="140px")        # slow spin\ncm.badge(monkey, size="96px", spin=False)')],
+     "notes": ["Recolored to ink via <code>currentColor</code>; scales to any size.",
+               "Spins slowly by default; the animation is off under <code>prefers-reduced-motion</code>."]},
+
+    # ---- MOLECULES ----
+    {"slug": "section-heading", "name": "Section Heading", "eyebrow": "MOLECULE", "color": "blue",
+     "blurb": "Eyebrow + Poppins 900 title + intro — the standard section lead-in.",
+     "builder": build_heading,
+     "api": [("Emit CSS once, then render",
+              'cm.heading("Custom merch services",\n           eyebrow="What we do",\n           sub="Six buyer-intent categories…",\n           center=False)')],
+     "notes": ["Title accepts inline HTML (<code>&lt;br&gt;</code>, highlight spans).",
+               "Pass <code>center=True</code> for centered section intros."]},
+    {"slug": "media-card", "name": "Media Card", "eyebrow": "MOLECULE", "color": "yellow",
+     "blurb": "Image on top, bright caption below (eyebrow + title + meta + optional link).",
+     "builder": build_media,
+     "api": [("Emit CSS once, then render",
+              'cm.media_card(img_src, "Marketing & Brand Teams",\n    "Client gifts that look retail-quality.",\n    eyebrow="Buyer type", accent="var(--yellow)", link="Learn more")')],
+     "notes": ["The caption surface is a bright (<code>accent</code>); title + text stay ink.",
+               "3:2 photo, object-fit cover — pass any image; the card sizes to it."]},
+    {"slug": "feature-card", "name": "Feature Card", "eyebrow": "MOLECULE", "color": "blue",
+     "blurb": "A numbered step card built on the K-notch atom — number, title, body.",
+     "builder": build_feature,
+     "api": [("Emit CSS once, then render (composes the notch card)",
+              'cm.feature_card("01", "Tell us what you need",\n    "Quote in 30 minutes…", side="r", bg="var(--blue)")')],
+     "notes": ["Reuses <code>notch_card</code>, so it inherits the signature K-cut.",
+               "<code>side</code> in {r, l, both}; padding clears the cut on either side."]},
+    {"slug": "checklist", "name": "Checklist", "eyebrow": "MOLECULE", "color": "mint",
+     "blurb": "Reassurance list — ink check badges (yellow tick) beside short bold lines.",
+     "builder": build_checklist,
+     "api": [("Emit CSS once, then render",
+              'cm.checklist(["Reply within 1 business hour",\n              "Dedicated account rep",\n              "No commitment to quote"])')],
+     "notes": ["Check badge is ink with a yellow tick — on-brand, no green.",
+               "Keep lines short; they read as promises, not paragraphs."]},
+    {"slug": "pill-group", "name": "Pill Group", "eyebrow": "MOLECULE", "color": "pink",
+     "blurb": "A wrapping cluster of Premium pills — the reusable 'text + brands' unit.",
+     "builder": build_pillgroup,
+     "api": [("Emit pill + group CSS once, then render",
+              'cm.pill_group(["Patagonia", "YETI", "Lululemon"])\ncm.pill_group(["NEW", "SALE"], bg="var(--blue)")  # filled')],
+     "notes": ["Wraps responsively; each pill keeps the brand 'crooked' hover.",
+               "Used inside the Text + Pills organism."]},
+    {"slug": "level-card", "name": "Level Card", "eyebrow": "MOLECULE", "color": "blue",
+     "blurb": "The 'Four Levels' content card — K-silhouette background, image + copy.",
+     "builder": build_level,
+     "api": [("Emit CSS once, then render",
+              'cm.level_card("01 / 04", "Decorate",\n    "Print, embroider, DTG on premium blanks",\n    "Screen printing, embroidery, DTG…",\n    "Screen printing", img_src, color="blue")')],
+     "notes": ["The colored background is the full K silhouette (<code>preserveAspectRatio=none</code>).",
+               "Building block of the Four Levels organism."]},
+
+    # ---- ORGANISMS ----
+    {"slug": "hero", "name": "Hero", "eyebrow": "ORGANISM", "color": "blue",
+     "blurb": "Top-of-page headline (highlighted phrase), subtitle, and two CTAs.",
+     "builder": build_hero,
+     "api": [("Emit CSS once, then render",
+              'cm.hero(\'CUSTOM MERCH &amp;<br>\'\n        \'<span class="cm-hero-hl">BRANDED SWAG</span>\',\n        "Crooked Monkey is a full-service merch agency…",\n        primary="Start a project", secondary="See all services")')],
+     "notes": ["Title accepts HTML; wrap a phrase in <code>.cm-hero-hl</code> for the blue highlight.",
+               "On the live site the hero pins on scroll; the component itself is static — add the pin at the page level."]},
+    {"slug": "service-cards", "name": "Service Cards", "eyebrow": "ORGANISM", "color": "yellow",
+     "blurb": "The signature grid: photo + copy cards whose K-notch color panel slides on hover.",
+     "builder": build_services,
+     "api": [("Emit CSS once, then render a grid",
+              'cm.services_grid([\n  (img, "Fully Custom Branded Merch", "Built from scratch.", "Cut & sew", "yellow"),\n  (img, "Swag Fulfillment", "Shipped worldwide.", "Fulfillment", "blue"),\n])')],
+     "notes": ["Each card: photo (44%) + copy; the bright panel is a K-notch mask that slides on hover/focus.",
+               "<code>color</code> sets the surface; the matching deep accent colors the title + link.",
+               "Fully keyboard-focusable (<code>tabindex=0</code>, focus-visible triggers the same reveal)."]},
+    {"slug": "text-pills", "name": "Text + Pills", "eyebrow": "ORGANISM", "color": "pink",
+     "blurb": "Ink section: headline + intro on the left, a cluster of brand pills on the right.",
+     "builder": build_premium,
+     "api": [("Emit CSS once, then render",
+              'cm.premium_section(\n  \'PREMIUM RETAIL<br>BRANDS YOU CAN<br><span class="acc">CO-BRAND</span>\',\n  "We partner with premium retail brands…",\n  ["Patagonia", "YETI", "Lululemon", …])')],
+     "notes": ["Dark (ink) surface; cream pills tint to a brand bright + tilt on hover (reduced-motion safe).",
+               "Wrap the accent word in <code>.acc</code> for the yellow highlight."]},
+    {"slug": "faq-title", "name": "FAQ + Title", "eyebrow": "ORGANISM", "color": "mint",
+     "blurb": "The full FAQ section — display title on the left, the accordion on the right.",
+     "builder": build_faqsection,
+     "api": [("Emit CSS once, render, wire the JS once",
+              'style  = cm.faqsection_css()\nhtml   = cm.faq_section(\'CUSTOM<br>MERCH <span class="pink">FAQ.</span>\',\n    [("Minimum order?", "MOQs vary…"), …])\nscript = cm.faq_js()   # one open at a time')],
+     "notes": ["Composes the FAQ Accordion molecule under a Poppins 900 title.",
+               "Two-column on desktop, stacks on mobile; wrap the accent word in <code>.pink</code>."]},
+    {"slug": "form", "name": "Form (Contact)", "eyebrow": "ORGANISM", "color": "blue",
+     "blurb": "The 'Ready to start?' block — headline + checklist beside an accessible quote form.",
+     "builder": build_form,
+     "api": [("Emit CSS once, render, wire the JS once",
+              'style  = cm.form_css()\nhtml   = cm.contact_form()   # name/company/email/quantity/message\nscript = cm.form_js()        # prototype: no-op submit')],
+     "notes": ["Blue card on cream; every field has a label + visible ink focus ring.",
+               "The select uses a custom brand chevron; submit is a prototype no-op.",
+               "Pass <code>title_html</code>, <code>checks</code>, <code>quantities</code> to customize."]},
+    {"slug": "footer", "name": "Footer", "eyebrow": "ORGANISM", "color": "yellow",
+     "blurb": "Ink footer — brand lockup + description, link columns, and a legal bar.",
+     "builder": build_footer,
+     "api": [("Emit CSS once, then render with your logo",
+              'cm.footer(logo_src,\n    columns=[("Services", [...]), ("Locations", [...]), ("Resources", [...])],\n    email="hello@crookedmonkey.com")')],
+     "notes": ["Cream logo on ink; column headers in yellow; links dim-cream → cream on hover.",
+               "Columns collapse 4 → 2 → 1 across breakpoints."]},
+    {"slug": "ticker", "name": "Image Ticker", "eyebrow": "MOLECULE", "color": "mint",
+     "blurb": "An infinite marquee of tilted product photos with edge fade; pauses on hover.",
+     "builder": build_ticker,
+     "api": [("Emit CSS once, then render",
+              'cm.ticker([img1, img2, img3, img4])  # duplicated internally for a seamless loop')],
+     "notes": ["Pure CSS loop (<code>@keyframes</code>); the list is duplicated for the −50% seam.",
+               "Animation stops under <code>prefers-reduced-motion</code>."]},
+    {"slug": "gallery", "name": "Gallery", "eyebrow": "ORGANISM", "color": "pink",
+     "blurb": "Oversized background wordmark behind the image ticker, with a CTA.",
+     "builder": build_gallery,
+     "api": [("Emit CSS once, then render",
+              'cm.gallery(["Transforming", "Companies", "Into Brands"],\n           [img1, img2, img3, img4], cta="Start a project")')],
+     "notes": ["Composes the Image Ticker over a Display-XL Poppins wordmark.",
+               "Fully self-contained; images are the only content you pass."]},
+    {"slug": "four-levels", "name": "Four Levels", "eyebrow": "ORGANISM", "color": "blue",
+     "blurb": "The intro + four Level Cards — the 'we go all the way to cut & sew' sequence.",
+     "builder": build_fourlevels,
+     "api": [("Emit CSS once, then render",
+              'cm.four_levels(\'<span class="hl">Four</span> Levels Of Custom\',\n  "Most agencies stop at level one…",\n  [("01 / 04", "Decorate", "…", "…", "Screen printing", img, "blue"), …])')],
+     "notes": ["Composes the Level Card molecule; each card carries its own bright K-silhouette.",
+               "On the live site these pin and slide on scroll; here they stack statically."]},
+    {"slug": "how-it-works", "name": "How It Works", "eyebrow": "ORGANISM", "color": "blue",
+     "blurb": "Process line — a 2×2 of Feature Cards (blue ramp) under a title, with the spinning badge.",
+     "builder": build_hiw,
+     "api": [("Emit CSS once, then render",
+              'cm.how_it_works(\n  [("01", "Tell us what you need", "Quote in 30 minutes…"), …],\n  monkey_svg=monkey_markup)')],
+     "notes": ["Steps are Feature Cards with a light→dark blue ramp and alternating notch sides.",
+               "The Monkey Badge sits in the header; pass its SVG markup (optional)."]},
+    {"slug": "who", "name": "Who We Make Merch For", "eyebrow": "ORGANISM", "color": "mint",
+     "blurb": "Buyer-type selector — an accessible vertical tablist that cross-fades a media card.",
+     "builder": build_who,
+     "api": [("Emit CSS once, render, wire the JS once",
+              'style  = cm.who_css()\nhtml   = cm.who_section([\n    ("Marketing & Brand Teams", "var(--yellow)", img, "Campaign launches…"), …])\nscript = cm.who_js()   # click + arrow keys, cross-fade')],
+     "notes": ["Proper ARIA tabs: <code>role=tablist/tab/tabpanel</code>, roving <code>tabindex</code>, arrow-key + Home/End nav.",
+               "The panel cross-fades on change; fade is skipped under reduced motion.",
+               "Each tab carries its own accent, image, and copy via data-attributes."]},
+
+    # ---- TEMPLATE ----
+    {"slug": "template-landing", "name": "Landing Page", "eyebrow": "TEMPLATE", "color": "yellow",
+     "blurb": "A full page composed from the organisms — Nav, Hero, Services, Text + Pills, FAQ, Form, Footer.",
+     "builder": build_landing,
+     "api": [("Compose organisms into a page (excerpt — see preview-landing.html)",
+              'body = cm.nav(logo) + cm.hero(...) + cm.services_grid(...) \\\n     + cm.premium_section(...) + cm.faq_section(...) \\\n     + cm.contact_form() + cm.footer(logo)\nstyle = (cm.root_css() + cm.nav_css() + cm.hero_css() + cm.service_css()\n         + cm.premium_css() + cm.faqsection_css() + cm.form_css() + cm.footer_css())\nscript = cm.nav_js() + cm.faq_js() + cm.form_js()')],
+     "notes": ["Templates show how organisms compose into a real page — each is emitted once, CSS + JS concatenated.",
+               "Shown here in an isolating <code>&lt;iframe&gt;</code> so its styles never touch the catalog chrome.",
+               "This is the blueprint for building any new page from the kit."]},
+])
+
 # ---------------------------------------------------------------------------
 # Build
 # ---------------------------------------------------------------------------
 def render_index():
-    order = ["TOKENS", "COMPONENT", "PATTERN"]
+    order = ["TOKENS", "ATOM", "MOLECULE", "ORGANISM", "TEMPLATE"]
     groups = {}
     for e in REGISTRY:
         groups.setdefault(e["eyebrow"], []).append(e)
@@ -468,14 +795,17 @@ def render_index():
                 f'<span class="c-title">{esc(e["name"])}</span>'
                 f'<span class="c-blurb">{esc(e["blurb"])}</span>'
                 f'<span class="c-go" style="color:var(--{deep})">View <span class="ar">→</span></span></a>')
-        label = {"TOKENS": "Tokens", "COMPONENT": "Components", "PATTERN": "Patterns"}[cat]
+        label = {"TOKENS": "Tokens", "ATOM": "Atoms", "MOLECULE": "Molecules",
+                 "ORGANISM": "Organisms", "TEMPLATE": "Templates"}[cat]
         blocks.append(f'<div class="cat-group"><h2 class="h-display">{label}</h2>'
                       f'<div class="grid">{"".join(cards)}</div></div>')
     body = ('<div class="wrap"><div class="hero">'
             '<h1 class="h-display">Component<br>Library</h1>'
-            '<p class="lead">The Crooked Monkey design system, browsable. Every card is a live demo '
-            'plus the exact <code>cm_kit</code> call to reuse it on a new page. Built self-contained '
-            'from <code>cm_kit.py</code> — the only external dependency is Google Fonts.</p></div>'
+            '<p class="lead">The Crooked Monkey design system, browsable and organized by '
+            '<b>atomic design</b> — tokens build atoms, atoms combine into molecules, molecules into '
+            'organisms, and organisms compose into templates. Every card is a live demo plus the exact '
+            '<code>cm_kit</code> call to reuse it. Built self-contained from <code>cm_kit.py</code> — '
+            'the only external dependency is Google Fonts.</p></div>'
             + "".join(blocks) + '</div>')
     return page("Component Library", body)
 
@@ -501,14 +831,68 @@ def render_component(e):
             '</div>')
     return page(e["name"], body, extra_css=css, extra_js=js)
 
+def render_landing_preview():
+    """A full page composed purely from kit organisms — the Template demo, in its own file."""
+    body = (
+        cm.nav(LOGO_URI, links=["Products"],
+               services=["Custom Screen Printing", "Embroidery & DTG", "Cut & Sew Manufacturing"],
+               brands=["Patagonia", "YETI", "Lululemon", "The North Face"])
+        + cm.hero('CUSTOM MERCH &amp;<br><span class="cm-hero-hl">BRANDED SWAG</span><br>FOR COMPANIES AND TEAMS',
+                  "Crooked Monkey is a full-service custom merch agency. In-house screen printing, embroidery "
+                  "and DTG; design, kitting, fulfillment, and premium retail brands — shipped from studios across the US.")
+        + '<section style="background:#fff;padding:clamp(48px,7vw,96px) clamp(24px,5vw,64px)">'
+        + '<div style="max-width:1180px;margin:0 auto">'
+        + cm.heading("Custom merch services<br>for every format", eyebrow="What we do", center=True)
+        + '<div style="margin-top:clamp(32px,5vw,56px)"></div>'
+        + cm.services_grid([
+            (IMG["chief"], "Fully Custom Branded Merch", "Unique pieces, built from scratch.", "Cut &amp; sew", "yellow"),
+            (IMG["hoodie"], "Swag Storage, Kitting &amp; Distribution", "Stored, kitted and shipped worldwide.", "Swag fulfillment", "blue"),
+            (IMG["duffel"], "Merch Design That Elevates Your Brand", "Your brand, on every detail.", "Design &amp; packaging", "pink"),
+            (IMG["sonoma"], "Custom Employee &amp; Client Swag Kits", "Curated unboxing, delivered.", "Custom swag kits", "mint"),
+          ])
+        + '</div></section>'
+        + '<div style="background:var(--cream);padding:clamp(48px,7vw,90px) clamp(24px,5vw,64px)">'
+        + cm.premium_section('PREMIUM RETAIL<br>BRANDS YOU CAN<br><span class="acc">CO-BRAND</span>',
+                             "We partner with a wide selection of premium retail brands so your merch feels bought, not made.",
+                             ["Patagonia", "YETI", "Lululemon", "The North Face", "Under Armour", "Stanley", "Hydro Flask", "Cotopaxi"])
+        + '</div>'
+        + '<div style="background:var(--cream);padding:clamp(24px,4vw,64px) clamp(24px,5vw,64px)">'
+        + cm.faq_section('CUSTOM<br>MERCH <span class="pink">FAQ.</span>',
+            [("What is the minimum order for custom merch?", "MOQs vary by item: apparel from 25 pieces, hard goods from 50, swag kits from 25 boxes."),
+             ("How fast can you produce custom merch?", "Standard production runs about two weeks after art approval; rush is 5 business days or less."),
+             ("Can you match my exact brand colors?", "Yes — we PMS-match colors and proof every decoration method."),
+             ("Do you ship internationally?", "Yes, we ship worldwide and can stage inventory regionally.")])
+        + '</div>'
+        + '<div style="background:var(--cream);padding:clamp(24px,4vw,64px) clamp(24px,5vw,64px)">'
+        + cm.contact_form() + '</div>'
+        + cm.footer(LOGO_URI)
+    )
+    css = (cm.root_css() + cm.nav_css() + ".cm-nav{position:sticky;top:0;z-index:50}"
+           + cm.hero_css() + cm.heading_css() + cm.service_css() + cm.premium_css()
+           + cm.faqsection_css() + cm.form_css() + cm.footer_css())
+    js = cm.nav_js() + cm.faq_js() + cm.form_js()
+    return ("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
+            "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
+            "<title>Landing Page — Crooked Monkey (template preview)</title>"
+            "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">"
+            "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
+            "<link href=\"https://fonts.googleapis.com/css2?family=Poppins:wght@900&"
+            "family=Inter:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\">"
+            "<style>*{box-sizing:border-box;margin:0}body{background:var(--cream);"
+            "font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}img{display:block;max-width:100%}"
+            + css + "</style></head><body>" + body
+            + "<script>(function(){" + js + "})();</script></body></html>")
+
 def main():
     n = 0
     open(os.path.join(_HERE, "index.html"), "w").write(render_index())
     n += 1
+    open(os.path.join(_HERE, "preview-landing.html"), "w").write(render_landing_preview())
+    n += 1
     for e in REGISTRY:
         open(os.path.join(_HERE, e["slug"] + ".html"), "w").write(render_component(e))
         n += 1
-    print(f"written {n} pages: index.html + {len(REGISTRY)} components")
+    print(f"written {n} pages: index.html + preview-landing.html + {len(REGISTRY)} components")
 
 if __name__ == "__main__":
     main()
