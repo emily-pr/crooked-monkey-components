@@ -568,14 +568,22 @@ def build_product():
     return demo, cm.product_css(), ""
 
 def build_process():
-    steps = [
+    steps4 = [
         ("01", "Quote", "24 hr reply", "Tell us what you want. We come back with pricing, lead time, and honest recommendations."),
         ("02", "Sample", "3–5 days", "We stitch or print a physical sample. You sign off before a single blank is touched."),
         ("03", "Production", "5–8 days", "Your run is decorated in-house — embroidery, patches, whatever the brief calls for."),
         ("04", "Ship", "Any address", "Bulk, split-ship to employees, or into our fulfillment program. We handle it."),
     ]
+    steps3 = [
+        ("01", "Quote", "24 hr reply", "Tell us what you want. We come back with pricing, lead time, and honest recommendations."),
+        ("02", "Produce", "1–2 weeks", "We sample, you sign off, and your run is decorated in-house — embroidery, patches, whatever fits."),
+        ("03", "Ship", "Any address", "Bulk, split-ship to employees, or into our fulfillment program. We handle it."),
+    ]
+    _lab = 'font:700 11px/1 Inter;letter-spacing:.13em;text-transform:uppercase;color:rgba(4,18,2,.5)'
     demo = ('<div class="demo bleed" style="background:#fff;padding:clamp(28px,4vw,52px)">'
-            + cm.process_row(steps) + '</div>')
+            f'<div style="{_lab};margin-bottom:14px">Four steps</div>' + cm.process_row(steps4)
+            + f'<div style="{_lab};margin:30px 0 14px">Three steps (same component — pass 3)</div>' + cm.process_row(steps3)
+            + '</div>')
     return demo, cm.process_css(), ""
 
 def build_premium_template():
@@ -1022,18 +1030,18 @@ REGISTRY.extend([
     {"slug": "process-row", "name": "Process Row", "eyebrow": "ORGANISM", "color": "blue",
      "blurb": "Four interlocking Card_Shape steps — number, title, a meta tag, and body. The 'quote → ship' line.",
      "builder": build_process,
-     "api": [("Self-contained — emit CSS once, pass exactly 4 steps",
-              'style  = cm.process_css()          # includes all four silhouette masks\nhtml   = cm.process_row([\n  ("01", "Quote",      "24 hr reply", "Tell us what you want…"),\n  ("02", "Sample",     "3–5 days",    "We stitch a physical sample…"),\n  ("03", "Production",  "5–8 days",    "Your run is decorated in-house…"),\n  ("04", "Ship",        "Any address", "Bulk, split-ship, or fulfillment…"),\n])')],
+     "api": [("Same component — pass 3 or 4 steps (no separate version needed)",
+              'cm.process_row([   # 4 steps\n  ("01", "Quote",      "24 hr reply", "…"),\n  ("02", "Sample",     "3–5 days",    "…"),\n  ("03", "Production",  "5–8 days",    "…"),\n  ("04", "Ship",        "Any address", "…"),\n])\n\ncm.process_row([   # 3 steps — first still rounds left, last rounds right\n  ("01", "Quote",   "24 hr reply", "…"),\n  ("02", "Produce", "1–2 weeks",   "…"),\n  ("03", "Ship",    "Any address", "…"),\n])')],
      "notes": [
-         "<b>The four cards are four DIFFERENT silhouettes, not one mirrored.</b> "
-         "01 = round-left + tooth-right; 02 &amp; 03 = notch-left + tooth-right; "
-         "04 = notch-left + round-right. Each right-hand tooth seats into the next card's left notch — that's the interlock.",
-         "<b>Built for exactly four steps</b> (the shape classes are <code>m1/m2/m3/m4</code> with <code>tl</code>/<code>nr</code> padding). "
-         "Pass four items; the helper assigns the shapes and the light→dark blue ramp automatically.",
-         "The art is the original 346×173 <code>Card_Shape</code> drawing (same as the brand pages), stretched with "
-         "<code>preserveAspectRatio=none</code> — so it matches Patagonia exactly at any card width.",
-         "<b>Self-contained:</b> <code>process_css()</code> carries every mask + the mobile fallback (single column, plain rounded-left). "
-         "Card height is <code>min-height:300px</code>; the row is a 4-up grid with an 8px gutter — drop it into a <code>.cm-container</code> on any page.",
+         "<b>Count-adaptive (2–4 steps).</b> Cards get a <b>role</b>, not a fixed index: first = round-left + tooth-right, "
+         "middle = notch-left + tooth-right, last = notch-left + round-right. So the row <b>always closes</b> — pass 3 and "
+         "it seals on the right, no editing needed. The blue ramp scales to the count (the 4-step ramp is unchanged).",
+         "<b>The silhouettes are distinct, not mirrored</b> — each right-hand tooth seats into the next card's left notch; "
+         "that's the interlock. The art is the original 346×173 <code>Card_Shape</code> drawing (same as the brand pages), "
+         "stretched with <code>preserveAspectRatio=none</code>, so it matches Patagonia at any card width.",
+         "<b>Self-contained:</b> <code>process_css()</code> carries every mask + the mobile fallback (single column, rounded-left). "
+         "Card height is <code>min-height:300px</code>; the grid column count follows <code>--n</code>. Drop it into a <code>.cm-container</code> on any page.",
+         "<b>Variants are inputs, not copies.</b> Need a 3-step version? Call the same <code>process-row</code> with 3 steps — one handle, one component.",
      ]},
     {"slug": "template-premium", "name": "Premium Brands Page", "eyebrow": "TEMPLATE", "color": "mint",
      "blurb": "The full brand landing (Patagonia) — hero, stat strip, statement, cards, process, FAQ, form, footer.",

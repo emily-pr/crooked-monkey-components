@@ -1191,15 +1191,17 @@ def _proc_mask(d):
 _PM1, _PM2, _PM4 = _proc_mask(_PROC1), _proc_mask(_PROC2), _proc_mask(_PROC4)
 
 def process_css():
-    return ("/* ---- CM: process row (drawn silhouettes, blue ramp) ---- */"
-            ".cm-proc-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}"
+    # Cards are assigned a ROLE (not a fixed index), so the row closes at any
+    # count: .pf = first (round-left + tooth-right), .pm = middle (notch-left +
+    # tooth-right), .pl = last (notch-left + round-right), .po = only (rounded).
+    return ("/* ---- CM: process row (drawn silhouettes, blue ramp; 2–4 steps) ---- */"
+            ".cm-proc-row{display:grid;grid-template-columns:repeat(var(--n,4),1fr);gap:8px}"
             ".cm-proc{position:relative;min-height:300px}"
-            ".cm-proc-bg{position:absolute;inset:0;-webkit-mask:no-repeat center/100% 100%;mask:no-repeat center/100% 100%}"
-            ".cm-proc.m1 .cm-proc-bg{background:#BCEDFC}.cm-proc.m2 .cm-proc-bg{background:#9DE1FA}"
-            ".cm-proc.m3 .cm-proc-bg{background:#80D5F4}.cm-proc.m4 .cm-proc-bg{background:#63C6EC}"
-            ".cm-proc.m1 .cm-proc-bg{-webkit-mask-image:url(\"" + _PM1 + "\");mask-image:url(\"" + _PM1 + "\")}"
-            ".cm-proc.m2 .cm-proc-bg,.cm-proc.m3 .cm-proc-bg{-webkit-mask-image:url(\"" + _PM2 + "\");mask-image:url(\"" + _PM2 + "\")}"
-            ".cm-proc.m4 .cm-proc-bg{-webkit-mask-image:url(\"" + _PM4 + "\");mask-image:url(\"" + _PM4 + "\")}"
+            ".cm-proc-bg{position:absolute;inset:0;background:var(--c,#9DE1FA);-webkit-mask:no-repeat center/100% 100%;mask:no-repeat center/100% 100%}"
+            ".cm-proc.pf .cm-proc-bg{-webkit-mask-image:url(\"" + _PM1 + "\");mask-image:url(\"" + _PM1 + "\")}"
+            ".cm-proc.pm .cm-proc-bg{-webkit-mask-image:url(\"" + _PM2 + "\");mask-image:url(\"" + _PM2 + "\")}"
+            ".cm-proc.pl .cm-proc-bg{-webkit-mask-image:url(\"" + _PM4 + "\");mask-image:url(\"" + _PM4 + "\")}"
+            ".cm-proc.po .cm-proc-bg{-webkit-mask:none;mask:none;border-radius:28px 8px 8px 28px}"
             ".cm-proc-in{position:relative;z-index:1;height:100%;min-height:300px;display:flex;flex-direction:column;padding:30px}"
             ".cm-proc.tl .cm-proc-in{padding-left:52px}.cm-proc.nr .cm-proc-in{padding-right:52px}"
             ".cm-proc-num{font:900 clamp(38px,3.6vw,54px)/1 Poppins,sans-serif;letter-spacing:-.02em;color:var(--blue-deep);margin-bottom:16px}"
@@ -1210,17 +1212,39 @@ def process_css():
             ".cm-proc,.cm-proc-in{min-height:240px}.cm-proc-in{padding:34px 40px 34px 36px}.cm-proc-t{margin:26px 0 10px}"
             ".cm-proc-bg{-webkit-mask:none;mask:none;border-radius:28px 8px 8px 28px}}")
 
+_PROC_RAMP4 = ["#BCEDFC", "#9DE1FA", "#80D5F4", "#63C6EC"]  # canonical 4-step ramp
+def _blue_ramp(n):
+    """n blue shades, light → dark. Keeps the exact 4-step ramp; interpolates otherwise."""
+    if n <= 1:
+        return [_PROC_RAMP4[0]]
+    if n == 4:
+        return list(_PROC_RAMP4)
+    a, b = (0xBC, 0xED, 0xFC), (0x63, 0xC6, 0xEC)
+    return ["#%02X%02X%02X" % tuple(round(a[k] + (b[k] - a[k]) * (i / (n - 1))) for k in range(3))
+            for i in range(n)]
+
 def process_row(steps):
-    """steps = list of (num, title, meta, body). Blue ramp; drawn Card_Shape cuts."""
-    shapes = ["m1 nr", "m2 tl nr", "m3 tl nr", "m4 tl"]
+    """steps = list of (num, title, meta, body). Works for 2–4 steps: the first
+    card always rounds on the left and the last rounds on the right, so the row
+    closes cleanly whether you pass 3 or 4. Blue ramp scales to the count."""
+    n = len(steps)
+    ramp = _blue_ramp(n)
     out = []
     for i, (num, title, meta, body) in enumerate(steps):
+        if n == 1:
+            cls = "po"
+        elif i == 0:
+            cls = "pf nr"
+        elif i == n - 1:
+            cls = "pl tl"
+        else:
+            cls = "pm tl nr"
         out.append(
-            f'<article class="cm-proc {shapes[i % 4]}"><div class="cm-proc-bg"></div>'
+            f'<article class="cm-proc {cls}" style="--c:{ramp[i]}"><div class="cm-proc-bg"></div>'
             f'<div class="cm-proc-in"><div class="cm-proc-num">{_html.escape(num)}</div>'
             f'<h3 class="cm-proc-t">{_html.escape(title)}</h3>'
             f'<div class="cm-proc-meta">{meta}</div><p class="cm-proc-b">{body}</p></div></article>')
-    return '<div class="cm-proc-row">' + "".join(out) + '</div>'
+    return f'<div class="cm-proc-row" style="--n:{n}">' + "".join(out) + '</div>'
 
 
 # ---- Info card (icon chip + eyebrow + body) — molecule ----
