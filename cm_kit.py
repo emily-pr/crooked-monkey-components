@@ -161,7 +161,8 @@ def notch_card(inner="", side="r", bg="var(--blue)", cls="", style=""):
 # Button — primary (CTA) + outline
 # ---------------------------------------------------------------------------
 def button_css():
-    """CSS for .cm-btn (+ --primary / --outline). Emit once."""
+    """CSS for .cm-btn (+ --primary / --mint / --outline). Emit once.
+    primary = yellow CTA · mint = green section CTA · outline = linear/ghost."""
     return (
         "/* ---- CM: button ---- */"
         ".cm-btn{display:inline-flex;align-items:center;justify-content:center;"
@@ -172,15 +173,18 @@ def button_css():
         "transition:transform .2s ease,background .2s ease,color .2s ease}"
         ".cm-btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}"
         ".cm-btn--primary{background:var(--cta);color:var(--ink);border-color:transparent}"
+        ".cm-btn--mint{background:var(--mint);color:var(--ink);border-color:transparent}"
         ".cm-btn--outline{background:transparent;color:var(--ink)}"
         ".cm-btn--outline:hover{background:var(--ink);color:var(--cream)}"
         "@media (prefers-reduced-motion:no-preference){"
-        ".cm-btn--primary:hover{transform:translateY(-2px)}}"
+        ".cm-btn--primary:hover,.cm-btn--mint:hover{transform:translateY(-2px)}}"
     )
 
+_BTN_VARIANT = {"primary": "cm-btn--primary", "mint": "cm-btn--mint", "outline": "cm-btn--outline"}
+
 def button(label, variant="primary", href="#", cls="", style=""):
-    """Render a button link. variant in {'primary','outline'}."""
-    v = "cm-btn--outline" if variant == "outline" else "cm-btn--primary"
+    """Render a button link. variant in {'primary' (yellow), 'mint' (green), 'outline' (linear)}."""
+    v = _BTN_VARIANT.get(variant, "cm-btn--primary")
     return f'<a class="cm-btn {v} {cls}" href="{href}" style="{style}">{_html.escape(label)}</a>'
 
 # ---------------------------------------------------------------------------

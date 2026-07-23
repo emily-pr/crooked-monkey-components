@@ -290,7 +290,9 @@ def build_notch():
     return demo, css, ""
 
 def build_button():
-    demo = ('<div class="demo">' + cm.button("Request a quote", variant="primary")
+    demo = ('<div class="demo">'
+            + cm.button("Request a quote", variant="primary")
+            + cm.button("Start a project", variant="mint")
             + cm.button("See all services", variant="outline") + '</div>')
     return demo, cm.button_css(), ""
 
@@ -734,16 +736,17 @@ REGISTRY = [
     },
     {
         "slug": "button", "name": "Buttons", "eyebrow": "ATOM", "color": "yellow",
-        "blurb": "Primary (yellow CTA) and outline. Pill radius, uppercase, visible focus ring.",
+        "blurb": "Three variants — primary (yellow CTA), mint (green section CTA), and outline (linear). Pill, uppercase, focus ring.",
         "builder": build_button,
         "api": [
-            ("Emit the CSS once, then render",
-             "import cm_kit as cm\nstyle = \"<style>\" + cm.root_css() + cm.button_css() + \"</style>\"\n\ncm.button(\"Request a quote\")                    # primary (CTA)\ncm.button(\"See all services\", variant=\"outline\") # outline\n\n# classes:  .cm-btn.cm-btn--primary | .cm-btn.cm-btn--outline"),
+            ("Emit the CSS once, then render — variant picks the style",
+             "import cm_kit as cm\nstyle = \"<style>\" + cm.root_css() + cm.button_css() + \"</style>\"\n\ncm.button(\"Request a quote\")                     # primary — yellow\ncm.button(\"Start a project\",  variant=\"mint\")    # mint — green\ncm.button(\"See all services\", variant=\"outline\") # outline — linear\n\n# classes: .cm-btn--primary | .cm-btn--mint | .cm-btn--outline"),
         ],
         "notes": [
-            "<b>Primary</b> fills <code>--cta</code> (yellow) with ink text; hover lifts slightly.",
-            "<b>Outline</b> is a 1.5px ink border; hover fills ink, text turns cream.",
-            "Both show a visible ink focus ring and honor <code>prefers-reduced-motion</code>.",
+            "<b>Primary</b> — yellow (<code>--cta</code>) with ink text. The top-level CTA; same color as the nav's yellow pill (which is part of the Nav component).",
+            "<b>Mint</b> — green fill with ink text. The in-section CTA (e.g. \"Start a project\"); this is the button the brand-page hero uses.",
+            "<b>Outline</b> — the \"linear\" button: transparent with a 1.5px ink border; hover fills ink, text turns cream. Use as the secondary action next to a filled button.",
+            "All share pill radius, uppercase label, a visible ink focus ring, and honor <code>prefers-reduced-motion</code>. Same component on every page — pick the variant per action.",
         ],
     },
     {
