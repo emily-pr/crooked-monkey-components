@@ -1340,11 +1340,51 @@ def page_css():
     )
 
 
+# ===========================================================================
+# MOTION SYSTEM — one scroll-reveal primitive, opt-in per element.
+# ===========================================================================
+# Components stay motion-agnostic; a page opts in by (1) emitting motion_css()
+# + motion_js() once and (2) adding class="reveal" to anything that should fade
+# up on scroll. Stagger a group by setting style="--i:0", "--i:1", … Honors
+# prefers-reduced-motion, and a <noscript> fallback keeps content visible if JS
+# is off. This is the reusable version of the home page's reveal system.
+
+def motion_css():
+    """The .reveal scroll-reveal primitive. Emit once. (add motion_noscript() too.)"""
+    return ("/* ---- CM: motion (scroll-reveal) ---- */"
+            ".reveal{opacity:0;transform:translateY(30px);"
+            "transition:opacity .8s ease,transform .8s cubic-bezier(.2,.75,.2,1);"
+            "transition-delay:calc(var(--i,0)*80ms)}"
+            ".reveal.in{opacity:1;transform:none}"
+            ".reveal.flow{transform:translateX(-34px)}.reveal.flow.in{transform:none}"
+            "@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}")
+
+def motion_js():
+    """One IntersectionObserver that adds .in as elements enter (staggered via --i)."""
+    return ("/* CM motion: reveal-on-scroll; respects reduced motion + missing IO. */"
+            "var _rm=matchMedia('(prefers-reduced-motion:reduce)').matches;"
+            "var _rv=[].slice.call(document.querySelectorAll('.reveal'));"
+            "if(_rm||!('IntersectionObserver' in window)){_rv.forEach(function(e){e.classList.add('in');});}"
+            "else{var _io=new IntersectionObserver(function(es){es.forEach(function(e){"
+            "if(e.isIntersecting){e.target.classList.add('in');_io.unobserve(e.target);}});},"
+            "{threshold:.16,rootMargin:'0px 0px -8% 0px'});_rv.forEach(function(e){_io.observe(e);});}")
+
+def motion_noscript():
+    """Fallback so .reveal content is visible when JS is disabled. Put in <head>."""
+    return "<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>"
+
+def reveal(inner, i=0, flow=False):
+    """Wrap markup so it fades up on scroll. i = stagger index; flow = slide in from left."""
+    cls = "reveal flow" if flow else "reveal"
+    return f'<div class="{cls}" style="--i:{i}">{inner}</div>'
+
+
 if __name__ == "__main__":
     # tiny smoke test
     print(root_css()[:60], "...")
     print("notch_css length:", len(notch_css()))
     print("button:", button("Request a quote")[:60], "...")
+    print("motion ok:", ".reveal" in motion_css() and "IntersectionObserver" in motion_js())
     print("info_card ok:", "cm-info" in info_card("<svg/>", "PRICING", "body"))
     print("callout ok:", "cm-callout" in callout_section("Eyebrow", "<b>T</b>", "body", [("<svg/>", "A", "b", "pink")]))
     print("layout ok:", "--pad" in layout_css() and ".cm-page" in page_css())

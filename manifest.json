@@ -489,6 +489,17 @@
       "url": "layout.html"
     },
     {
+      "handle": "motion",
+      "name": "Motion",
+      "tier": "Tokens",
+      "color": "pink",
+      "pages": [
+        "tokens"
+      ],
+      "call": "cm.motion_js(…)",
+      "url": "motion.html"
+    },
+    {
       "handle": "template-lululemon",
       "name": "Custom Lululemon Page",
       "tier": "Template",

@@ -128,6 +128,24 @@ style = cm.root_css() + cm.layout_css() + cm.page_css() + <component css…>
 
 `render_lululemon_preview()` in `build_catalog.py` is the reference implementation.
 
+## Motion (scroll-reveal)
+
+Motion is a **primitive, opt-in per element** — components stay motion-agnostic (see
+the catalog's **Tokens → Motion** page). A page turns it on with three calls and a class:
+
+```python
+style  = cm.motion_css()      # the .reveal primitive (fade-up, staggered via --i)
+script = cm.motion_js()       # one IntersectionObserver adds .in on entry
+# in <head>: cm.motion_noscript()   # <noscript> fallback so content is never hidden
+```
+```html
+<div class="reveal" style="--i:0"> … </div>   <!-- or cm.reveal(html, i=0) -->
+```
+
+The brand-page template reveals every section automatically, the catalog reveals its
+card groups, and everything honors `prefers-reduced-motion`. Heavier scroll
+choreography (hero pin, parallax) stays page-level and opt-in — it's bespoke per layout.
+
 ## How it fits together
 
 | File | Role |

@@ -184,9 +184,10 @@ def page(title, body, extra_css="", extra_js=""):
             "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
             "<link href=\"https://fonts.googleapis.com/css2?family=Poppins:wght@900&"
             "family=Inter:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\">"
-            "<style>" + cm.root_css() + BASE_CSS + extra_css + "</style></head><body>"
+            + cm.motion_noscript()
+            + "<style>" + cm.root_css() + cm.motion_css() + BASE_CSS + extra_css + "</style></head><body>"
             + topbar() + body
-            + "<script>(function(){" + COPY_JS + extra_js + "})();</script>"
+            + "<script>(function(){" + cm.motion_js() + COPY_JS + extra_js + "})();</script>"
             "</body></html>")
 
 def code(snippet, lang_lab="python"):
@@ -653,6 +654,25 @@ def build_layout():
             '<div class="lay-demo">' + bands + '</div></div>')
     return demo, css, ""
 
+def build_motion():
+    # motion_css()/motion_js() are already in the page shell, so the .reveal
+    # boxes below animate in on load (reload to replay).
+    css = ("/* motion demo */"
+           ".mo-tok{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}"
+           ".mo-tok code{background:rgba(4,18,2,.06);border-radius:8px;padding:9px 13px;font:600 13px/1 ui-monospace,SFMono-Regular,Menlo,monospace}"
+           ".mo-row{display:flex;gap:16px;flex-wrap:wrap}"
+           ".mo-box{width:150px;height:120px;border-radius:var(--r-card);display:flex;align-items:center;justify-content:center;"
+           "text-align:center;font:800 12px/1.3 Inter;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}")
+    swatches = [("yellow", "Fade&nbsp;up"), ("blue", "+80ms"), ("mint", "+160ms"), ("pink", "+240ms")]
+    boxes = "".join(f'<div class="mo-box reveal" style="--i:{i};background:var(--{c})">{n}</div>'
+                    for i, (c, n) in enumerate(swatches))
+    demo = ('<div class="demo col">'
+            '<div class="mo-tok"><code>.reveal</code><code>--i: stagger</code><code>0.8s · cubic-bezier(.2,.75,.2,1)</code></div>'
+            '<div style="font:700 11px/1 Inter;letter-spacing:.13em;text-transform:uppercase;color:rgba(4,18,2,.5);margin-bottom:14px">'
+            'Reload the page to replay — each block fades up, staggered by --i</div>'
+            '<div class="mo-row">' + boxes + '</div></div>')
+    return demo, css, ""
+
 # ---------------------------------------------------------------------------
 # REGISTRY — the single place to add a component. Each entry -> card + page.
 #   slug/name/eyebrow/color/blurb + a builder() -> (demo_html, css, js)
@@ -1086,6 +1106,16 @@ REGISTRY.extend([
          "<b>Display headings: 2 lines max.</b> Keep hero/section titles tight or use <code>&lt;br&gt;</code>; never let one wrap to three.",
          "<b>Spacing scale is 4-based</b> (4·8·12·16·20·24·32·40·56·64·72·96·120); section rhythm lives at the big end via the section padding token.",
          "This is the layer that makes the two brand pages (Patagonia, Lululemon) read as one system — build every new page on it."]},
+    {"slug": "motion", "name": "Motion", "eyebrow": "TOKENS", "color": "pink",
+     "blurb": "The scroll-reveal system — fade-up on entry, staggered, reduced-motion aware. Opt in with class=\"reveal\".",
+     "builder": build_motion,
+     "api": [("Emit once, then mark anything reveal",
+              'style  = cm.motion_css()          # the .reveal primitive\nscript = cm.motion_js()          # one observer adds .in on entry\n# in <head>: cm.motion_noscript()  # stays visible if JS is off\n\n# then, on any element:\n<div class="reveal" style="--i:0">…</div>\n<div class="reveal" style="--i:1">…</div>   # stagger a group\n\ncm.reveal(html, i=2)               # helper that wraps for you')],
+     "notes": [
+         "<b>Fade + rise, 0.8s, brand easing</b> (<code>cubic-bezier(.2,.75,.2,1)</code>); stagger a group with <code>--i:0,1,2…</code> (×80ms).",
+         "<b>Opt-in, one observer.</b> Components stay motion-agnostic — a page turns motion on by emitting <code>motion_css()</code> + <code>motion_js()</code> and marking elements <code>.reveal</code>. The brand-page template does this for every section automatically, and the catalog reveals its card groups.",
+         "<b>Accessible + robust:</b> honors <code>prefers-reduced-motion</code> (shows instantly) and ships a <code>&lt;noscript&gt;</code> fallback so content is never stuck hidden.",
+         "<b>Reuse across sites:</b> the same three calls on any page. Heavier scroll choreography (hero pin, parallax) stays page-level and opt-in — it's bespoke per layout, not a safe global default."]},
     {"slug": "template-lululemon", "name": "Custom Lululemon Page", "eyebrow": "TEMPLATE", "color": "pink",
      "blurb": "A second brand-page variant — same template skeleton as Patagonia; only Why (Statement Band) and What-to-know (Callout) change.",
      "builder": build_lululemon_template,
@@ -1123,7 +1153,7 @@ def _assign(slugs, keys):
     for s in slugs:
         _PAGE_OF.setdefault(s, set()).update(keys)
 
-_assign(["color", "typography", "spacing", "radius", "layout"], ["tokens"])
+_assign(["color", "typography", "spacing", "radius", "layout", "motion"], ["tokens"])
 # shared across both pages
 _assign(["nav", "button", "pill", "input", "eyebrow", "arrow-link", "pill-group",
          "section-heading", "text-pills", "faq-title", "form", "footer", "faq",
@@ -1162,12 +1192,14 @@ def _tier_blocks(items):
     for e in items:
         groups.setdefault(e["eyebrow"], []).append(e)
     blocks = []
+    gi = 0
     for cat in order:
         g = groups.get(cat)
         if not g:
             continue
-        blocks.append(f'<div class="cat-group"><h2 class="h-display">{label[cat]}</h2>'
+        blocks.append(f'<div class="cat-group reveal" style="--i:{gi}"><h2 class="h-display">{label[cat]}</h2>'
                       f'<div class="grid">{"".join(component_card(e) for e in g)}</div></div>')
+        gi += 1
     return "".join(blocks)
 
 def render_index():
@@ -1187,7 +1219,7 @@ def render_index():
             '<b>tokens</b>, then dive into a <b>page</b> to see the components it\'s built from — '
             'each with a live demo and the exact <code>cm_kit</code> call. Self-contained from '
             '<code>cm_kit.py</code>; the only external dependency is Google Fonts.</p></div>'
-            f'<div class="grid grid-lg">{"".join(cards)}</div></div>')
+            + cm.reveal(f'<div class="grid grid-lg">{"".join(cards)}</div>') + '</div>')
     return page("Component Library", body)
 
 def render_collection(key, label, blurb):
@@ -1231,14 +1263,14 @@ def render_component(e):
 
 def render_landing_preview():
     """A full page composed purely from kit organisms — the Template demo, in its own file."""
-    body = (
-        cm.nav(LOGO_URI, links=["Products"],
-               services=["Custom Screen Printing", "Embroidery & DTG", "Cut & Sew Manufacturing"],
-               brands=["Patagonia", "YETI", "Lululemon", "The North Face"])
-        + cm.hero('CUSTOM MERCH &amp;<br><span class="cm-hero-hl">BRANDED SWAG</span><br>FOR COMPANIES AND TEAMS',
-                  "Crooked Monkey is a full-service custom merch agency. In-house screen printing, embroidery "
-                  "and DTG; design, kitting, fulfillment, and premium retail brands — shipped from studios across the US.")
-        + '<section style="background:#fff;padding:clamp(48px,7vw,96px) clamp(24px,5vw,64px)">'
+    nav_html = cm.nav(LOGO_URI, links=["Products"],
+                      services=["Custom Screen Printing", "Embroidery & DTG", "Cut & Sew Manufacturing"],
+                      brands=["Patagonia", "YETI", "Lululemon", "The North Face"])
+    sections = [
+        cm.hero('CUSTOM MERCH &amp;<br><span class="cm-hero-hl">BRANDED SWAG</span><br>FOR COMPANIES AND TEAMS',
+                "Crooked Monkey is a full-service custom merch agency. In-house screen printing, embroidery "
+                "and DTG; design, kitting, fulfillment, and premium retail brands — shipped from studios across the US."),
+        '<section style="background:#fff;padding:clamp(48px,7vw,96px) clamp(24px,5vw,64px)">'
         + '<div style="max-width:1180px;margin:0 auto">'
         + cm.heading("Custom merch services<br>for every format", eyebrow="What we do", center=True)
         + '<div style="margin-top:clamp(32px,5vw,56px)"></div>'
@@ -1247,28 +1279,25 @@ def render_landing_preview():
             (IMG["hoodie"], "Swag Storage, Kitting &amp; Distribution", "Stored, kitted and shipped worldwide.", "Swag fulfillment", "blue"),
             (IMG["duffel"], "Merch Design That Elevates Your Brand", "Your brand, on every detail.", "Design &amp; packaging", "pink"),
             (IMG["sonoma"], "Custom Employee &amp; Client Swag Kits", "Curated unboxing, delivered.", "Custom swag kits", "mint"),
-          ])
-        + '</div></section>'
-        + '<div style="background:var(--cream);padding:clamp(48px,7vw,90px) clamp(24px,5vw,64px)">'
+          ]) + '</div></section>',
+        '<div style="background:var(--cream);padding:clamp(48px,7vw,90px) clamp(24px,5vw,64px)">'
         + cm.premium_section('PREMIUM RETAIL<br>BRANDS YOU CAN<br><span class="acc">CO-BRAND</span>',
                              "We partner with a wide selection of premium retail brands so your merch feels bought, not made.",
-                             ["Patagonia", "YETI", "Lululemon", "The North Face", "Under Armour", "Stanley", "Hydro Flask", "Cotopaxi"])
-        + '</div>'
-        + '<div style="background:var(--cream);padding:clamp(24px,4vw,64px) clamp(24px,5vw,64px)">'
+                             ["Patagonia", "YETI", "Lululemon", "The North Face", "Under Armour", "Stanley", "Hydro Flask", "Cotopaxi"]) + '</div>',
+        '<div style="background:var(--cream);padding:clamp(24px,4vw,64px) clamp(24px,5vw,64px)">'
         + cm.faq_section('CUSTOM<br>MERCH <span class="pink">FAQ.</span>',
             [("What is the minimum order for custom merch?", "MOQs vary by item: apparel from 25 pieces, hard goods from 50, swag kits from 25 boxes."),
              ("How fast can you produce custom merch?", "Standard production runs about two weeks after art approval; rush is 5 business days or less."),
              ("Can you match my exact brand colors?", "Yes — we PMS-match colors and proof every decoration method."),
-             ("Do you ship internationally?", "Yes, we ship worldwide and can stage inventory regionally.")])
-        + '</div>'
-        + '<div style="background:var(--cream);padding:clamp(24px,4vw,64px) clamp(24px,5vw,64px)">'
-        + cm.contact_form() + '</div>'
-        + cm.footer(LOGO_URI)
-    )
-    css = (cm.root_css() + cm.nav_css() + ".cm-nav{position:sticky;top:0;z-index:50}"
+             ("Do you ship internationally?", "Yes, we ship worldwide and can stage inventory regionally.")]) + '</div>',
+        '<div style="background:var(--cream);padding:clamp(24px,4vw,64px) clamp(24px,5vw,64px)">' + cm.contact_form() + '</div>',
+        cm.footer(LOGO_URI),
+    ]
+    body = nav_html + "".join(cm.reveal(s) for s in sections)
+    css = (cm.root_css() + cm.motion_css() + cm.nav_css() + ".cm-nav{position:sticky;top:0;z-index:50}"
            + cm.hero_css() + cm.heading_css() + cm.service_css() + cm.premium_css()
            + cm.faqsection_css() + cm.form_css() + cm.footer_css())
-    js = cm.nav_js() + cm.faq_js() + cm.form_js()
+    js = cm.motion_js() + cm.nav_js() + cm.faq_js() + cm.form_js()
     return ("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
             "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
             "<title>Landing Page — Crooked Monkey (template preview)</title>"
@@ -1276,7 +1305,8 @@ def render_landing_preview():
             "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
             "<link href=\"https://fonts.googleapis.com/css2?family=Poppins:wght@900&"
             "family=Inter:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\">"
-            "<style>*{box-sizing:border-box;margin:0}body{background:var(--cream);"
+            + cm.motion_noscript()
+            + "<style>*{box-sizing:border-box;margin:0}body{background:var(--cream);"
             "font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}img{display:block;max-width:100%}"
             + css + "</style></head><body>" + body
             + "<script>(function(){" + js + "})();</script></body></html>")
@@ -1331,36 +1361,36 @@ def render_brand_page(cfg):
         al = cfg["alternatives"]
         alt_html = cm.premium_section(al["title"], al["sub"], al["brands"], cta=al.get("cta", "Browse all premium brands"))
 
-    body = (
-        cm.nav(LOGO_URI, links=["Products"],
-               services=["Custom Screen Printing", "Embroidery & DTG", "Cut & Sew Manufacturing"],
-               brands=cfg.get("nav_brands", ["Patagonia", "YETI", "Lululemon", "The North Face"]))
-        + cm.brand_hero(h["title"], h["sub"], [IMG[k] for k in h["images"]], cta=h.get("cta", "Talk to a Merch Expert"))
-        + cm.stat_strip([(_IC[i], l, v) for (i, l, v) in cfg["stats"]])
-        # variant section 1 — Why = Statement Band
-        + cm.statement_band(wy["eyebrow"], wy["title"], wy["paras"], IMG[wy["img"]],
-                            quote=wy.get("quote"), cite=wy.get("cite"), alt=wy.get("alt", ""))
-        # variant section 2 — What to know = Callout (optional)
-        + callout_html
-        + wrap("#fff", heading(cu["eyebrow"], cu["title"])
-               + cm.photo_grid([(IMG[im], t, b, a) for (im, t, b, a) in cu["cards"]]))
-        + wrap("var(--ink)", heading(wo["eyebrow"], wo["title"], center=True, on_ink=True)
-               + cm.usecase_grid([(_IC[i], l) for (i, l) in wo["cards"]]))
-        + wrap("var(--cream)", heading(de["eyebrow"], de["title"], center=True)
-               + cm.decoration_grid([(IMG[im], t, d, lst, a, bd) for (im, t, d, lst, a, bd) in de["cards"]]))
-        + wrap("#fff", heading(pr["eyebrow"], pr["title"]) + cm.process_row(pr["steps"]))
-        + cm.faq_section(fq["title"], fq["items"])
-        + alt_html
-        + '<section class="cm-section" style="background:var(--cream)">'
-        + cm.contact_form(quantities=fm["quantities"]) + '</section>'
-        + cm.footer(LOGO_URI, columns=ft["columns"])
-    )
-    css = (cm.root_css() + cm.layout_css() + cm.page_css() + cm.nav_css()
+    # Each section is wrapped in .reveal so it fades up on scroll — motion comes
+    # from the template, not the components. The nav stays fixed (not revealed).
+    nav_html = cm.nav(LOGO_URI, links=["Products"],
+                      services=["Custom Screen Printing", "Embroidery & DTG", "Cut & Sew Manufacturing"],
+                      brands=cfg.get("nav_brands", ["Patagonia", "YETI", "Lululemon", "The North Face"]))
+    sections = [
+        cm.brand_hero(h["title"], h["sub"], [IMG[k] for k in h["images"]], cta=h.get("cta", "Talk to a Merch Expert")),
+        cm.stat_strip([(_IC[i], l, v) for (i, l, v) in cfg["stats"]]),
+        cm.statement_band(wy["eyebrow"], wy["title"], wy["paras"], IMG[wy["img"]],
+                          quote=wy.get("quote"), cite=wy.get("cite"), alt=wy.get("alt", "")),
+        callout_html,
+        wrap("#fff", heading(cu["eyebrow"], cu["title"])
+             + cm.photo_grid([(IMG[im], t, b, a) for (im, t, b, a) in cu["cards"]])),
+        wrap("var(--ink)", heading(wo["eyebrow"], wo["title"], center=True, on_ink=True)
+             + cm.usecase_grid([(_IC[i], l) for (i, l) in wo["cards"]])),
+        wrap("var(--cream)", heading(de["eyebrow"], de["title"], center=True)
+             + cm.decoration_grid([(IMG[im], t, d, lst, a, bd) for (im, t, d, lst, a, bd) in de["cards"]])),
+        wrap("#fff", heading(pr["eyebrow"], pr["title"]) + cm.process_row(pr["steps"])),
+        cm.faq_section(fq["title"], fq["items"]),
+        alt_html,
+        '<section class="cm-section" style="background:var(--cream)">' + cm.contact_form(quantities=fm["quantities"]) + '</section>',
+        cm.footer(LOGO_URI, columns=ft["columns"]),
+    ]
+    body = nav_html + "".join(cm.reveal(s) for s in sections if s)
+    css = (cm.root_css() + cm.layout_css() + cm.page_css() + cm.motion_css() + cm.nav_css()
            + cm.brand_hero_css() + cm.stat_strip_css() + cm.statement_css() + cm.callout_css()
            + cm.heading_css() + cm.photo_card_css() + cm.usecase_css() + cm.decoration_css()
            + cm.process_css() + cm.faqsection_css() + cm.premium_css() + cm.pill_css()
            + cm.pillgroup_css() + cm.button_css() + cm.form_css() + cm.footer_css())
-    js = cm.nav_js() + cm.faq_js() + cm.form_js()
+    js = cm.motion_js() + cm.nav_js() + cm.faq_js() + cm.form_js()
     return ("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
             "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
             "<title>" + esc(cfg.get("title", "Custom Brand")) + " — Crooked Monkey (template preview)</title>"
@@ -1368,7 +1398,8 @@ def render_brand_page(cfg):
             "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
             "<link href=\"https://fonts.googleapis.com/css2?family=Poppins:wght@900&"
             "family=Inter:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\">"
-            "<style>*{box-sizing:border-box;margin:0}body{background:var(--cream);"
+            + cm.motion_noscript()
+            + "<style>*{box-sizing:border-box;margin:0}body{background:var(--cream);"
             "font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}img{display:block;max-width:100%}"
             + css + "</style></head><body><div class=\"cm-page\">" + body
             + "</div><script>(function(){" + js + "})();</script></body></html>")
